@@ -308,16 +308,24 @@ static void Collect(JsonElement module, Dictionary<string, JsonElement> decls)
 BigInteger Eval(JsonElement expr) => expr.GetProperty("type").GetString() switch
 {
     "IntLiteral" => BigInteger.Parse(expr.GetProperty("value").GetString()!),
-    "NegateExpr" => -Eval(expr.GetProperty("expr")),
-    "PowExpr" => BigInteger.Pow(Eval(expr.GetProperty("base")), (int)Eval(expr.GetProperty("exponent"))),
-    "IdentifierExpr" => Eval(ResolveConst(expr).GetProperty("value")),
+    "NegateExpr" => -Eval(expr.GetProperty("rhs")),
+    "PowExpr" => BigInteger.Pow(Eval(expr.GetProperty("lhs")), (int)Eval(expr.GetProperty("rhs"))),
+    // LShiftExpr, MulExpr, OrExpr도 lhs/rhs
+    "IdentifierExpr" => EvalIdentifier(expr.GetProperty("fullname").GetString()!),   // ConstDecl 또는 enum 멤버
     var t => throw new NotSupportedException(t),
 };
 ```
 
-json 속성명(`expr`, `base`, `exponent` 등)은 내려받은 파일로 확정하고, 모르는 노드는 `NotSupportedException`으로 드러낸다.
+내려받은 원본 93개 전체 조사로 확정한 사실(구현 시 반영):
 
-- **검증**: `verify --build 98310` 출력을 증거로 쓴다(테스트 프로젝트는 생성기를 참조하지 않는다) — 98310에서 루트 6종과 이벤트 표 타입이 모두 해석되고, 미지원 노드가 없음
+- 구버전 23개 json에 비표준 이스케이프 `\x1b`(리플레이 서명 StringLiteral)가 있다. 파싱 전에 `\xHH` → `\u00HH`로 바꾼다.
+- 타입 노드: `IntType`, `BoolType`, `BlobType`, `StringType`, `AsciiStringType`, `FourCCType`, `BitArrayType`, `NullType`, `ArrayType`·`DynArrayType`(`element_type`), `OptionalType`(`type_info`), `StructType`(`parents`=`ParentStructField`, `fields`=`MemberStructField`), `ChoiceType`(`MemberChoiceField`), `EnumType`·`InumType`(`MemberEnumField`·`MemberInumField`, 인라인 정의 있음), `UserType`. real 타입은 json·py 모두 없다.
+- 식 노드: `IntLiteral`, `NegateExpr`(`rhs`), `PowExpr`·`LShiftExpr`·`MulExpr`·`OrExpr`(`lhs`, `rhs`), `IdentifierExpr`(`fullname`).
+- bounds의 min/max에는 원본이 계산한 `evalue`와 `inclusive`가 있다. 레이아웃은 `evalue`를 쓰고, 평가기는 모든 bounds의 식을 `evalue`와 대조해 스스로를 검증한다. 평가기가 꼭 필요한 곳은 enum 멤버 값이다.
+- 루트 fullname: `NNet.Replay.SHeader`, `NNet.Game.SDetails`, `NNet.Replay.SInitData`, `NNet.SVarUint32`, `NNet.Replay.SGameUserId`, eventid는 `NNet.Game.EEventId`·`NNet.Game.EMessageId`·`NNet.Replay.Tracker.EEventId`.
+- 15405~23260(17개)은 py `replay_userid_typeid = None`이라 Python도 game/message 이벤트를 디코딩하지 못하고, 24944 이하(18개)는 `tracker_eventid_typeid = None`이다. 이 스트림은 해당 버전에서 미지원으로 표시한다(단위 11에서 `NotSupportedException`).
+
+- **검증**: `verify --build 98310` 출력을 증거로 쓴다(테스트 프로젝트는 생성기를 참조하지 않는다) — 98310에서 루트와 이벤트 표 타입이 모두 해석되고, 미지원 노드·bounds 평가 불일치가 없음. 전 버전 `verify`도 실행해 보고한다
 - **선행 단위**: 7
 
 ## 단위 9. 레이아웃·py 대조
@@ -413,6 +421,8 @@ public IEnumerable<GameEvent> DecodeGameEvents(ReadOnlyMemory<byte> data)
 ```
 
 tracker events는 `VersionedDecoder`, userid 없음. header는 user data 바이트를 versioned로 디코딩.
+
+py에서 userid/eventid 루트가 `None`인 버전(단위 8 참고)은 해당 스트림의 Decode/Encode가 `NotSupportedException`을 던진다(Python과 동일하게 디코딩 불가).
 
 `SVarUint32`는 choice(`m_uint6`/`m_uint14`/`m_uint22`/`m_uint32`)이므로 생성기가 `public long GetValue()`(각 경우의 값 반환)를 함께 출력한다. 인코딩은 값이 들어가는 가장 작은 경우를 고른다. 단위 17 왕복에서 원본 바이트와 다르면 원래 경우를 이벤트 메타에 보존하는 방식으로 바꾼다.
 
