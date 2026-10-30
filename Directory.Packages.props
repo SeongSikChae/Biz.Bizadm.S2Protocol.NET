@@ -1,0 +1,9 @@
+<Project>
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageVersion Include="Biz.Bizadm.MPQ.NET" Version="1.0.0" />
+    <PackageVersion Include="MSTest" Version="4.5.2" />
+  </ItemGroup>
+</Project>

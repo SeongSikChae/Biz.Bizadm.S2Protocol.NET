@@ -1,0 +1,8 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Biz.Bizadm.S2Protocol.NET.Tests" />
+    <PackageReference Include="Biz.Bizadm.MPQ.NET" />
+  </ItemGroup>
+
+</Project>
