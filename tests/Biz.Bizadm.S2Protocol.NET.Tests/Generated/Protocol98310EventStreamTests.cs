@@ -117,9 +117,19 @@ public sealed class Protocol98310EventStreamTests
     [TestMethod]
     public void Encode_WrongType_Throws()
     {
-        Assert.ThrowsExactly<ArgumentException>(() => _protocol.EncodeHeader(new SVersion()));
+        Assert.ThrowsExactly<ArgumentException>(() => _protocol.EncodeHeader(new ForeignHeader()));
+        Assert.ThrowsExactly<ArgumentException>(() => _protocol.EncodeHeader(null!));
         Assert.ThrowsExactly<ArgumentException>(() => _protocol.EncodeGameEvents(
             [new GameEvent(9, "", 0, 0, 0, new SUserFinishedLoadingSyncEvent())]));
+    }
+
+    // 다른 빌드(또는 사용자)가 구현한 IHeader: 이 빌드의 SHeader가 아니므로 인코딩할 수 없다.
+    private sealed class ForeignHeader : Common.Replay.IHeader
+    {
+        public byte[] Signature => [];
+        public Common.IVersion Version => new SVersion();
+        public int Type => 0;
+        public long ElapsedGameLoops => 0;
     }
 
     [TestMethod]

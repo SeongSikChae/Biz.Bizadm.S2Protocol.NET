@@ -1,42 +1,112 @@
+using System.Text.RegularExpressions;
 using Biz.Bizadm.S2Protocol.NET.Generator.Emit;
 
 namespace Biz.Bizadm.S2Protocol.NET.Generator;
 
-// py 대조를 통과한 버전만 src/Biz.Bizadm.S2Protocol.NET/Generated/Versions/ProtocolNNNNN/ProtocolNNNNN.g.cs로 출력한다.
-internal static class EmitCommand
+// 출력: src/Biz.Bizadm.S2Protocol.NET/Generated/
+//   Versions/ProtocolNNNNN/ProtocolNNNNN.g.cs  요청한 빌드(py 대조 통과 필수)
+//   Common/Common.g.cs                         전 버전 교집합 공통 인터페이스
+//   Versions/S2ProtocolRegistry.g.cs           Versions 아래 출력된 빌드 목록
+// 공통 인터페이스는 전 버전에서 계산하므로 --build를 줘도 93개 전부를 대조·요약한다.
+internal static partial class EmitCommand
 {
+    [GeneratedRegex(@"^Protocol(\d{5})$")]
+    private static partial Regex VersionDirectory();
+
     public static int Run(Upstream upstream, int? build)
     {
-        var builds = ProtocolModel.Builds(upstream).Where(b => build is null || b == build).ToList();
+        var all = ProtocolModel.Builds(upstream).ToList();
+        var builds = all.Where(b => build is null || b == build).ToList();
         if (builds.Count == 0)
         {
             Console.Error.WriteLine(build is null ? "No protocol files. Run fetch first." : $"Build {build} not found.");
             return 1;
         }
 
-        string outputRoot = Path.GetFullPath(Path.Combine(
-            upstream.ProjectDirectory, "..", "..", "src", "Biz.Bizadm.S2Protocol.NET", "Generated", "Versions"));
-        int failed = 0;
-        foreach (int b in builds)
+        var summaries = new List<CommonInterfaces.VersionSummary>();
+        foreach (int b in all)
         {
             try
             {
                 using var model = ProtocolModel.Load(upstream, b);
-                var emitter = new VersionEmitter(model);
-                string code = emitter.Emit();
-                string directory = Path.Combine(outputRoot, $"Protocol{b:D5}");
-                Directory.CreateDirectory(directory);
-                string path = Path.Combine(directory, $"Protocol{b:D5}.g.cs");
-                File.WriteAllText(path, code);
-                Console.WriteLine($"{b}: types={emitter.TypeCount} → {path}");
+                summaries.Add(CommonInterfaces.Summarize(b, new VersionEmitter(model, null).Catalog));
             }
             catch (Exception e)
             {
-                failed++;
                 Console.WriteLine($"{b}: FAILED {e.GetType().Name}: {e.Message}");
+                Console.WriteLine("Common interfaces need every build; nothing emitted.");
+                return 1;
             }
         }
-        Console.WriteLine($"emitted {builds.Count - failed}/{builds.Count}");
-        return failed == 0 ? 0 : 1;
+        var common = CommonInterfaces.Build(summaries);
+        foreach (string warning in common.Warnings)
+            Console.WriteLine($"warning: {warning}");
+
+        string generated = Path.GetFullPath(Path.Combine(upstream.ProjectDirectory, "..", "..", "src", "Biz.Bizadm.S2Protocol.NET", "Generated"));
+        string versionsRoot = Path.Combine(generated, "Versions");
+
+        // 이미 출력된 빌드도 새 공통 인터페이스에 맞춰 다시 만든다(옛 명시적 구현이 남아 컴파일이 깨지지 않게).
+        // 한 빌드라도 실패하면 아무것도 쓰지 않는다.
+        var targets = builds.Union(ExistingBuilds(versionsRoot)).Order().ToList();
+        var outputs = new List<(string Path, string Code)>();
+        foreach (int b in targets)
+        {
+            try
+            {
+                using var model = ProtocolModel.Load(upstream, b);
+                var emitter = new VersionEmitter(model, common);
+                string path = Path.Combine(versionsRoot, $"Protocol{b:D5}", $"Protocol{b:D5}.g.cs");
+                outputs.Add((path, emitter.Emit()));
+                Console.WriteLine($"{b}: types={emitter.TypeCount}");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"{b}: FAILED {e.GetType().Name}: {e.Message}");
+                Console.WriteLine("Nothing written.");
+                return 1;
+            }
+        }
+
+        foreach (var (path, code) in outputs)
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+            File.WriteAllText(path, code);
+        }
+        Console.WriteLine($"versions={outputs.Count} → {versionsRoot}");
+
+        string commonPath = Path.Combine(generated, "Common", "Common.g.cs");
+        Directory.CreateDirectory(Path.GetDirectoryName(commonPath)!);
+        File.WriteAllText(commonPath, common.Emit());
+        Console.WriteLine($"common interfaces={common.ByDecl.Count} → {commonPath}");
+
+        string registryPath = Path.Combine(versionsRoot, "S2ProtocolRegistry.g.cs");
+        File.WriteAllText(registryPath, Registry(targets));
+        Console.WriteLine($"registry builds={targets.Count} → {registryPath}");
+        return 0;
+    }
+
+    private static IEnumerable<int> ExistingBuilds(string versionsRoot) =>
+        !Directory.Exists(versionsRoot)
+            ? []
+            : Directory.EnumerateDirectories(versionsRoot)
+                .Select(d => VersionDirectory().Match(Path.GetFileName(d)))
+                .Where(m => m.Success && File.Exists(Path.Combine(versionsRoot, m.Value, m.Value + ".g.cs")))
+                .Select(m => int.Parse(m.Groups[1].Value));
+
+    private static string Registry(IReadOnlyList<int> builds)
+    {
+        var w = new CodeWriter();
+        w.Line("// <auto-generated/>");
+        w.Line("#nullable enable");
+        w.Line("namespace Biz.Bizadm.S2Protocol.NET.Protocols;");
+        w.Line();
+        w.Open("public static partial class S2ProtocolRegistry");
+        w.Line("private static partial global::System.Collections.Generic.IReadOnlyList<(int Build, global::System.Func<IS2Protocol> Create)> Factories() =>");
+        w.Line("[");
+        foreach (int b in builds)
+            w.Line($"    ({b}, static () => new global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol{b:D5}.Protocol()),");
+        w.Line("];");
+        w.Close();
+        return w.ToString();
     }
 }

@@ -41,13 +41,16 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310
         Unrecoverable = 3,
     }
 
-    public sealed partial class SMD5
+    public sealed partial class SMD5 : global::Biz.Bizadm.S2Protocol.NET.Common.IMD5
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_dataDeprecated")]
         public int[]? DataDeprecated { get; set; }
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_data")]
         public byte[] Data { get; set; } = [];
+
+        global::System.Collections.Generic.IReadOnlyList<int>? global::Biz.Bizadm.S2Protocol.NET.Common.IMD5.DataDeprecated => DataDeprecated;
+        byte[] global::Biz.Bizadm.S2Protocol.NET.Common.IMD5.Data => Data;
 
         internal static SMD5 ReadVersioned(VersionedDecoder d)
         {
@@ -75,7 +78,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310
 
     }
 
-    public sealed partial class SUserInitialData
+    public sealed partial class SUserInitialData : global::Biz.Bizadm.S2Protocol.NET.Common.IUserInitialData
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_name")]
         public byte[] Name { get; set; } = [];
@@ -133,6 +136,13 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scaledRating")]
         public int? ScaledRating { get; set; }
+
+        byte[] global::Biz.Bizadm.S2Protocol.NET.Common.IUserInitialData.Name => Name;
+        long global::Biz.Bizadm.S2Protocol.NET.Common.IUserInitialData.RandomSeed => RandomSeed;
+        global::Biz.Bizadm.S2Protocol.NET.Common.ITRacePreference global::Biz.Bizadm.S2Protocol.NET.Common.IUserInitialData.RacePreference => RacePreference;
+        bool global::Biz.Bizadm.S2Protocol.NET.Common.IUserInitialData.TestMap => TestMap;
+        bool global::Biz.Bizadm.S2Protocol.NET.Common.IUserInitialData.TestAuto => TestAuto;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.IUserInitialData.Observe => (int)Observe;
 
         internal static SUserInitialData ReadBitPacked(BitPackedDecoder d)
         {
@@ -268,7 +278,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310
 
     }
 
-    public sealed partial class SVersion
+    public sealed partial class SVersion : global::Biz.Bizadm.S2Protocol.NET.Common.IVersion
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_flags")]
         public int Flags { get; set; }
@@ -287,6 +297,13 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_baseBuild")]
         public long BaseBuild { get; set; }
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.IVersion.Flags => Flags;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.IVersion.Major => Major;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.IVersion.Minor => Minor;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.IVersion.Revision => Revision;
+        long global::Biz.Bizadm.S2Protocol.NET.Common.IVersion.Build => Build;
+        long global::Biz.Bizadm.S2Protocol.NET.Common.IVersion.BaseBuild => BaseBuild;
 
         internal static SVersion ReadVersioned(VersionedDecoder d)
         {
@@ -326,10 +343,12 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310
 
     }
 
-    public sealed partial class TRacePreference
+    public sealed partial class TRacePreference : global::Biz.Bizadm.S2Protocol.NET.Common.ITRacePreference
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_race")]
         public int? Race { get; set; }
+
+        int? global::Biz.Bizadm.S2Protocol.NET.Common.ITRacePreference.Race => Race;
 
         internal static TRacePreference ReadBitPacked(BitPackedDecoder d)
         {
@@ -345,10 +364,12 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310
 
     }
 
-    public sealed partial class TTeamPreference
+    public sealed partial class TTeamPreference : global::Biz.Bizadm.S2Protocol.NET.Common.ITTeamPreference
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_team")]
         public int? Team { get; set; }
+
+        int? global::Biz.Bizadm.S2Protocol.NET.Common.ITTeamPreference.Team => Team;
 
         internal static TTeamPreference ReadBitPacked(BitPackedDecoder d)
         {
@@ -367,13 +388,16 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310
 
 namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 {
-    public sealed partial class CRewardOverride
+    public sealed partial class CRewardOverride : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICRewardOverride
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_key")]
         public long Key { get; set; }
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_rewards")]
         public long[] Rewards { get; set; } = [];
+
+        long global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICRewardOverride.Key => Key;
+        global::System.Collections.Generic.IReadOnlyList<long> global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICRewardOverride.Rewards => Rewards;
 
         internal static CRewardOverride ReadBitPacked(BitPackedDecoder d)
         {
@@ -636,7 +660,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
         Tie = 3,
     }
 
-    public sealed partial class SAICommunicateEvent
+    public sealed partial class SAICommunicateEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IAICommunicateEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_beacon")]
         public int Beacon { get; set; }
@@ -664,6 +688,12 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_targetPoint")]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SPoint3 TargetPoint { get; set; } = new();
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IAICommunicateEvent.Beacon => Beacon;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IAICommunicateEvent.Ally => Ally;
+        long global::Biz.Bizadm.S2Protocol.NET.Common.Game.IAICommunicateEvent.TargetUnitTag => TargetUnitTag;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IAICommunicateEvent.TargetUnitSnapshotUnitLink => TargetUnitSnapshotUnitLink;
+        global::Biz.Bizadm.S2Protocol.NET.Common.Game.IPoint3 global::Biz.Bizadm.S2Protocol.NET.Common.Game.IAICommunicateEvent.TargetPoint => TargetPoint;
 
         internal static SAICommunicateEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -695,10 +725,12 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SAchievementAwardedEvent
+    public sealed partial class SAchievementAwardedEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IAchievementAwardedEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_achievementLink")]
         public int AchievementLink { get; set; }
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IAchievementAwardedEvent.AchievementLink => AchievementLink;
 
         internal static SAchievementAwardedEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -714,10 +746,12 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SAddAbsoluteGameSpeedEvent
+    public sealed partial class SAddAbsoluteGameSpeedEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IAddAbsoluteGameSpeedEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_delta")]
         public int Delta { get; set; }
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IAddAbsoluteGameSpeedEvent.Delta => Delta;
 
         internal static SAddAbsoluteGameSpeedEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -733,13 +767,16 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SAllianceEvent
+    public sealed partial class SAllianceEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IAllianceEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_alliance")]
         public long Alliance { get; set; }
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_control")]
         public long Control { get; set; }
+
+        long global::Biz.Bizadm.S2Protocol.NET.Common.Game.IAllianceEvent.Alliance => Alliance;
+        long global::Biz.Bizadm.S2Protocol.NET.Common.Game.IAllianceEvent.Control => Control;
 
         internal static SAllianceEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -757,10 +794,12 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SBankFileEvent
+    public sealed partial class SBankFileEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IBankFileEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_name")]
         public byte[] Name { get; set; } = [];
+
+        byte[] global::Biz.Bizadm.S2Protocol.NET.Common.Game.IBankFileEvent.Name => Name;
 
         internal static SBankFileEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -776,7 +815,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SBankKeyEvent
+    public sealed partial class SBankKeyEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IBankKeyEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_name")]
         public byte[] Name { get; set; } = [];
@@ -786,6 +825,10 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_data")]
         public byte[] Data { get; set; } = [];
+
+        byte[] global::Biz.Bizadm.S2Protocol.NET.Common.Game.IBankKeyEvent.Name => Name;
+        long global::Biz.Bizadm.S2Protocol.NET.Common.Game.IBankKeyEvent.Type => Type;
+        byte[] global::Biz.Bizadm.S2Protocol.NET.Common.Game.IBankKeyEvent.Data => Data;
 
         internal static SBankKeyEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -805,10 +848,12 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SBankSectionEvent
+    public sealed partial class SBankSectionEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IBankSectionEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_name")]
         public byte[] Name { get; set; } = [];
+
+        byte[] global::Biz.Bizadm.S2Protocol.NET.Common.Game.IBankSectionEvent.Name => Name;
 
         internal static SBankSectionEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -824,13 +869,15 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SBankSignatureEvent
+    public sealed partial class SBankSignatureEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IBankSignatureEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_signature")]
         public int[] Signature { get; set; } = [];
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_toonHandle")]
         public byte[] ToonHandle { get; set; } = [];
+
+        global::System.Collections.Generic.IReadOnlyList<int> global::Biz.Bizadm.S2Protocol.NET.Common.Game.IBankSignatureEvent.Signature => Signature;
 
         internal static SBankSignatureEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -848,7 +895,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SBankValueEvent
+    public sealed partial class SBankValueEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IBankValueEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_type")]
         public long Type { get; set; }
@@ -858,6 +905,10 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_data")]
         public byte[] Data { get; set; } = [];
+
+        long global::Biz.Bizadm.S2Protocol.NET.Common.Game.IBankValueEvent.Type => Type;
+        byte[] global::Biz.Bizadm.S2Protocol.NET.Common.Game.IBankValueEvent.Name => Name;
+        byte[] global::Biz.Bizadm.S2Protocol.NET.Common.Game.IBankValueEvent.Data => Data;
 
         internal static SBankValueEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -877,13 +928,16 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SBroadcastCheatEvent
+    public sealed partial class SBroadcastCheatEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IBroadcastCheatEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_verb")]
         public byte[] Verb { get; set; } = [];
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_arguments")]
         public byte[] Arguments { get; set; } = [];
+
+        byte[] global::Biz.Bizadm.S2Protocol.NET.Common.Game.IBroadcastCheatEvent.Verb => Verb;
+        byte[] global::Biz.Bizadm.S2Protocol.NET.Common.Game.IBroadcastCheatEvent.Arguments => Arguments;
 
         internal static SBroadcastCheatEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -901,13 +955,16 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SCameraSaveEvent
+    public sealed partial class SCameraSaveEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICameraSaveEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_which")]
         public int Which { get; set; }
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_target")]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SPointMini Target { get; set; } = new();
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICameraSaveEvent.Which => Which;
+        global::Biz.Bizadm.S2Protocol.NET.Common.Game.IPointMini global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICameraSaveEvent.Target => Target;
 
         internal static SCameraSaveEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -925,7 +982,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SCameraUpdateEvent
+    public sealed partial class SCameraUpdateEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICameraUpdateEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_target")]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SPointMini? Target { get; set; }
@@ -969,7 +1026,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SCatalogModifyEvent
+    public sealed partial class SCatalogModifyEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICatalogModifyEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_catalog")]
         public int Catalog { get; set; }
@@ -982,6 +1039,11 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_value")]
         public byte[] Value { get; set; } = [];
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICatalogModifyEvent.Catalog => Catalog;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICatalogModifyEvent.Entry => Entry;
+        byte[] global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICatalogModifyEvent.Field => Field;
+        byte[] global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICatalogModifyEvent.Value => Value;
 
         internal static SCatalogModifyEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -1003,13 +1065,16 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SChatMessage
+    public sealed partial class SChatMessage : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IChatMessage
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_recipient")]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.EMessageRecipient Recipient { get; set; }
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_string")]
         public byte[] String { get; set; } = [];
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IChatMessage.Recipient => (int)Recipient;
+        byte[] global::Biz.Bizadm.S2Protocol.NET.Common.Game.IChatMessage.String => String;
 
         internal static SChatMessage ReadBitPacked(BitPackedDecoder d)
         {
@@ -1027,7 +1092,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SCheatEventData
+    public sealed partial class SCheatEventData : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICheatEventData
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_point")]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SPoint Point { get; set; } = new();
@@ -1040,6 +1105,11 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_arguments")]
         public byte[] Arguments { get; set; } = [];
+
+        global::Biz.Bizadm.S2Protocol.NET.Common.Game.IPoint global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICheatEventData.Point => Point;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICheatEventData.Time => Time;
+        byte[] global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICheatEventData.Verb => Verb;
+        byte[] global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICheatEventData.Arguments => Arguments;
 
         internal static SCheatEventData ReadBitPacked(BitPackedDecoder d)
         {
@@ -1061,7 +1131,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SCmdAbil
+    public sealed partial class SCmdAbil : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICmdAbil
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_abilLink")]
         public int AbilLink { get; set; }
@@ -1071,6 +1141,10 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_abilCmdData")]
         public int? AbilCmdData { get; set; }
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICmdAbil.AbilLink => AbilLink;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICmdAbil.AbilCmdIndex => AbilCmdIndex;
+        int? global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICmdAbil.AbilCmdData => AbilCmdData;
 
         internal static SCmdAbil ReadBitPacked(BitPackedDecoder d)
         {
@@ -1146,7 +1220,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SCmdDataTargetUnit
+    public sealed partial class SCmdDataTargetUnit : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICmdDataTargetUnit
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_targetUnitFlags")]
         public int TargetUnitFlags { get; set; }
@@ -1168,6 +1242,12 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_snapshotPoint")]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SMapCoord3D SnapshotPoint { get; set; } = new();
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICmdDataTargetUnit.TargetUnitFlags => TargetUnitFlags;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICmdDataTargetUnit.Timer => Timer;
+        long global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICmdDataTargetUnit.Tag => Tag;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICmdDataTargetUnit.SnapshotUnitLink => SnapshotUnitLink;
+        global::Biz.Bizadm.S2Protocol.NET.Common.Game.IMapCoord3D global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICmdDataTargetUnit.SnapshotPoint => SnapshotPoint;
 
         internal static SCmdDataTargetUnit ReadBitPacked(BitPackedDecoder d)
         {
@@ -1195,7 +1275,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SCmdEvent
+    public sealed partial class SCmdEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICmdEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_cmdFlags")]
         public int CmdFlags { get; set; }
@@ -1239,10 +1319,12 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SCmdUpdateTargetPointEvent
+    public sealed partial class SCmdUpdateTargetPointEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICmdUpdateTargetPointEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_target")]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SMapCoord3D Target { get; set; } = new();
+
+        global::Biz.Bizadm.S2Protocol.NET.Common.Game.IMapCoord3D global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICmdUpdateTargetPointEvent.Target => Target;
 
         internal static SCmdUpdateTargetPointEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -1258,10 +1340,12 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SCmdUpdateTargetUnitEvent
+    public sealed partial class SCmdUpdateTargetUnitEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICmdUpdateTargetUnitEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_target")]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SCmdDataTargetUnit Target { get; set; } = new();
+
+        global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICmdDataTargetUnit global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICmdUpdateTargetUnitEvent.Target => Target;
 
         internal static SCmdUpdateTargetUnitEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -1277,7 +1361,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SColor
+    public sealed partial class SColor : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IColor
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_a")]
         public int A { get; set; }
@@ -1290,6 +1374,11 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_b")]
         public int B { get; set; }
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IColor.A => A;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IColor.R => R;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IColor.G => G;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IColor.B => B;
 
         internal static SColor ReadVersioned(VersionedDecoder d)
         {
@@ -1323,10 +1412,12 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SCommandManagerResetEvent
+    public sealed partial class SCommandManagerResetEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICommandManagerResetEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_sequence")]
         public long Sequence { get; set; }
+
+        long global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICommandManagerResetEvent.Sequence => Sequence;
 
         internal static SCommandManagerResetEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -1342,13 +1433,16 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SCommandManagerStateEvent
+    public sealed partial class SCommandManagerStateEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICommandManagerStateEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_state")]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.ECommandManagerState State { get; set; }
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_sequence")]
         public long? Sequence { get; set; }
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICommandManagerStateEvent.State => (int)State;
+        long? global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICommandManagerStateEvent.Sequence => Sequence;
 
         internal static SCommandManagerStateEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -1366,7 +1460,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SControlGroupUpdateEvent
+    public sealed partial class SControlGroupUpdateEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IControlGroupUpdateEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_controlGroupIndex")]
         public int ControlGroupIndex { get; set; }
@@ -1376,6 +1470,9 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_mask")]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SSelectionMask Mask { get; set; } = null!;
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IControlGroupUpdateEvent.ControlGroupIndex => ControlGroupIndex;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IControlGroupUpdateEvent.ControlGroupUpdate => (int)ControlGroupUpdate;
 
         internal static SControlGroupUpdateEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -1395,7 +1492,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SDecrementGameTimeRemainingEvent
+    public sealed partial class SDecrementGameTimeRemainingEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IDecrementGameTimeRemainingEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_decrementSeconds")]
         public int DecrementSeconds { get; set; }
@@ -1414,7 +1511,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SDetails
+    public sealed partial class SDetails : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IDetails
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_playerList")]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SPlayerDetails[]? PlayerList { get; set; }
@@ -1469,6 +1566,21 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_modPaths")]
         public byte[][]? ModPaths { get; set; }
+
+        global::System.Collections.Generic.IReadOnlyList<global::Biz.Bizadm.S2Protocol.NET.Common.Game.IPlayerDetails>? global::Biz.Bizadm.S2Protocol.NET.Common.Game.IDetails.PlayerList => PlayerList;
+        byte[] global::Biz.Bizadm.S2Protocol.NET.Common.Game.IDetails.Title => Title;
+        byte[] global::Biz.Bizadm.S2Protocol.NET.Common.Game.IDetails.Difficulty => Difficulty;
+        global::Biz.Bizadm.S2Protocol.NET.Common.Game.IThumbnail global::Biz.Bizadm.S2Protocol.NET.Common.Game.IDetails.Thumbnail => Thumbnail;
+        bool global::Biz.Bizadm.S2Protocol.NET.Common.Game.IDetails.IsBlizzardMap => IsBlizzardMap;
+        long global::Biz.Bizadm.S2Protocol.NET.Common.Game.IDetails.TimeUTC => TimeUTC;
+        long global::Biz.Bizadm.S2Protocol.NET.Common.Game.IDetails.TimeLocalOffset => TimeLocalOffset;
+        byte[] global::Biz.Bizadm.S2Protocol.NET.Common.Game.IDetails.Description => Description;
+        byte[] global::Biz.Bizadm.S2Protocol.NET.Common.Game.IDetails.ImageFilePath => ImageFilePath;
+        byte[] global::Biz.Bizadm.S2Protocol.NET.Common.Game.IDetails.MapFileName => MapFileName;
+        global::System.Collections.Generic.IReadOnlyList<byte[]>? global::Biz.Bizadm.S2Protocol.NET.Common.Game.IDetails.CacheHandles => CacheHandles;
+        bool global::Biz.Bizadm.S2Protocol.NET.Common.Game.IDetails.MiniSave => MiniSave;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IDetails.GameSpeed => (int)GameSpeed;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IDetails.DefaultDifficulty => DefaultDifficulty;
 
         internal static SDetails ReadVersioned(VersionedDecoder d)
         {
@@ -1544,10 +1656,12 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SGameCheatEvent
+    public sealed partial class SGameCheatEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IGameCheatEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_data")]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SCheatEventData Data { get; set; } = new();
+
+        global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICheatEventData global::Biz.Bizadm.S2Protocol.NET.Common.Game.IGameCheatEvent.Data => Data;
 
         internal static SGameCheatEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -1563,7 +1677,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SGameDescription
+    public sealed partial class SGameDescription : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IGameDescription
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_randomValue")]
         public long RandomValue { get; set; }
@@ -1649,6 +1763,28 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_isRealtimeMode")]
         public bool IsRealtimeMode { get; set; }
 
+        long global::Biz.Bizadm.S2Protocol.NET.Common.Game.IGameDescription.RandomValue => RandomValue;
+        byte[] global::Biz.Bizadm.S2Protocol.NET.Common.Game.IGameDescription.GameCacheName => GameCacheName;
+        global::Biz.Bizadm.S2Protocol.NET.Common.Game.IGameOptions global::Biz.Bizadm.S2Protocol.NET.Common.Game.IGameDescription.GameOptions => GameOptions;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IGameDescription.GameSpeed => (int)GameSpeed;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IGameDescription.GameType => (int)GameType;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IGameDescription.MaxUsers => MaxUsers;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IGameDescription.MaxObservers => MaxObservers;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IGameDescription.MaxPlayers => MaxPlayers;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IGameDescription.MaxTeams => MaxTeams;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IGameDescription.MaxColors => MaxColors;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IGameDescription.MaxRaces => MaxRaces;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IGameDescription.MaxControls => MaxControls;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IGameDescription.MapSizeX => MapSizeX;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IGameDescription.MapSizeY => MapSizeY;
+        long global::Biz.Bizadm.S2Protocol.NET.Common.Game.IGameDescription.MapFileSyncChecksum => MapFileSyncChecksum;
+        byte[] global::Biz.Bizadm.S2Protocol.NET.Common.Game.IGameDescription.MapFileName => MapFileName;
+        long global::Biz.Bizadm.S2Protocol.NET.Common.Game.IGameDescription.ModFileSyncChecksum => ModFileSyncChecksum;
+        global::System.Collections.Generic.IReadOnlyList<global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISlotDescription> global::Biz.Bizadm.S2Protocol.NET.Common.Game.IGameDescription.SlotDescriptions => SlotDescriptions;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IGameDescription.DefaultDifficulty => DefaultDifficulty;
+        global::System.Collections.Generic.IReadOnlyList<byte[]> global::Biz.Bizadm.S2Protocol.NET.Common.Game.IGameDescription.CacheHandles => CacheHandles;
+        bool global::Biz.Bizadm.S2Protocol.NET.Common.Game.IGameDescription.IsBlizzardMap => IsBlizzardMap;
+
         internal static SGameDescription ReadBitPacked(BitPackedDecoder d)
         {
             var r = new SGameDescription();
@@ -1717,7 +1853,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SGameOptions
+    public sealed partial class SGameOptions : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IGameOptions
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_lockTeams")]
         public bool LockTeams { get; set; }
@@ -1767,6 +1903,17 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_buildCoachEnabled")]
         public bool BuildCoachEnabled { get; set; }
 
+        bool global::Biz.Bizadm.S2Protocol.NET.Common.Game.IGameOptions.LockTeams => LockTeams;
+        bool global::Biz.Bizadm.S2Protocol.NET.Common.Game.IGameOptions.TeamsTogether => TeamsTogether;
+        bool global::Biz.Bizadm.S2Protocol.NET.Common.Game.IGameOptions.AdvancedSharedControl => AdvancedSharedControl;
+        bool global::Biz.Bizadm.S2Protocol.NET.Common.Game.IGameOptions.RandomRaces => RandomRaces;
+        bool global::Biz.Bizadm.S2Protocol.NET.Common.Game.IGameOptions.BattleNet => BattleNet;
+        bool global::Biz.Bizadm.S2Protocol.NET.Common.Game.IGameOptions.Amm => Amm;
+        bool global::Biz.Bizadm.S2Protocol.NET.Common.Game.IGameOptions.NoVictoryOrDefeat => NoVictoryOrDefeat;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IGameOptions.Fog => (int)Fog;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IGameOptions.Observers => (int)Observers;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IGameOptions.UserDifficulty => (int)UserDifficulty;
+
         internal static SGameOptions ReadBitPacked(BitPackedDecoder d)
         {
             var r = new SGameOptions();
@@ -1811,7 +1958,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SGameUserJoinEvent
+    public sealed partial class SGameUserJoinEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IGameUserJoinEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_observe")]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.EObserve Observe { get; set; }
@@ -1833,6 +1980,11 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_hijackCloneGameUserId")]
         public int? HijackCloneGameUserId { get; set; }
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IGameUserJoinEvent.Observe => (int)Observe;
+        byte[] global::Biz.Bizadm.S2Protocol.NET.Common.Game.IGameUserJoinEvent.Name => Name;
+        byte[]? global::Biz.Bizadm.S2Protocol.NET.Common.Game.IGameUserJoinEvent.ToonHandle => ToonHandle;
+        byte[]? global::Biz.Bizadm.S2Protocol.NET.Common.Game.IGameUserJoinEvent.ClanTag => ClanTag;
 
         internal static SGameUserJoinEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -1860,7 +2012,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SGameUserLeaveEvent
+    public sealed partial class SGameUserLeaveEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IGameUserLeaveEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_leaveReason")]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.ELeaveReason LeaveReason { get; set; }
@@ -1879,10 +2031,12 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SHeroTalentTreeSelectedEvent
+    public sealed partial class SHeroTalentTreeSelectedEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IHeroTalentTreeSelectedEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_index")]
         public long Index { get; set; }
+
+        long global::Biz.Bizadm.S2Protocol.NET.Common.Game.IHeroTalentTreeSelectedEvent.Index => Index;
 
         internal static SHeroTalentTreeSelectedEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -1898,10 +2052,12 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SHeroTalentTreeSelectionPanelToggledEvent
+    public sealed partial class SHeroTalentTreeSelectionPanelToggledEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IHeroTalentTreeSelectionPanelToggledEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_shown")]
         public bool Shown { get; set; }
+
+        bool global::Biz.Bizadm.S2Protocol.NET.Common.Game.IHeroTalentTreeSelectionPanelToggledEvent.Shown => Shown;
 
         internal static SHeroTalentTreeSelectionPanelToggledEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -1917,13 +2073,16 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SHijackReplayGameEvent
+    public sealed partial class SHijackReplayGameEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IHijackReplayGameEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_userInfos")]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SHijackReplayGameUserInfo[] UserInfos { get; set; } = [];
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_method")]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.EHijackMethod Method { get; set; }
+
+        global::System.Collections.Generic.IReadOnlyList<global::Biz.Bizadm.S2Protocol.NET.Common.Game.IHijackReplayGameUserInfo> global::Biz.Bizadm.S2Protocol.NET.Common.Game.IHijackReplayGameEvent.UserInfos => UserInfos;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IHijackReplayGameEvent.Method => (int)Method;
 
         internal static SHijackReplayGameEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -1941,7 +2100,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SHijackReplayGameUserInfo
+    public sealed partial class SHijackReplayGameUserInfo : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IHijackReplayGameUserInfo
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_gameUserId")]
         public int GameUserId { get; set; }
@@ -1960,6 +2119,12 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_clanLogo")]
         public byte[]? ClanLogo { get; set; }
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IHijackReplayGameUserInfo.GameUserId => GameUserId;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IHijackReplayGameUserInfo.Observe => (int)Observe;
+        byte[] global::Biz.Bizadm.S2Protocol.NET.Common.Game.IHijackReplayGameUserInfo.Name => Name;
+        byte[]? global::Biz.Bizadm.S2Protocol.NET.Common.Game.IHijackReplayGameUserInfo.ToonHandle => ToonHandle;
+        byte[]? global::Biz.Bizadm.S2Protocol.NET.Common.Game.IHijackReplayGameUserInfo.ClanTag => ClanTag;
 
         internal static SHijackReplayGameUserInfo ReadBitPacked(BitPackedDecoder d)
         {
@@ -1985,7 +2150,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SLoadGameDoneEvent
+    public sealed partial class SLoadGameDoneEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ILoadGameDoneEvent
     {
         internal static SLoadGameDoneEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -1999,10 +2164,12 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SLoadingProgressMessage
+    public sealed partial class SLoadingProgressMessage : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ILoadingProgressMessage
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_progress")]
         public int Progress { get; set; }
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ILoadingProgressMessage.Progress => Progress;
 
         internal static SLoadingProgressMessage ReadBitPacked(BitPackedDecoder d)
         {
@@ -2018,7 +2185,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SLobbySlot
+    public sealed partial class SLobbySlot : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ILobbySlot
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_control")]
         public int Control { get; set; }
@@ -2116,6 +2283,14 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_selectedCommanderPrestige")]
         public long SelectedCommanderPrestige { get; set; }
 
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ILobbySlot.Control => Control;
+        int? global::Biz.Bizadm.S2Protocol.NET.Common.Game.ILobbySlot.UserId => UserId;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ILobbySlot.TeamId => TeamId;
+        global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITColorPreference global::Biz.Bizadm.S2Protocol.NET.Common.Game.ILobbySlot.ColorPref => ColorPref;
+        global::Biz.Bizadm.S2Protocol.NET.Common.ITRacePreference global::Biz.Bizadm.S2Protocol.NET.Common.Game.ILobbySlot.RacePref => RacePref;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ILobbySlot.Difficulty => Difficulty;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ILobbySlot.Observe => (int)Observe;
+
         internal static SLobbySlot ReadBitPacked(BitPackedDecoder d)
         {
             var r = new SLobbySlot();
@@ -2192,7 +2367,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SLobbyState
+    public sealed partial class SLobbyState : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ILobbyState
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_phase")]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.EPhase Phase { get; set; }
@@ -2226,6 +2401,16 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_defaultAIBuild")]
         public int DefaultAIBuild { get; set; }
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ILobbyState.Phase => (int)Phase;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ILobbyState.MaxUsers => MaxUsers;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ILobbyState.MaxObservers => MaxObservers;
+        global::System.Collections.Generic.IReadOnlyList<global::Biz.Bizadm.S2Protocol.NET.Common.Game.ILobbySlot> global::Biz.Bizadm.S2Protocol.NET.Common.Game.ILobbyState.Slots => Slots;
+        long global::Biz.Bizadm.S2Protocol.NET.Common.Game.ILobbyState.RandomSeed => RandomSeed;
+        int? global::Biz.Bizadm.S2Protocol.NET.Common.Game.ILobbyState.HostUserId => HostUserId;
+        bool global::Biz.Bizadm.S2Protocol.NET.Common.Game.ILobbyState.IsSinglePlayer => IsSinglePlayer;
+        long global::Biz.Bizadm.S2Protocol.NET.Common.Game.ILobbyState.GameDuration => GameDuration;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ILobbyState.DefaultDifficulty => DefaultDifficulty;
 
         internal static SLobbyState ReadBitPacked(BitPackedDecoder d)
         {
@@ -2261,7 +2446,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SLobbySyncState
+    public sealed partial class SLobbySyncState : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ILobbySyncState
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_userInitialData")]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.SUserInitialData[] UserInitialData { get; set; } = [];
@@ -2271,6 +2456,10 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_lobbyState")]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SLobbyState LobbyState { get; set; } = new();
+
+        global::System.Collections.Generic.IReadOnlyList<global::Biz.Bizadm.S2Protocol.NET.Common.IUserInitialData> global::Biz.Bizadm.S2Protocol.NET.Common.Game.ILobbySyncState.UserInitialData => UserInitialData;
+        global::Biz.Bizadm.S2Protocol.NET.Common.Game.IGameDescription global::Biz.Bizadm.S2Protocol.NET.Common.Game.ILobbySyncState.GameDescription => GameDescription;
+        global::Biz.Bizadm.S2Protocol.NET.Common.Game.ILobbyState global::Biz.Bizadm.S2Protocol.NET.Common.Game.ILobbySyncState.LobbyState => LobbyState;
 
         internal static SLobbySyncState ReadBitPacked(BitPackedDecoder d)
         {
@@ -2290,7 +2479,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SMapCoord3D
+    public sealed partial class SMapCoord3D : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IMapCoord3D
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("x")]
         public int X { get; set; }
@@ -2300,6 +2489,10 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("z")]
         public int Z { get; set; }
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IMapCoord3D.X => X;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IMapCoord3D.Y => Y;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IMapCoord3D.Z => Z;
 
         internal static SMapCoord3D ReadBitPacked(BitPackedDecoder d)
         {
@@ -2319,10 +2512,12 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SPeerSetSyncLoadingTimeEvent
+    public sealed partial class SPeerSetSyncLoadingTimeEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IPeerSetSyncLoadingTimeEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_syncTime")]
         public long SyncTime { get; set; }
+
+        long global::Biz.Bizadm.S2Protocol.NET.Common.Game.IPeerSetSyncLoadingTimeEvent.SyncTime => SyncTime;
 
         internal static SPeerSetSyncLoadingTimeEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -2338,10 +2533,12 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SPeerSetSyncPlayingTimeEvent
+    public sealed partial class SPeerSetSyncPlayingTimeEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IPeerSetSyncPlayingTimeEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_syncTime")]
         public long SyncTime { get; set; }
+
+        long global::Biz.Bizadm.S2Protocol.NET.Common.Game.IPeerSetSyncPlayingTimeEvent.SyncTime => SyncTime;
 
         internal static SPeerSetSyncPlayingTimeEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -2357,13 +2554,16 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SPingMessage
+    public sealed partial class SPingMessage : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IPingMessage
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_recipient")]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.EMessageRecipient Recipient { get; set; }
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_point")]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SPoint Point { get; set; } = new();
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IPingMessage.Recipient => (int)Recipient;
+        global::Biz.Bizadm.S2Protocol.NET.Common.Game.IPoint global::Biz.Bizadm.S2Protocol.NET.Common.Game.IPingMessage.Point => Point;
 
         internal static SPingMessage ReadBitPacked(BitPackedDecoder d)
         {
@@ -2381,7 +2581,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SPlayerDetails
+    public sealed partial class SPlayerDetails : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IPlayerDetails
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_name")]
         public byte[] Name { get; set; } = [];
@@ -2415,6 +2615,15 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_hero")]
         public byte[] Hero { get; set; } = [];
+
+        byte[] global::Biz.Bizadm.S2Protocol.NET.Common.Game.IPlayerDetails.Name => Name;
+        global::Biz.Bizadm.S2Protocol.NET.Common.Game.IToonNameDetails global::Biz.Bizadm.S2Protocol.NET.Common.Game.IPlayerDetails.Toon => Toon;
+        byte[] global::Biz.Bizadm.S2Protocol.NET.Common.Game.IPlayerDetails.Race => Race;
+        global::Biz.Bizadm.S2Protocol.NET.Common.Game.IColor global::Biz.Bizadm.S2Protocol.NET.Common.Game.IPlayerDetails.Color => Color;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IPlayerDetails.Control => Control;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IPlayerDetails.TeamId => TeamId;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IPlayerDetails.Observe => (int)Observe;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IPlayerDetails.Result => (int)Result;
 
         internal static SPlayerDetails ReadVersioned(VersionedDecoder d)
         {
@@ -2469,13 +2678,16 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SPoint
+    public sealed partial class SPoint : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IPoint
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("x")]
         public int X { get; set; }
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("y")]
         public int Y { get; set; }
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IPoint.X => X;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IPoint.Y => Y;
 
         internal static SPoint ReadBitPacked(BitPackedDecoder d)
         {
@@ -2493,7 +2705,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SPoint3
+    public sealed partial class SPoint3 : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IPoint3
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("x")]
         public int X { get; set; }
@@ -2503,6 +2715,10 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("z")]
         public int Z { get; set; }
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IPoint3.X => X;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IPoint3.Y => Y;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IPoint3.Z => Z;
 
         internal static SPoint3 ReadBitPacked(BitPackedDecoder d)
         {
@@ -2522,13 +2738,16 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SPointMini
+    public sealed partial class SPointMini : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IPointMini
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("x")]
         public int X { get; set; }
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("y")]
         public int Y { get; set; }
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IPointMini.X => X;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IPointMini.Y => Y;
 
         internal static SPointMini ReadBitPacked(BitPackedDecoder d)
         {
@@ -2546,10 +2765,12 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SReconnectNotifyMessage
+    public sealed partial class SReconnectNotifyMessage : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IReconnectNotifyMessage
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_status")]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.EReconnectStatus Status { get; set; }
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IReconnectNotifyMessage.Status => (int)Status;
 
         internal static SReconnectNotifyMessage ReadBitPacked(BitPackedDecoder d)
         {
@@ -2565,10 +2786,12 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SResourceRequestCancelEvent
+    public sealed partial class SResourceRequestCancelEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IResourceRequestCancelEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_cancelRequestId")]
         public int CancelRequestId { get; set; }
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IResourceRequestCancelEvent.CancelRequestId => CancelRequestId;
 
         internal static SResourceRequestCancelEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -2584,10 +2807,12 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SResourceRequestEvent
+    public sealed partial class SResourceRequestEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IResourceRequestEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_resources")]
         public int[] Resources { get; set; } = [];
+
+        global::System.Collections.Generic.IReadOnlyList<int> global::Biz.Bizadm.S2Protocol.NET.Common.Game.IResourceRequestEvent.Resources => Resources;
 
         internal static SResourceRequestEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -2603,10 +2828,12 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SResourceRequestFulfillEvent
+    public sealed partial class SResourceRequestFulfillEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IResourceRequestFulfillEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_fulfillRequestId")]
         public int FulfillRequestId { get; set; }
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IResourceRequestFulfillEvent.FulfillRequestId => FulfillRequestId;
 
         internal static SResourceRequestFulfillEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -2622,13 +2849,16 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SResourceTradeEvent
+    public sealed partial class SResourceTradeEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IResourceTradeEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_recipientId")]
         public int RecipientId { get; set; }
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_resources")]
         public int[] Resources { get; set; } = [];
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IResourceTradeEvent.RecipientId => RecipientId;
+        global::System.Collections.Generic.IReadOnlyList<int> global::Biz.Bizadm.S2Protocol.NET.Common.Game.IResourceTradeEvent.Resources => Resources;
 
         internal static SResourceTradeEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -2646,7 +2876,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SSaveGameDoneEvent
+    public sealed partial class SSaveGameDoneEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISaveGameDoneEvent
     {
         internal static SSaveGameDoneEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -2660,7 +2890,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SSaveGameEvent
+    public sealed partial class SSaveGameEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISaveGameEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_fileName")]
         public byte[] FileName { get; set; } = [];
@@ -2676,6 +2906,12 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_description")]
         public byte[] Description { get; set; } = [];
+
+        byte[] global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISaveGameEvent.FileName => FileName;
+        bool global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISaveGameEvent.Automatic => Automatic;
+        bool global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISaveGameEvent.Overwrite => Overwrite;
+        byte[] global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISaveGameEvent.Name => Name;
+        byte[] global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISaveGameEvent.Description => Description;
 
         internal static SSaveGameEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -2699,7 +2935,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SSelectionDelta
+    public sealed partial class SSelectionDelta : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISelectionDelta
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_subgroupIndex")]
         public int SubgroupIndex { get; set; }
@@ -2712,6 +2948,10 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_addUnitTags")]
         public long[] AddUnitTags { get; set; } = [];
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISelectionDelta.SubgroupIndex => SubgroupIndex;
+        global::System.Collections.Generic.IReadOnlyList<global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISelectionDeltaSubgroup> global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISelectionDelta.AddSubgroups => AddSubgroups;
+        global::System.Collections.Generic.IReadOnlyList<long> global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISelectionDelta.AddUnitTags => AddUnitTags;
 
         internal static SSelectionDelta ReadBitPacked(BitPackedDecoder d)
         {
@@ -2733,13 +2973,16 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SSelectionDeltaEvent
+    public sealed partial class SSelectionDeltaEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISelectionDeltaEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_controlGroupId")]
         public int ControlGroupId { get; set; }
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_delta")]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SSelectionDelta Delta { get; set; } = new();
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISelectionDeltaEvent.ControlGroupId => ControlGroupId;
+        global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISelectionDelta global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISelectionDeltaEvent.Delta => Delta;
 
         internal static SSelectionDeltaEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -2757,7 +3000,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SSelectionDeltaSubgroup
+    public sealed partial class SSelectionDeltaSubgroup : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISelectionDeltaSubgroup
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitLink")]
         public int UnitLink { get; set; }
@@ -2770,6 +3013,10 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_count")]
         public int Count { get; set; }
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISelectionDeltaSubgroup.UnitLink => UnitLink;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISelectionDeltaSubgroup.IntraSubgroupPriority => IntraSubgroupPriority;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISelectionDeltaSubgroup.Count => Count;
 
         internal static SSelectionDeltaSubgroup ReadBitPacked(BitPackedDecoder d)
         {
@@ -2847,13 +3094,16 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SSelectionSyncCheckEvent
+    public sealed partial class SSelectionSyncCheckEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISelectionSyncCheckEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_controlGroupId")]
         public int ControlGroupId { get; set; }
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_selectionSyncData")]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SSelectionSyncData SelectionSyncData { get; set; } = new();
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISelectionSyncCheckEvent.ControlGroupId => ControlGroupId;
+        global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISelectionSyncData global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISelectionSyncCheckEvent.SelectionSyncData => SelectionSyncData;
 
         internal static SSelectionSyncCheckEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -2871,7 +3121,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SSelectionSyncData
+    public sealed partial class SSelectionSyncData : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISelectionSyncData
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_count")]
         public int Count { get; set; }
@@ -2890,6 +3140,13 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_subgroupsChecksum")]
         public long SubgroupsChecksum { get; set; }
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISelectionSyncData.Count => Count;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISelectionSyncData.SubgroupCount => SubgroupCount;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISelectionSyncData.ActiveSubgroupIndex => ActiveSubgroupIndex;
+        long global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISelectionSyncData.UnitTagsChecksum => UnitTagsChecksum;
+        long global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISelectionSyncData.SubgroupIndicesChecksum => SubgroupIndicesChecksum;
+        long global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISelectionSyncData.SubgroupsChecksum => SubgroupsChecksum;
 
         internal static SSelectionSyncData ReadBitPacked(BitPackedDecoder d)
         {
@@ -2915,7 +3172,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SServerPingMessage
+    public sealed partial class SServerPingMessage : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IServerPingMessage
     {
         internal static SServerPingMessage ReadBitPacked(BitPackedDecoder d)
         {
@@ -2929,10 +3186,12 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SSetAbsoluteGameSpeedEvent
+    public sealed partial class SSetAbsoluteGameSpeedEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISetAbsoluteGameSpeedEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_speed")]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.EGameSpeed Speed { get; set; }
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISetAbsoluteGameSpeedEvent.Speed => (int)Speed;
 
         internal static SSetAbsoluteGameSpeedEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -2948,10 +3207,12 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SSetSyncLoadingTimeEvent
+    public sealed partial class SSetSyncLoadingTimeEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISetSyncLoadingTimeEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_syncTime")]
         public long SyncTime { get; set; }
+
+        long global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISetSyncLoadingTimeEvent.SyncTime => SyncTime;
 
         internal static SSetSyncLoadingTimeEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -2967,10 +3228,12 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SSetSyncPlayingTimeEvent
+    public sealed partial class SSetSyncPlayingTimeEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISetSyncPlayingTimeEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_syncTime")]
         public long SyncTime { get; set; }
+
+        long global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISetSyncPlayingTimeEvent.SyncTime => SyncTime;
 
         internal static SSetSyncPlayingTimeEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -2986,7 +3249,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SSlotDescription
+    public sealed partial class SSlotDescription : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISlotDescription
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_allowedColors")]
         public global::Biz.Bizadm.S2Protocol.NET.S2BitArray AllowedColors { get; set; } = new(0, []);
@@ -3005,6 +3268,12 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_allowedAIBuilds")]
         public global::Biz.Bizadm.S2Protocol.NET.S2BitArray AllowedAIBuilds { get; set; } = new(0, []);
+
+        global::Biz.Bizadm.S2Protocol.NET.S2BitArray global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISlotDescription.AllowedColors => AllowedColors;
+        global::Biz.Bizadm.S2Protocol.NET.S2BitArray global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISlotDescription.AllowedRaces => AllowedRaces;
+        global::Biz.Bizadm.S2Protocol.NET.S2BitArray global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISlotDescription.AllowedDifficulty => AllowedDifficulty;
+        global::Biz.Bizadm.S2Protocol.NET.S2BitArray global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISlotDescription.AllowedControls => AllowedControls;
+        global::Biz.Bizadm.S2Protocol.NET.S2BitArray global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISlotDescription.AllowedObserveTypes => AllowedObserveTypes;
 
         internal static SSlotDescription ReadBitPacked(BitPackedDecoder d)
         {
@@ -3030,13 +3299,16 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SSyncSoundLength
+    public sealed partial class SSyncSoundLength : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISyncSoundLength
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_soundHash")]
         public long[] SoundHash { get; set; } = [];
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_length")]
         public long[] Length { get; set; } = [];
+
+        global::System.Collections.Generic.IReadOnlyList<long> global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISyncSoundLength.SoundHash => SoundHash;
+        global::System.Collections.Generic.IReadOnlyList<long> global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISyncSoundLength.Length => Length;
 
         internal static SSyncSoundLength ReadBitPacked(BitPackedDecoder d)
         {
@@ -3054,10 +3326,12 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SThumbnail
+    public sealed partial class SThumbnail : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IThumbnail
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_file")]
         public byte[] File { get; set; } = [];
+
+        byte[] global::Biz.Bizadm.S2Protocol.NET.Common.Game.IThumbnail.File => File;
 
         internal static SThumbnail ReadVersioned(VersionedDecoder d)
         {
@@ -3082,7 +3356,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SToonNameDetails
+    public sealed partial class SToonNameDetails : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IToonNameDetails
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_region")]
         public int Region { get; set; }
@@ -3098,6 +3372,11 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_id")]
         public ulong Id { get; set; }
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IToonNameDetails.Region => Region;
+        global::Biz.Bizadm.S2Protocol.NET.FourCC global::Biz.Bizadm.S2Protocol.NET.Common.Game.IToonNameDetails.ProgramId => ProgramId;
+        long global::Biz.Bizadm.S2Protocol.NET.Common.Game.IToonNameDetails.Realm => Realm;
+        byte[] global::Biz.Bizadm.S2Protocol.NET.Common.Game.IToonNameDetails.Name => Name;
 
         internal static SToonNameDetails ReadVersioned(VersionedDecoder d)
         {
@@ -3134,7 +3413,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class STriggerAbortMissionEvent
+    public sealed partial class STriggerAbortMissionEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerAbortMissionEvent
     {
         internal static STriggerAbortMissionEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -3148,7 +3427,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class STriggerAnimLengthQueryByNameEvent
+    public sealed partial class STriggerAnimLengthQueryByNameEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerAnimLengthQueryByNameEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_queryId")]
         public int QueryId { get; set; }
@@ -3158,6 +3437,10 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_finishGameLoop")]
         public long FinishGameLoop { get; set; }
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerAnimLengthQueryByNameEvent.QueryId => QueryId;
+        long global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerAnimLengthQueryByNameEvent.LengthMs => LengthMs;
+        long global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerAnimLengthQueryByNameEvent.FinishGameLoop => FinishGameLoop;
 
         internal static STriggerAnimLengthQueryByNameEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -3177,13 +3460,16 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class STriggerAnimLengthQueryByPropsEvent
+    public sealed partial class STriggerAnimLengthQueryByPropsEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerAnimLengthQueryByPropsEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_queryId")]
         public int QueryId { get; set; }
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_lengthMs")]
         public long LengthMs { get; set; }
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerAnimLengthQueryByPropsEvent.QueryId => QueryId;
+        long global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerAnimLengthQueryByPropsEvent.LengthMs => LengthMs;
 
         internal static STriggerAnimLengthQueryByPropsEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -3201,10 +3487,12 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class STriggerAnimOffsetEvent
+    public sealed partial class STriggerAnimOffsetEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerAnimOffsetEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_animWaitQueryId")]
         public int AnimWaitQueryId { get; set; }
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerAnimOffsetEvent.AnimWaitQueryId => AnimWaitQueryId;
 
         internal static STriggerAnimOffsetEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -3220,7 +3508,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class STriggerBattleReportPanelExitEvent
+    public sealed partial class STriggerBattleReportPanelExitEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerBattleReportPanelExitEvent
     {
         internal static STriggerBattleReportPanelExitEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -3234,13 +3522,16 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class STriggerBattleReportPanelPlayMissionEvent
+    public sealed partial class STriggerBattleReportPanelPlayMissionEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerBattleReportPanelPlayMissionEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_battleReportId")]
         public int BattleReportId { get; set; }
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_difficultyLevel")]
         public int DifficultyLevel { get; set; }
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerBattleReportPanelPlayMissionEvent.BattleReportId => BattleReportId;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerBattleReportPanelPlayMissionEvent.DifficultyLevel => DifficultyLevel;
 
         internal static STriggerBattleReportPanelPlayMissionEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -3258,10 +3549,12 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class STriggerBattleReportPanelPlaySceneEvent
+    public sealed partial class STriggerBattleReportPanelPlaySceneEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerBattleReportPanelPlaySceneEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_battleReportId")]
         public int BattleReportId { get; set; }
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerBattleReportPanelPlaySceneEvent.BattleReportId => BattleReportId;
 
         internal static STriggerBattleReportPanelPlaySceneEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -3277,10 +3570,12 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class STriggerBattleReportPanelSelectionChangedEvent
+    public sealed partial class STriggerBattleReportPanelSelectionChangedEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerBattleReportPanelSelectionChangedEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_battleReportId")]
         public int BattleReportId { get; set; }
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerBattleReportPanelSelectionChangedEvent.BattleReportId => BattleReportId;
 
         internal static STriggerBattleReportPanelSelectionChangedEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -3296,10 +3591,12 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class STriggerButtonPressedEvent
+    public sealed partial class STriggerButtonPressedEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerButtonPressedEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_button")]
         public int Button { get; set; }
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerButtonPressedEvent.Button => Button;
 
         internal static STriggerButtonPressedEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -3315,10 +3612,12 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class STriggerChatMessageEvent
+    public sealed partial class STriggerChatMessageEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerChatMessageEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_chatMessage")]
         public byte[] ChatMessage { get; set; } = [];
+
+        byte[] global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerChatMessageEvent.ChatMessage => ChatMessage;
 
         internal static STriggerChatMessageEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -3334,13 +3633,16 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class STriggerCommandErrorEvent
+    public sealed partial class STriggerCommandErrorEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerCommandErrorEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_error")]
         public int Error { get; set; }
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_abil")]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SCmdAbil? Abil { get; set; }
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerCommandErrorEvent.Error => Error;
+        global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICmdAbil? global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerCommandErrorEvent.Abil => Abil;
 
         internal static STriggerCommandErrorEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -3358,10 +3660,12 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class STriggerConversationSkippedEvent
+    public sealed partial class STriggerConversationSkippedEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerConversationSkippedEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_skipType")]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.EConversationSkip SkipType { get; set; }
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerConversationSkippedEvent.SkipType => (int)SkipType;
 
         internal static STriggerConversationSkippedEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -3377,10 +3681,12 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class STriggerCustomDialogDismissedEvent
+    public sealed partial class STriggerCustomDialogDismissedEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerCustomDialogDismissedEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_result")]
         public int Result { get; set; }
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerCustomDialogDismissedEvent.Result => Result;
 
         internal static STriggerCustomDialogDismissedEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -3396,13 +3702,16 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class STriggerCutsceneBookmarkFiredEvent
+    public sealed partial class STriggerCutsceneBookmarkFiredEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerCutsceneBookmarkFiredEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_cutsceneId")]
         public int CutsceneId { get; set; }
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_bookmarkName")]
         public byte[] BookmarkName { get; set; } = [];
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerCutsceneBookmarkFiredEvent.CutsceneId => CutsceneId;
+        byte[] global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerCutsceneBookmarkFiredEvent.BookmarkName => BookmarkName;
 
         internal static STriggerCutsceneBookmarkFiredEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -3420,7 +3729,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class STriggerCutsceneConversationLineEvent
+    public sealed partial class STriggerCutsceneConversationLineEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerCutsceneConversationLineEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_cutsceneId")]
         public int CutsceneId { get; set; }
@@ -3430,6 +3739,10 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_altConversationLine")]
         public byte[] AltConversationLine { get; set; } = [];
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerCutsceneConversationLineEvent.CutsceneId => CutsceneId;
+        byte[] global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerCutsceneConversationLineEvent.ConversationLine => ConversationLine;
+        byte[] global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerCutsceneConversationLineEvent.AltConversationLine => AltConversationLine;
 
         internal static STriggerCutsceneConversationLineEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -3449,13 +3762,16 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class STriggerCutsceneConversationLineMissingEvent
+    public sealed partial class STriggerCutsceneConversationLineMissingEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerCutsceneConversationLineMissingEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_cutsceneId")]
         public int CutsceneId { get; set; }
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_conversationLine")]
         public byte[] ConversationLine { get; set; } = [];
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerCutsceneConversationLineMissingEvent.CutsceneId => CutsceneId;
+        byte[] global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerCutsceneConversationLineMissingEvent.ConversationLine => ConversationLine;
 
         internal static STriggerCutsceneConversationLineMissingEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -3473,10 +3789,12 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class STriggerCutsceneEndSceneFiredEvent
+    public sealed partial class STriggerCutsceneEndSceneFiredEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerCutsceneEndSceneFiredEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_cutsceneId")]
         public int CutsceneId { get; set; }
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerCutsceneEndSceneFiredEvent.CutsceneId => CutsceneId;
 
         internal static STriggerCutsceneEndSceneFiredEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -3492,7 +3810,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class STriggerDialogControlEvent
+    public sealed partial class STriggerDialogControlEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerDialogControlEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_controlId")]
         public int ControlId { get; set; }
@@ -3502,6 +3820,9 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_eventData")]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerDialogControlEvent.EventDataChoice EventData { get; set; } = null!;
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerDialogControlEvent.ControlId => ControlId;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerDialogControlEvent.EventType => EventType;
 
         public abstract partial class EventDataChoice
         {
@@ -3593,7 +3914,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class STriggerGameCreditsFinishedEvent
+    public sealed partial class STriggerGameCreditsFinishedEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerGameCreditsFinishedEvent
     {
         internal static STriggerGameCreditsFinishedEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -3607,10 +3928,12 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class STriggerGameMenuItemSelectedEvent
+    public sealed partial class STriggerGameMenuItemSelectedEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerGameMenuItemSelectedEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_gameMenuItemIndex")]
         public int GameMenuItemIndex { get; set; }
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerGameMenuItemSelectedEvent.GameMenuItemIndex => GameMenuItemIndex;
 
         internal static STriggerGameMenuItemSelectedEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -3626,13 +3949,16 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class STriggerHotkeyPressedEvent
+    public sealed partial class STriggerHotkeyPressedEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerHotkeyPressedEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_hotkey")]
         public long Hotkey { get; set; }
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_down")]
         public bool Down { get; set; }
+
+        long global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerHotkeyPressedEvent.Hotkey => Hotkey;
+        bool global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerHotkeyPressedEvent.Down => Down;
 
         internal static STriggerHotkeyPressedEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -3650,13 +3976,16 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class STriggerKeyPressedEvent
+    public sealed partial class STriggerKeyPressedEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerKeyPressedEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_key")]
         public int Key { get; set; }
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_flags")]
         public int Flags { get; set; }
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerKeyPressedEvent.Key => Key;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerKeyPressedEvent.Flags => Flags;
 
         internal static STriggerKeyPressedEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -3674,7 +4003,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class STriggerMercenaryPanelExitEvent
+    public sealed partial class STriggerMercenaryPanelExitEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerMercenaryPanelExitEvent
     {
         internal static STriggerMercenaryPanelExitEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -3688,7 +4017,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class STriggerMercenaryPanelPurchaseEvent
+    public sealed partial class STriggerMercenaryPanelPurchaseEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerMercenaryPanelPurchaseEvent
     {
         internal static STriggerMercenaryPanelPurchaseEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -3702,10 +4031,12 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class STriggerMercenaryPanelSelectionChangedEvent
+    public sealed partial class STriggerMercenaryPanelSelectionChangedEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerMercenaryPanelSelectionChangedEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_mercenaryId")]
         public int MercenaryId { get; set; }
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerMercenaryPanelSelectionChangedEvent.MercenaryId => MercenaryId;
 
         internal static STriggerMercenaryPanelSelectionChangedEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -3721,7 +4052,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class STriggerMouseClickedEvent
+    public sealed partial class STriggerMouseClickedEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerMouseClickedEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_button")]
         public long Button { get; set; }
@@ -3737,6 +4068,9 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_flags")]
         public int Flags { get; set; }
+
+        long global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerMouseClickedEvent.Button => Button;
+        bool global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerMouseClickedEvent.Down => Down;
 
         internal static STriggerMouseClickedEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -3760,7 +4094,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class STriggerMouseMovedEvent
+    public sealed partial class STriggerMouseMovedEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerMouseMovedEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_posUI")]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SUICoord PosUI { get; set; } = new();
@@ -3770,6 +4104,9 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_flags")]
         public int Flags { get; set; }
+
+        global::Biz.Bizadm.S2Protocol.NET.Common.Game.IUICoord global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerMouseMovedEvent.PosUI => PosUI;
+        global::Biz.Bizadm.S2Protocol.NET.Common.Game.IMapCoord3D global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerMouseMovedEvent.PosWorld => PosWorld;
 
         internal static STriggerMouseMovedEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -3789,13 +4126,16 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class STriggerMouseWheelEvent
+    public sealed partial class STriggerMouseWheelEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerMouseWheelEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_wheelSpin")]
         public int WheelSpin { get; set; }
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_flags")]
         public int Flags { get; set; }
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerMouseWheelEvent.WheelSpin => WheelSpin;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerMouseWheelEvent.Flags => Flags;
 
         internal static STriggerMouseWheelEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -3813,7 +4153,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class STriggerMovieFinishedEvent
+    public sealed partial class STriggerMovieFinishedEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerMovieFinishedEvent
     {
         internal static STriggerMovieFinishedEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -3827,10 +4167,12 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class STriggerMovieFunctionEvent
+    public sealed partial class STriggerMovieFunctionEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerMovieFunctionEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_functionName")]
         public byte[] FunctionName { get; set; } = [];
+
+        byte[] global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerMovieFunctionEvent.FunctionName => FunctionName;
 
         internal static STriggerMovieFunctionEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -3846,7 +4188,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class STriggerMovieStartedEvent
+    public sealed partial class STriggerMovieStartedEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerMovieStartedEvent
     {
         internal static STriggerMovieStartedEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -3860,7 +4202,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class STriggerPingEvent
+    public sealed partial class STriggerPingEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerPingEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_point")]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SPoint Point { get; set; } = new();
@@ -3888,6 +4230,10 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_option")]
         public int Option { get; set; }
+
+        global::Biz.Bizadm.S2Protocol.NET.Common.Game.IPoint global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerPingEvent.Point => Point;
+        long global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerPingEvent.Unit => Unit;
+        bool global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerPingEvent.PingedMinimap => PingedMinimap;
 
         internal static STriggerPingEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -3919,10 +4265,12 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class STriggerPlanetMissionLaunchedEvent
+    public sealed partial class STriggerPlanetMissionLaunchedEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerPlanetMissionLaunchedEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_difficultyLevel")]
         public int DifficultyLevel { get; set; }
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerPlanetMissionLaunchedEvent.DifficultyLevel => DifficultyLevel;
 
         internal static STriggerPlanetMissionLaunchedEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -3938,10 +4286,12 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class STriggerPlanetMissionSelectedEvent
+    public sealed partial class STriggerPlanetMissionSelectedEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerPlanetMissionSelectedEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_planetId")]
         public int PlanetId { get; set; }
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerPlanetMissionSelectedEvent.PlanetId => PlanetId;
 
         internal static STriggerPlanetMissionSelectedEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -3957,7 +4307,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class STriggerPlanetPanelBirthCompleteEvent
+    public sealed partial class STriggerPlanetPanelBirthCompleteEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerPlanetPanelBirthCompleteEvent
     {
         internal static STriggerPlanetPanelBirthCompleteEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -3971,7 +4321,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class STriggerPlanetPanelCanceledEvent
+    public sealed partial class STriggerPlanetPanelCanceledEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerPlanetPanelCanceledEvent
     {
         internal static STriggerPlanetPanelCanceledEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -3985,7 +4335,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class STriggerPlanetPanelDeathCompleteEvent
+    public sealed partial class STriggerPlanetPanelDeathCompleteEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerPlanetPanelDeathCompleteEvent
     {
         internal static STriggerPlanetPanelDeathCompleteEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -3999,7 +4349,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class STriggerPlanetPanelReplayEvent
+    public sealed partial class STriggerPlanetPanelReplayEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerPlanetPanelReplayEvent
     {
         internal static STriggerPlanetPanelReplayEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -4013,10 +4363,12 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class STriggerPortraitLoadedEvent
+    public sealed partial class STriggerPortraitLoadedEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerPortraitLoadedEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_portraitId")]
         public int PortraitId { get; set; }
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerPortraitLoadedEvent.PortraitId => PortraitId;
 
         internal static STriggerPortraitLoadedEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -4032,7 +4384,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class STriggerProfilerLoggingFinishedEvent
+    public sealed partial class STriggerProfilerLoggingFinishedEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerProfilerLoggingFinishedEvent
     {
         internal static STriggerProfilerLoggingFinishedEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -4046,7 +4398,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class STriggerPurchaseExitEvent
+    public sealed partial class STriggerPurchaseExitEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerPurchaseExitEvent
     {
         internal static STriggerPurchaseExitEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -4060,10 +4412,12 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class STriggerPurchaseMadeEvent
+    public sealed partial class STriggerPurchaseMadeEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerPurchaseMadeEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_purchaseItemId")]
         public int PurchaseItemId { get; set; }
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerPurchaseMadeEvent.PurchaseItemId => PurchaseItemId;
 
         internal static STriggerPurchaseMadeEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -4079,10 +4433,12 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class STriggerPurchasePanelSelectedPurchaseCategoryChangedEvent
+    public sealed partial class STriggerPurchasePanelSelectedPurchaseCategoryChangedEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerPurchasePanelSelectedPurchaseCategoryChangedEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_purchaseCategoryId")]
         public int PurchaseCategoryId { get; set; }
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerPurchasePanelSelectedPurchaseCategoryChangedEvent.PurchaseCategoryId => PurchaseCategoryId;
 
         internal static STriggerPurchasePanelSelectedPurchaseCategoryChangedEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -4098,10 +4454,12 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class STriggerPurchasePanelSelectedPurchaseItemChangedEvent
+    public sealed partial class STriggerPurchasePanelSelectedPurchaseItemChangedEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerPurchasePanelSelectedPurchaseItemChangedEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_purchaseItemId")]
         public int PurchaseItemId { get; set; }
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerPurchasePanelSelectedPurchaseItemChangedEvent.PurchaseItemId => PurchaseItemId;
 
         internal static STriggerPurchasePanelSelectedPurchaseItemChangedEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -4117,13 +4475,16 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class STriggerReplySelectedEvent
+    public sealed partial class STriggerReplySelectedEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerReplySelectedEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_conversationId")]
         public int ConversationId { get; set; }
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_replyId")]
         public int ReplyId { get; set; }
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerReplySelectedEvent.ConversationId => ConversationId;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerReplySelectedEvent.ReplyId => ReplyId;
 
         internal static STriggerReplySelectedEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -4141,7 +4502,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class STriggerResearchPanelExitEvent
+    public sealed partial class STriggerResearchPanelExitEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerResearchPanelExitEvent
     {
         internal static STriggerResearchPanelExitEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -4155,7 +4516,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class STriggerResearchPanelPurchaseEvent
+    public sealed partial class STriggerResearchPanelPurchaseEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerResearchPanelPurchaseEvent
     {
         internal static STriggerResearchPanelPurchaseEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -4169,10 +4530,12 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class STriggerResearchPanelSelectionChangedEvent
+    public sealed partial class STriggerResearchPanelSelectionChangedEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerResearchPanelSelectionChangedEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_researchItemId")]
         public int ResearchItemId { get; set; }
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerResearchPanelSelectionChangedEvent.ResearchItemId => ResearchItemId;
 
         internal static STriggerResearchPanelSelectionChangedEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -4188,7 +4551,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class STriggerSkippedEvent
+    public sealed partial class STriggerSkippedEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerSkippedEvent
     {
         internal static STriggerSkippedEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -4202,13 +4565,16 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class STriggerSoundLengthQueryEvent
+    public sealed partial class STriggerSoundLengthQueryEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerSoundLengthQueryEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_soundHash")]
         public long SoundHash { get; set; }
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_length")]
         public long Length { get; set; }
+
+        long global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerSoundLengthQueryEvent.SoundHash => SoundHash;
+        long global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerSoundLengthQueryEvent.Length => Length;
 
         internal static STriggerSoundLengthQueryEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -4226,10 +4592,12 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class STriggerSoundLengthSyncEvent
+    public sealed partial class STriggerSoundLengthSyncEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerSoundLengthSyncEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_syncInfo")]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SSyncSoundLength SyncInfo { get; set; } = new();
+
+        global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISyncSoundLength global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerSoundLengthSyncEvent.SyncInfo => SyncInfo;
 
         internal static STriggerSoundLengthSyncEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -4245,10 +4613,12 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class STriggerSoundOffsetEvent
+    public sealed partial class STriggerSoundOffsetEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerSoundOffsetEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_sound")]
         public long Sound { get; set; }
+
+        long global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerSoundOffsetEvent.Sound => Sound;
 
         internal static STriggerSoundOffsetEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -4264,10 +4634,12 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class STriggerSoundtrackDoneEvent
+    public sealed partial class STriggerSoundtrackDoneEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerSoundtrackDoneEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_soundtrack")]
         public long Soundtrack { get; set; }
+
+        long global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerSoundtrackDoneEvent.Soundtrack => Soundtrack;
 
         internal static STriggerSoundtrackDoneEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -4283,7 +4655,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class STriggerTargetModeUpdateEvent
+    public sealed partial class STriggerTargetModeUpdateEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerTargetModeUpdateEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_abilLink")]
         public int AbilLink { get; set; }
@@ -4293,6 +4665,10 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_state")]
         public int State { get; set; }
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerTargetModeUpdateEvent.AbilLink => AbilLink;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerTargetModeUpdateEvent.AbilCmdIndex => AbilCmdIndex;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerTargetModeUpdateEvent.State => State;
 
         internal static STriggerTargetModeUpdateEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -4312,10 +4688,12 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class STriggerTransmissionCompleteEvent
+    public sealed partial class STriggerTransmissionCompleteEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerTransmissionCompleteEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_transmissionId")]
         public int TransmissionId { get; set; }
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerTransmissionCompleteEvent.TransmissionId => TransmissionId;
 
         internal static STriggerTransmissionCompleteEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -4331,13 +4709,15 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class STriggerTransmissionOffsetEvent
+    public sealed partial class STriggerTransmissionOffsetEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerTransmissionOffsetEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_transmissionId")]
         public int TransmissionId { get; set; }
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_thread")]
         public long Thread { get; set; }
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerTransmissionOffsetEvent.TransmissionId => TransmissionId;
 
         internal static STriggerTransmissionOffsetEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -4355,7 +4735,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class STriggerVictoryPanelExitEvent
+    public sealed partial class STriggerVictoryPanelExitEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerVictoryPanelExitEvent
     {
         internal static STriggerVictoryPanelExitEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -4369,10 +4749,12 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class STriggerVictoryPanelPlayMissionAgainEvent
+    public sealed partial class STriggerVictoryPanelPlayMissionAgainEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerVictoryPanelPlayMissionAgainEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_difficultyLevel")]
         public int DifficultyLevel { get; set; }
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerVictoryPanelPlayMissionAgainEvent.DifficultyLevel => DifficultyLevel;
 
         internal static STriggerVictoryPanelPlayMissionAgainEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -4388,13 +4770,16 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SUICoord
+    public sealed partial class SUICoord : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IUICoord
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("x")]
         public int X { get; set; }
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("y")]
         public int Y { get; set; }
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IUICoord.X => X;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IUICoord.Y => Y;
 
         internal static SUICoord ReadBitPacked(BitPackedDecoder d)
         {
@@ -4412,10 +4797,12 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SUnitClickEvent
+    public sealed partial class SUnitClickEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IUnitClickEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitTag")]
         public long UnitTag { get; set; }
+
+        long global::Biz.Bizadm.S2Protocol.NET.Common.Game.IUnitClickEvent.UnitTag => UnitTag;
 
         internal static SUnitClickEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -4431,13 +4818,16 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SUnitHighlightEvent
+    public sealed partial class SUnitHighlightEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IUnitHighlightEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitTag")]
         public long UnitTag { get; set; }
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_flags")]
         public int Flags { get; set; }
+
+        long global::Biz.Bizadm.S2Protocol.NET.Common.Game.IUnitHighlightEvent.UnitTag => UnitTag;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IUnitHighlightEvent.Flags => Flags;
 
         internal static SUnitHighlightEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -4455,7 +4845,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SUserFinishedLoadingSyncEvent
+    public sealed partial class SUserFinishedLoadingSyncEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IUserFinishedLoadingSyncEvent
     {
         internal static SUserFinishedLoadingSyncEvent ReadBitPacked(BitPackedDecoder d)
         {
@@ -4469,7 +4859,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class SUserOptionsEvent
+    public sealed partial class SUserOptionsEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IUserOptionsEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_gameFullyDownloaded")]
         public bool GameFullyDownloaded { get; set; }
@@ -4513,6 +4903,11 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_hotkeyProfile")]
         public byte[] HotkeyProfile { get; set; } = [];
 
+        bool global::Biz.Bizadm.S2Protocol.NET.Common.Game.IUserOptionsEvent.DevelopmentCheatsEnabled => DevelopmentCheatsEnabled;
+        bool global::Biz.Bizadm.S2Protocol.NET.Common.Game.IUserOptionsEvent.MultiplayerCheatsEnabled => MultiplayerCheatsEnabled;
+        bool global::Biz.Bizadm.S2Protocol.NET.Common.Game.IUserOptionsEvent.SyncChecksummingEnabled => SyncChecksummingEnabled;
+        bool global::Biz.Bizadm.S2Protocol.NET.Common.Game.IUserOptionsEvent.IsMapToMapTransition => IsMapToMapTransition;
+
         internal static SUserOptionsEvent ReadBitPacked(BitPackedDecoder d)
         {
             var r = new SUserOptionsEvent();
@@ -4553,10 +4948,12 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game
 
     }
 
-    public sealed partial class TColorPreference
+    public sealed partial class TColorPreference : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITColorPreference
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_color")]
         public int? Color { get; set; }
+
+        int? global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITColorPreference.Color => Color;
 
         internal static TColorPreference ReadBitPacked(BitPackedDecoder d)
         {
@@ -4583,10 +4980,12 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay
         Custom = 3,
     }
 
-    public sealed partial class SGameUserId
+    public sealed partial class SGameUserId : global::Biz.Bizadm.S2Protocol.NET.Common.Replay.IGameUserId
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_userId")]
         public int UserId { get; set; }
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.IGameUserId.UserId => UserId;
 
         internal static SGameUserId ReadBitPacked(BitPackedDecoder d)
         {
@@ -4602,7 +5001,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay
 
     }
 
-    public sealed partial class SHeader
+    public sealed partial class SHeader : global::Biz.Bizadm.S2Protocol.NET.Common.Replay.IHeader
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_signature")]
         public byte[] Signature { get; set; } = [];
@@ -4630,6 +5029,11 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_ngdpRootKeyIsDevData")]
         public bool NgdpRootKeyIsDevData { get; set; }
+
+        byte[] global::Biz.Bizadm.S2Protocol.NET.Common.Replay.IHeader.Signature => Signature;
+        global::Biz.Bizadm.S2Protocol.NET.Common.IVersion global::Biz.Bizadm.S2Protocol.NET.Common.Replay.IHeader.Version => Version;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.IHeader.Type => (int)Type;
+        long global::Biz.Bizadm.S2Protocol.NET.Common.Replay.IHeader.ElapsedGameLoops => ElapsedGameLoops;
 
         internal static SHeader ReadVersioned(VersionedDecoder d)
         {
@@ -4678,10 +5082,12 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay
 
     }
 
-    public sealed partial class SInitData
+    public sealed partial class SInitData : global::Biz.Bizadm.S2Protocol.NET.Common.Replay.IInitData
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_syncLobbyState")]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SLobbySyncState SyncLobbyState { get; set; } = new();
+
+        global::Biz.Bizadm.S2Protocol.NET.Common.Game.ILobbySyncState global::Biz.Bizadm.S2Protocol.NET.Common.Replay.IInitData.SyncLobbyState => SyncLobbyState;
 
         internal static SInitData ReadBitPacked(BitPackedDecoder d)
         {
@@ -4714,7 +5120,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.Tracker
         PlayerSetup = 9,
     }
 
-    public sealed partial class SPlayerSetupEvent
+    public sealed partial class SPlayerSetupEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerSetupEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_playerId")]
         public int PlayerId { get; set; }
@@ -4727,6 +5133,11 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.Tracker
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_slotId")]
         public long? SlotId { get; set; }
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerSetupEvent.PlayerId => PlayerId;
+        long global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerSetupEvent.Type => Type;
+        long? global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerSetupEvent.UserId => UserId;
+        long? global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerSetupEvent.SlotId => SlotId;
 
         internal static SPlayerSetupEvent ReadVersioned(VersionedDecoder d)
         {
@@ -4760,7 +5171,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.Tracker
 
     }
 
-    public sealed partial class SPlayerStats
+    public sealed partial class SPlayerStats : global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerStats
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueMineralsCurrent")]
         public int ScoreValueMineralsCurrent { get; set; }
@@ -4878,6 +5289,46 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.Tracker
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueVespeneFriendlyFireTechnology")]
         public int ScoreValueVespeneFriendlyFireTechnology { get; set; }
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerStats.ScoreValueMineralsCurrent => ScoreValueMineralsCurrent;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerStats.ScoreValueVespeneCurrent => ScoreValueVespeneCurrent;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerStats.ScoreValueMineralsCollectionRate => ScoreValueMineralsCollectionRate;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerStats.ScoreValueVespeneCollectionRate => ScoreValueVespeneCollectionRate;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerStats.ScoreValueWorkersActiveCount => ScoreValueWorkersActiveCount;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerStats.ScoreValueMineralsUsedInProgressArmy => ScoreValueMineralsUsedInProgressArmy;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerStats.ScoreValueMineralsUsedInProgressEconomy => ScoreValueMineralsUsedInProgressEconomy;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerStats.ScoreValueMineralsUsedInProgressTechnology => ScoreValueMineralsUsedInProgressTechnology;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerStats.ScoreValueVespeneUsedInProgressArmy => ScoreValueVespeneUsedInProgressArmy;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerStats.ScoreValueVespeneUsedInProgressEconomy => ScoreValueVespeneUsedInProgressEconomy;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerStats.ScoreValueVespeneUsedInProgressTechnology => ScoreValueVespeneUsedInProgressTechnology;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerStats.ScoreValueMineralsUsedCurrentArmy => ScoreValueMineralsUsedCurrentArmy;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerStats.ScoreValueMineralsUsedCurrentEconomy => ScoreValueMineralsUsedCurrentEconomy;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerStats.ScoreValueMineralsUsedCurrentTechnology => ScoreValueMineralsUsedCurrentTechnology;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerStats.ScoreValueVespeneUsedCurrentArmy => ScoreValueVespeneUsedCurrentArmy;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerStats.ScoreValueVespeneUsedCurrentEconomy => ScoreValueVespeneUsedCurrentEconomy;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerStats.ScoreValueVespeneUsedCurrentTechnology => ScoreValueVespeneUsedCurrentTechnology;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerStats.ScoreValueMineralsLostArmy => ScoreValueMineralsLostArmy;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerStats.ScoreValueMineralsLostEconomy => ScoreValueMineralsLostEconomy;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerStats.ScoreValueMineralsLostTechnology => ScoreValueMineralsLostTechnology;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerStats.ScoreValueVespeneLostArmy => ScoreValueVespeneLostArmy;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerStats.ScoreValueVespeneLostEconomy => ScoreValueVespeneLostEconomy;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerStats.ScoreValueVespeneLostTechnology => ScoreValueVespeneLostTechnology;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerStats.ScoreValueMineralsKilledArmy => ScoreValueMineralsKilledArmy;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerStats.ScoreValueMineralsKilledEconomy => ScoreValueMineralsKilledEconomy;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerStats.ScoreValueMineralsKilledTechnology => ScoreValueMineralsKilledTechnology;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerStats.ScoreValueVespeneKilledArmy => ScoreValueVespeneKilledArmy;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerStats.ScoreValueVespeneKilledEconomy => ScoreValueVespeneKilledEconomy;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerStats.ScoreValueVespeneKilledTechnology => ScoreValueVespeneKilledTechnology;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerStats.ScoreValueFoodUsed => ScoreValueFoodUsed;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerStats.ScoreValueFoodMade => ScoreValueFoodMade;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerStats.ScoreValueMineralsUsedActiveForces => ScoreValueMineralsUsedActiveForces;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerStats.ScoreValueVespeneUsedActiveForces => ScoreValueVespeneUsedActiveForces;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerStats.ScoreValueMineralsFriendlyFireArmy => ScoreValueMineralsFriendlyFireArmy;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerStats.ScoreValueMineralsFriendlyFireEconomy => ScoreValueMineralsFriendlyFireEconomy;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerStats.ScoreValueMineralsFriendlyFireTechnology => ScoreValueMineralsFriendlyFireTechnology;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerStats.ScoreValueVespeneFriendlyFireArmy => ScoreValueVespeneFriendlyFireArmy;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerStats.ScoreValueVespeneFriendlyFireEconomy => ScoreValueVespeneFriendlyFireEconomy;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerStats.ScoreValueVespeneFriendlyFireTechnology => ScoreValueVespeneFriendlyFireTechnology;
 
         internal static SPlayerStats ReadVersioned(VersionedDecoder d)
         {
@@ -5016,13 +5467,16 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.Tracker
 
     }
 
-    public sealed partial class SPlayerStatsEvent
+    public sealed partial class SPlayerStatsEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerStatsEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_playerId")]
         public int PlayerId { get; set; }
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_stats")]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.Tracker.SPlayerStats Stats { get; set; } = new();
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerStatsEvent.PlayerId => PlayerId;
+        global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerStats global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerStatsEvent.Stats => Stats;
 
         internal static SPlayerStatsEvent ReadVersioned(VersionedDecoder d)
         {
@@ -5050,7 +5504,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.Tracker
 
     }
 
-    public sealed partial class SUnitBornEvent
+    public sealed partial class SUnitBornEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitBornEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitTagIndex")]
         public long UnitTagIndex { get; set; }
@@ -5081,6 +5535,14 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.Tracker
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_creatorAbilityName")]
         public byte[]? CreatorAbilityName { get; set; }
+
+        long global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitBornEvent.UnitTagIndex => UnitTagIndex;
+        long global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitBornEvent.UnitTagRecycle => UnitTagRecycle;
+        byte[] global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitBornEvent.UnitTypeName => UnitTypeName;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitBornEvent.ControlPlayerId => ControlPlayerId;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitBornEvent.UpkeepPlayerId => UpkeepPlayerId;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitBornEvent.X => X;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitBornEvent.Y => Y;
 
         internal static SUnitBornEvent ReadVersioned(VersionedDecoder d)
         {
@@ -5132,7 +5594,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.Tracker
 
     }
 
-    public sealed partial class SUnitDiedEvent
+    public sealed partial class SUnitDiedEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitDiedEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitTagIndex")]
         public long UnitTagIndex { get; set; }
@@ -5154,6 +5616,12 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.Tracker
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_killerUnitTagRecycle")]
         public long? KillerUnitTagRecycle { get; set; }
+
+        long global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitDiedEvent.UnitTagIndex => UnitTagIndex;
+        long global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitDiedEvent.UnitTagRecycle => UnitTagRecycle;
+        int? global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitDiedEvent.KillerPlayerId => KillerPlayerId;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitDiedEvent.X => X;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitDiedEvent.Y => Y;
 
         internal static SUnitDiedEvent ReadVersioned(VersionedDecoder d)
         {
@@ -5196,13 +5664,16 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.Tracker
 
     }
 
-    public sealed partial class SUnitDoneEvent
+    public sealed partial class SUnitDoneEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitDoneEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitTagIndex")]
         public long UnitTagIndex { get; set; }
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitTagRecycle")]
         public long UnitTagRecycle { get; set; }
+
+        long global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitDoneEvent.UnitTagIndex => UnitTagIndex;
+        long global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitDoneEvent.UnitTagRecycle => UnitTagRecycle;
 
         internal static SUnitDoneEvent ReadVersioned(VersionedDecoder d)
         {
@@ -5230,7 +5701,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.Tracker
 
     }
 
-    public sealed partial class SUnitInitEvent
+    public sealed partial class SUnitInitEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitInitEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitTagIndex")]
         public long UnitTagIndex { get; set; }
@@ -5252,6 +5723,14 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.Tracker
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_y")]
         public int Y { get; set; }
+
+        long global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitInitEvent.UnitTagIndex => UnitTagIndex;
+        long global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitInitEvent.UnitTagRecycle => UnitTagRecycle;
+        byte[] global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitInitEvent.UnitTypeName => UnitTypeName;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitInitEvent.ControlPlayerId => ControlPlayerId;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitInitEvent.UpkeepPlayerId => UpkeepPlayerId;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitInitEvent.X => X;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitInitEvent.Y => Y;
 
         internal static SUnitInitEvent ReadVersioned(VersionedDecoder d)
         {
@@ -5294,7 +5773,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.Tracker
 
     }
 
-    public sealed partial class SUnitOwnerChangeEvent
+    public sealed partial class SUnitOwnerChangeEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitOwnerChangeEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitTagIndex")]
         public long UnitTagIndex { get; set; }
@@ -5307,6 +5786,11 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.Tracker
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_upkeepPlayerId")]
         public int UpkeepPlayerId { get; set; }
+
+        long global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitOwnerChangeEvent.UnitTagIndex => UnitTagIndex;
+        long global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitOwnerChangeEvent.UnitTagRecycle => UnitTagRecycle;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitOwnerChangeEvent.ControlPlayerId => ControlPlayerId;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitOwnerChangeEvent.UpkeepPlayerId => UpkeepPlayerId;
 
         internal static SUnitOwnerChangeEvent ReadVersioned(VersionedDecoder d)
         {
@@ -5340,13 +5824,16 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.Tracker
 
     }
 
-    public sealed partial class SUnitPositionsEvent
+    public sealed partial class SUnitPositionsEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitPositionsEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_firstUnitIndex")]
         public long FirstUnitIndex { get; set; }
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_items")]
         public int[] Items { get; set; } = [];
+
+        long global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitPositionsEvent.FirstUnitIndex => FirstUnitIndex;
+        global::System.Collections.Generic.IReadOnlyList<int> global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitPositionsEvent.Items => Items;
 
         internal static SUnitPositionsEvent ReadVersioned(VersionedDecoder d)
         {
@@ -5374,7 +5861,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.Tracker
 
     }
 
-    public sealed partial class SUnitTypeChangeEvent
+    public sealed partial class SUnitTypeChangeEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitTypeChangeEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitTagIndex")]
         public long UnitTagIndex { get; set; }
@@ -5384,6 +5871,10 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.Tracker
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitTypeName")]
         public byte[] UnitTypeName { get; set; } = [];
+
+        long global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitTypeChangeEvent.UnitTagIndex => UnitTagIndex;
+        long global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitTypeChangeEvent.UnitTagRecycle => UnitTagRecycle;
+        byte[] global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitTypeChangeEvent.UnitTypeName => UnitTypeName;
 
         internal static SUnitTypeChangeEvent ReadVersioned(VersionedDecoder d)
         {
@@ -5414,7 +5905,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.Tracker
 
     }
 
-    public sealed partial class SUpgradeEvent
+    public sealed partial class SUpgradeEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUpgradeEvent
     {
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_playerId")]
         public int PlayerId { get; set; }
@@ -5424,6 +5915,10 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.Tracker
 
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_count")]
         public int Count { get; set; }
+
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUpgradeEvent.PlayerId => PlayerId;
+        byte[] global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUpgradeEvent.UpgradeTypeName => UpgradeTypeName;
+        int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUpgradeEvent.Count => Count;
 
         internal static SUpgradeEvent ReadVersioned(VersionedDecoder d)
         {
@@ -5461,39 +5956,39 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310
     {
         public int BaseBuild => 98310;
 
-        public object DecodeHeader(global::System.ReadOnlyMemory<byte> data)
+        public global::Biz.Bizadm.S2Protocol.NET.Common.Replay.IHeader DecodeHeader(global::System.ReadOnlyMemory<byte> data)
         {
             var d = new VersionedDecoder(data);
             return global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.SHeader.ReadVersioned(d);
         }
 
-        public byte[] EncodeHeader(object value)
+        public byte[] EncodeHeader(global::Biz.Bizadm.S2Protocol.NET.Common.Replay.IHeader value)
         {
             var e = new VersionedEncoder();
             global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.SHeader.WriteVersioned(e, value as global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.SHeader ?? throw new global::System.ArgumentException($"Expected global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.SHeader, got {value?.GetType().FullName ?? "null"}.", nameof(value)));
             return e.ToArray();
         }
 
-        public object DecodeDetails(global::System.ReadOnlyMemory<byte> data)
+        public global::Biz.Bizadm.S2Protocol.NET.Common.Game.IDetails DecodeDetails(global::System.ReadOnlyMemory<byte> data)
         {
             var d = new VersionedDecoder(data);
             return global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SDetails.ReadVersioned(d);
         }
 
-        public byte[] EncodeDetails(object value)
+        public byte[] EncodeDetails(global::Biz.Bizadm.S2Protocol.NET.Common.Game.IDetails value)
         {
             var e = new VersionedEncoder();
             global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SDetails.WriteVersioned(e, value as global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SDetails ?? throw new global::System.ArgumentException($"Expected global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SDetails, got {value?.GetType().FullName ?? "null"}.", nameof(value)));
             return e.ToArray();
         }
 
-        public object DecodeInitData(global::System.ReadOnlyMemory<byte> data)
+        public global::Biz.Bizadm.S2Protocol.NET.Common.Replay.IInitData DecodeInitData(global::System.ReadOnlyMemory<byte> data)
         {
             var d = new BitPackedDecoder(data);
             return global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.SInitData.ReadBitPacked(d);
         }
 
-        public byte[] EncodeInitData(object value)
+        public byte[] EncodeInitData(global::Biz.Bizadm.S2Protocol.NET.Common.Replay.IInitData value)
         {
             var e = new BitPackedEncoder();
             global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.SInitData.WriteBitPacked(e, value as global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.SInitData ?? throw new global::System.ArgumentException($"Expected global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.SInitData, got {value?.GetType().FullName ?? "null"}.", nameof(value)));

@@ -512,6 +512,16 @@ public static IS2Protocol Get(int baseBuild, ProtocolResolveOptions? options = n
 
 이름·생략 규칙(설계 문서): 인터페이스명은 `S` 접두를 뗀 `I{Name}`(`SHeader` → `IHeader`). 같은 fullname이 버전마다 종류가 다르면 인터페이스를 만들지 않고 경고한다. 이름 충돌은 단위 10 출력 단계에서 실패시킨다. 버전 프로토콜 인스턴스는 지연 생성·캐시한다.
 
+구현에서 정한 세부:
+
+- 교집합은 93개 버전 전체로 계산한다. `emit`은 `--build`가 있어도 전 버전을 대조·요약한 뒤 요청 빌드만 출력하고, `Generated/Common/Common.g.cs`(공통 인터페이스)와 `Generated/Versions/S2ProtocolRegistry.g.cs`(출력된 빌드 목록)를 매번 다시 쓴다.
+- 필드 키: 정수는 CLR 타입, enum은 `E:기반형`, struct는 `I:fullname`, 배열 `L(k)`, optional `O(k)`. enum이 들어간 배열은 C# 변환이 없어 뺀다. 인터페이스가 없는 struct를 가리키는 필드도 뺀다.
+- 한 버전이라도 struct가 아닌 종류로 정의된 fullname은 인터페이스를 만들지 않는다(현재 `NNet.Game.SSelectionMask`: 15405는 struct, 이후 choice).
+- 클래스는 공통 인터페이스를 선언하고 교집합 필드마다 명시적 구현을 둔다. `IS2Protocol`의 header/details/initdata는 `IHeader`/`IDetails`/`IInitData`(단위 11의 `object`를 좁힘).
+- `emit --build N`은 이미 출력된 빌드도 함께 다시 만든다(공통 인터페이스가 바뀌면 옛 명시적 구현이 컴파일을 깨므로). 한 빌드라도 실패하면 아무것도 쓰지 않는다. header/details/initdata 루트가 별칭으로 다른 decl을 가리키면 출력을 실패시킨다.
+- 인터페이스 필드 순서는 최신 빌드 기준이라, 빌드가 추가되면 `Common.g.cs`에 동작과 무관한 순서 diff가 생길 수 있다.
+- 결과(98310 출력 시점): 공통 인터페이스 155개. `IHeader.Version.BaseBuild`, `IDetails.PlayerList`가 교집합에 남는다.
+
 - **검증**: 98310만 출력한 상태로 `Get(98310)` 성공, 없는 빌드 예외, 폴백 옵션 2종
 - **선행 단위**: 11
 
