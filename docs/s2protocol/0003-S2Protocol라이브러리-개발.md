@@ -340,13 +340,21 @@ sealed record WStruct(IReadOnlyList<(string Name, WireType Type, int Tag)> Field
 sealed record WChoice(BigInteger Offset, int Bits, IReadOnlyDictionary<int, (string Name, WireType Type)> Cases) : WireType;
 // WArray, WBlob, WBitArray, WOptional, WBool, WFourCC, WNull, WReal32, WReal64
 
-static int BitsFor(BigInteger min, BigInteger max) => (int)(max - min).GetBitLength();   // 대조로 검증할 가정
+static int BitsFor(BigInteger min, BigInteger max) => (int)(max - min).GetBitLength();   // 대조로 확인됨
 
 // py: ('_int',[(0,7)]) 같은 리터럴을 재귀 하강으로 파싱 → 같은 WireType 트리로 변환
 bool Equal(WireType a, WireType b, string path, List<string> errors);
 ```
 
 `__parent` 필드: json `parents`를 py와 같이 `('__parent', typeid, -1)` 형태 필드로 정규화해 비교한다.
+
+py 대조로 확정한 유도 규칙(93개 버전 전부 일치):
+
+- int/blob/bitarray/array/choice: `(min, bitlen(max - min))`, bounds는 `evalue`·`inclusive` 기준. 고정 길이는 `(n, 0)`.
+- `StringType` bounds는 문자 수다. 와이어 길이는 UTF-8 바이트라 min·max에 4를 곱한다(`AsciiStringType`·`BlobType`은 그대로).
+- bounds가 null인 enum은 멤버 값의, choice는 경우 태그의 최소~최대 범위를 쓴다(null bounds인 `IntType`은 ConstDecl에만 있고 도달하지 않음).
+- 태그 없는 struct 필드의 태그는 `k - n`(k: 실제 필드 순번, n: `ConstDecl` 멤버까지 센 전체 수). 이벤트 struct의 `ConstDecl` 멤버(`EEVENTID`, `Synchronous`, `Synthesized`, `Debug`, `Senders`)는 와이어에 없다.
+- 15405의 `('__parent', 40, -1)` 단일 부모 struct도 위 규칙으로 일치한다.
 
 - **검증**: `verify` 실행 시 93개 버전 모두 대조 통과. 실패 버전이 있으면 경로·차이를 보고하고 유도 규칙을 고친다(같은 실패 2회면 중단·보고)
 - **선행 단위**: 8

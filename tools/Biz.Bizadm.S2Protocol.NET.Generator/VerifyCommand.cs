@@ -1,3 +1,4 @@
+using Biz.Bizadm.S2Protocol.NET.Generator.Layout;
 using Biz.Bizadm.S2Protocol.NET.Generator.Model;
 
 namespace Biz.Bizadm.S2Protocol.NET.Generator;
@@ -41,17 +42,32 @@ internal static class VerifyCommand
     {
         string name = $"protocol{build:D5}";
         using var document = ProtocolDocument.Load(Path.Combine(upstream.Directory, "json", name + ".json"), build);
-        var py = PyProtocolFile.Parse(Path.Combine(upstream.Directory, "s2protocol", "versions", name + ".py"));
+        string pyPath = Path.Combine(upstream.Directory, "s2protocol", "versions", name + ".py");
+        var py = PyProtocolFile.Parse(pyPath);
         var roots = ProtocolRoots.From(py);
 
-        var reach = new Reachability(document, new ConstantEvaluator(document));
+        var evaluator = new ConstantEvaluator(document);
+        var reach = new Reachability(document, evaluator);
         foreach (string fullName in roots.AllTypeNames)
             reach.Visit(fullName);
+
+        // json에서 유도한 레이아웃을 py typeinfos와 대조한다.
+        var pyTypes = PyTypeInfoParser.Parse(pyPath);
+        var layout = new LayoutBuilder(document, evaluator);
+        var comparer = new OracleComparer();
+        foreach (var (pyName, fullName) in roots.Roots)
+            comparer.Compare(layout.ForDecl(fullName), pyTypes[py.TypeIds[pyName]!.Value], fullName);
+        foreach (var table in roots.EventTables.Values)
+            foreach (var (typeId, typeName) in table.Values)
+                comparer.Compare(layout.ForDecl(typeName), pyTypes[typeId], typeName);
+        if (comparer.Errors.Count > 0)
+            throw new InvalidOperationException("layout mismatch:" + Environment.NewLine + "  "
+                + string.Join(Environment.NewLine + "  ", comparer.Errors));
 
         string events = string.Join(" ", roots.EventTables.Select(t => $"{t.Key}={t.Value.Count}"));
         string unsupported = string.Join(",", roots.UnsupportedStreams());
         return $"{build}: decls={document.Decls.Count} reached={reach.Reached.Count} bounds={reach.BoundsChecked} "
-             + $"enumValues={reach.EnumValuesEvaluated} {events}"
+             + $"enumValues={reach.EnumValuesEvaluated} {events} pyTypes={pyTypes.Count} compared={comparer.Compared}"
              + (unsupported.Length > 0 ? $" unsupported=[{unsupported}]" : "");
     }
 }
