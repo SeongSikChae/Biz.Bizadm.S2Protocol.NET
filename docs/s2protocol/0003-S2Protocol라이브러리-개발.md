@@ -215,12 +215,11 @@ public void SkipInstance()
 생성 코드의 versioned struct 읽기 패턴(단위 10에서 출력):
 
 ```csharp
-d.ExpectSkip(5);
-for (long n = d.ReadVInt(); n > 0; n--)
+for (long n = d.ReadStructFieldCount(); n > 0; n--)   // ExpectSkip(5) + ReadVInt
 {
     switch (d.ReadVInt())
     {
-        case 0: r.Flags = (int)d.ReadIntV(); break;   // ReadIntV = ExpectSkip(9) + ReadVInt
+        case 0: r.Flags = (int)d.ReadInt(); break;   // ReadInt = ExpectSkip(9) + ReadVInt
         // ...
         default: d.SkipInstance(); break;
     }
