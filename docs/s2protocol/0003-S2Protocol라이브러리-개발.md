@@ -156,7 +156,8 @@ public long UsedBits => _buffer.UsedBits;
 public void ByteAlign() => _buffer.ByteAlign();
 public byte[] ReadBlob(long offset, int bits) => _buffer.ReadAlignedBytes(checked((int)ReadInt(offset, bits)));
 public bool ReadOptionalExists() => ReadBool();
-public FourCC ReadFourCC() => new((uint)_buffer.ReadBits(32));   // Python: read_unaligned_bytes(4)
+// Python: read_unaligned_bytes(4) = 8비트 4회. 비정렬 위치에서는 ReadBits(32)와 결과가 다르다
+public FourCC ReadFourCC() => new(BinaryPrimitives.ReadUInt32BigEndian(_buffer.ReadUnalignedBytes(4)));
 public float ReadReal32() => BinaryPrimitives.ReadSingleBigEndian(_buffer.ReadUnalignedBytes(4));
 ```
 
@@ -264,7 +265,7 @@ public void WriteVInt(long value)
 }
 ```
 
-인코더는 `encoders.py` 포팅이 아니라 단위 3~5 디코더의 정확한 역이다. 특히 bitpacked FourCC는 정렬 없이 32비트로 쓰고(`WriteBits(value, 32)`), blob은 길이를 `_int`로 쓴 뒤 정렬 바이트를 쓴다.
+인코더는 `encoders.py` 포팅이 아니라 단위 3~5 디코더의 정확한 역이다. 특히 bitpacked FourCC·real은 정렬 없이 8비트씩 바이트 수만큼 쓰고(`WriteBits(b, 8)` 반복. 비정렬 위치에서 `WriteBits(value, 32)`와 다름), blob은 길이를 `_int`로 쓴 뒤 정렬 바이트를 쓴다.
 
 - **검증**: `EncoderRoundTripTests` — 단위 3~5 테스트의 바이트열을 인코더로 다시 만들어 일치, 랜덤 값 왕복(시드 고정)
 - **선행 단위**: 4, 5
