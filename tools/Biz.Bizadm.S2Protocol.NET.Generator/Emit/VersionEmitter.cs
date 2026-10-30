@@ -35,6 +35,8 @@ internal sealed class VersionEmitter
         Mark("game_details_typeid", Codecs.Versioned);
         Mark("tracker_eventid_typeid", Codecs.Versioned);
         MarkTable("tracker", Codecs.Versioned);
+        if (roots.ContainsKey("tracker_eventid_typeid"))
+            Mark("svaruint32_typeid", Codecs.Versioned);   // tracker 스트림의 gameloop 차이는 versioned로 읽는다
         Mark("replay_initdata_typeid", Codecs.BitPacked);
         Mark("svaruint32_typeid", Codecs.BitPacked);
         Mark("replay_userid_typeid", Codecs.BitPacked);
@@ -69,7 +71,159 @@ internal sealed class VersionEmitter
             }
             w.Close();
         }
+        EmitProtocol(w);
         return w.ToString();
+    }
+
+    // ---- IS2Protocol 구현 (Python versions/protocolNNNNN.py의 decode_replay_* 대응) ----
+
+    private void EmitProtocol(CodeWriter w)
+    {
+        const string Events = "global::Biz.Bizadm.S2Protocol.NET.Events";
+        w.Line();
+        w.Open($"namespace {RootNamespace}");
+        w.Open("public sealed class Protocol : global::Biz.Bizadm.S2Protocol.NET.Protocols.IS2Protocol");
+        w.Line($"public int BaseBuild => {_model.Build};");
+        w.Line();
+        EmitRoot(w, "Header", "replay_header_typeid", versioned: true);
+        EmitRoot(w, "Details", "game_details_typeid", versioned: true);
+        EmitRoot(w, "InitData", "replay_initdata_typeid", versioned: false);
+        EmitStream(w, "game", "Game", $"{Events}.GameEvent", "game_eventid_typeid", versioned: false, userId: true);
+        EmitStream(w, "message", "Message", $"{Events}.MessageEvent", "message_eventid_typeid", versioned: false, userId: true);
+        EmitStream(w, "tracker", "Tracker", $"{Events}.TrackerEvent", "tracker_eventid_typeid", versioned: true, userId: false);
+        EmitVarUInt32(w);
+        w.Close();
+        w.Close();
+    }
+
+    private WireType RootType(string pyName) => _model.Layout.ForDecl(_model.Roots.Roots[pyName]);
+
+    private void EmitRoot(CodeWriter w, string name, string pyName, bool versioned)
+    {
+        var type = RootType(pyName);
+        string typeName = TypeName(type);
+        string decoder = versioned ? "VersionedDecoder" : "BitPackedDecoder";
+        string encoder = versioned ? "VersionedEncoder" : "BitPackedEncoder";
+        string value = $"value as {typeName} ?? throw new global::System.ArgumentException($\"Expected {typeName}, got {{value?.GetType().FullName ?? \"null\"}}.\", nameof(value))";
+
+        w.Open($"public object Decode{name}(global::System.ReadOnlyMemory<byte> data)");
+        w.Line($"var d = new {decoder}(data);");
+        w.Line($"return {(versioned ? ReadVersioned(type) : ReadBitPacked(type))};");
+        w.Close();
+        w.Line();
+        w.Open($"public byte[] Encode{name}(object value)");
+        w.Line($"var e = new {encoder}();");
+        w.Line((versioned ? WriteVersioned(type, value, 0) : WriteBitPacked(type, value, 0)) + ";");
+        w.Line("return e.ToArray();");
+        w.Close();
+        w.Line();
+    }
+
+    // Python _decode_event_stream: gameloop 차이, (userid), eventid, 본문, 바이트 정렬, 소비 비트 수.
+    private void EmitStream(CodeWriter w, string stream, string name, string eventType, string eventIdPyName, bool versioned, bool userId)
+    {
+        var roots = _model.Roots.Roots;
+        string enumerable = $"global::System.Collections.Generic.IEnumerable<{eventType}>";
+        string? missing = !roots.ContainsKey(eventIdPyName) ? eventIdPyName
+            : userId && !roots.ContainsKey("replay_userid_typeid") ? "replay_userid_typeid"
+            : null;
+        if (missing is not null)
+        {
+            string error = $"throw new global::System.NotSupportedException(\"{stream} events cannot be decoded for build {_model.Build}: s2protocol has no {missing}.\")";
+            w.Line($"public {enumerable} Decode{name}Events(global::System.ReadOnlyMemory<byte> data) => {error};");
+            w.Line();
+            w.Line($"public byte[] Encode{name}Events({enumerable} events) => {error};");
+            w.Line();
+            return;
+        }
+
+        Func<WireType, string> read = versioned ? ReadVersioned : ReadBitPacked;
+        Func<WireType, string, int, string> write = versioned ? WriteVersioned : WriteBitPacked;
+        var varUInt32 = RootType("svaruint32_typeid");
+        var eventId = RootType(eventIdPyName);
+        var table = _model.Roots.EventTables[stream];
+        var (userType, userProperty) = userId ? UserIdRoot() : (null, "");
+
+        w.Open($"public {enumerable} Decode{name}Events(global::System.ReadOnlyMemory<byte> data)");
+        w.Line($"var d = new {(versioned ? "VersionedDecoder" : "BitPackedDecoder")}(data);");
+        w.Line("long gameLoop = 0;");
+        w.Open("while (!d.Done)");
+        w.Line("long start = d.UsedBits;");
+        w.Line($"gameLoop += VarUInt32Value({read(varUInt32)});");
+        if (userType is not null)
+            w.Line($"int userId = checked((int){read(userType)}.{userProperty});");
+        w.Line($"int eventId = (int){read(eventId)};");
+        w.Line("object body;");
+        w.Line("string name;");
+        w.Open("switch (eventId)");
+        foreach (var (id, (_, typeName)) in table)
+            w.Line($"case {id}: body = {read(_model.Layout.ForDecl(typeName))}; name = \"{typeName}\"; break;");
+        w.Line($"default: throw new CorruptedReplayException($\"Unknown {stream} event id {{eventId}} for build {_model.Build}.\");");
+        w.Close();
+        w.Line("d.ByteAlign();");
+        w.Line($"yield return new {eventType}(eventId, name, gameLoop, {(userType is not null ? "userId, " : "")}d.UsedBits - start, body);");
+        w.Close();
+        w.Close();
+        w.Line();
+
+        w.Open($"public byte[] Encode{name}Events({enumerable} events)");
+        w.Line($"var e = new {(versioned ? "VersionedEncoder" : "BitPackedEncoder")}();");
+        w.Line("long gameLoop = 0;");
+        w.Open("foreach (var ev in events)");
+        w.Line(write(varUInt32, "VarUInt32(ev.GameLoop - gameLoop)", 0) + ";");
+        w.Line("gameLoop = ev.GameLoop;");
+        if (userType is not null)
+            w.Line(write(userType, $"new {TypeName(userType)} {{ {userProperty} = ev.UserId }}", 0) + ";");
+        w.Line(write(eventId, $"({TypeName(eventId)})ev.EventId", 0) + ";");
+        w.Open("switch (ev.EventId)");
+        foreach (var (id, (_, typeName)) in table)
+        {
+            var bodyType = _model.Layout.ForDecl(typeName);
+            w.Line($"case {id} when ev.Body is {TypeName(bodyType)} b: {write(bodyType, "b", 0)}; break;");
+        }
+        w.Line($"default: throw new global::System.ArgumentException($\"{stream} event {{ev.EventId}} body {{ev.Body?.GetType().FullName ?? \"null\"}} does not match build {_model.Build}.\", nameof(events));");
+        w.Close();
+        if (!versioned)
+            w.Line("e.ByteAlign();");   // versioned 값은 모두 바이트 단위라 정렬이 필요 없다
+        w.Close();
+        w.Line("return e.ToArray();");
+        w.Close();
+        w.Line();
+    }
+
+    // SGameUserId는 정수 필드 하나인 struct여야 한다(_userid = m_userId).
+    private (WireType Type, string Property) UserIdRoot()
+    {
+        var type = RootType("replay_userid_typeid");
+        if (type is not WStruct { Fields: [{ Type: WInt } field] })
+            throw new NotSupportedException($"{_model.Build}: replay userid is not a single-integer struct.");
+        return (type, ClrNames.Member(field.Name));
+    }
+
+    // SVarUint32는 offset 0 정수 경우들의 choice여야 한다. 값은 Python _varuint32_value처럼 경우의 값,
+    // 인코딩은 값이 들어가는 가장 작은 경우.
+    private void EmitVarUInt32(CodeWriter w)
+    {
+        var type = RootType("svaruint32_typeid");
+        if (type is not WChoice choice || choice.Cases.Any(c => c.Type is not WInt { Offset.IsZero: true, Bits: < 64 }))
+            throw new NotSupportedException($"{_model.Build}: SVarUint32 is not a choice of unsigned integers.");
+
+        string typeName = TypeName(type);
+        var cases = choice.Cases.OrderBy(c => ((WInt)c.Type).Bits).ToList();
+        w.Open($"private static long VarUInt32Value({typeName} v) => v switch");
+        foreach (var c in cases)
+            w.Line($"{typeName}.{ClrNames.Member(c.Name)} c => c.Value,");
+        w.Line("_ => throw new CorruptedReplayException(\"Unknown SVarUint32 case.\"),");
+        w.Close(";");
+        w.Line();
+        w.Open($"private static {typeName} VarUInt32(long value) => value switch");
+        foreach (var c in cases)
+        {
+            var i = (WInt)c.Type;
+            w.Line($">= 0 and < {BigInteger.One << i.Bits}L => new {typeName}.{ClrNames.Member(c.Name)} {{ Value = ({TypeName(i)})value }},");
+        }
+        w.Line("_ => throw new global::System.ArgumentOutOfRangeException(nameof(value), value, \"Game loop delta does not fit SVarUint32.\"),");
+        w.Close(";");
     }
 
     private void EmitType(CodeWriter w, EmittedType type)

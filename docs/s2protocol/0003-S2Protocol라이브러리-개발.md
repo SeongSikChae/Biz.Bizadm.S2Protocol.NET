@@ -443,6 +443,15 @@ tracker events는 `VersionedDecoder`, userid 없음. header는 user data 바이�
 
 py에서 userid/eventid 루트가 `None`인 버전(단위 8 참고)은 해당 스트림의 Decode/Encode가 `NotSupportedException`을 던진다(Python과 동일하게 디코딩 불가).
 
+구현에서 정한 세부:
+
+- 생성 클래스 이름은 `Versions.ProtocolNNNNN.Protocol`(네임스페이스 마지막 이름과 같은 클래스명을 피함).
+- 이벤트 레코드: `ReplayEvent(EventId, EventName, GameLoop, Bits, Body)`를 기반으로 `GameEvent`·`MessageEvent`는 `UserId(int)`, `TrackerEvent`는 UserId 없음(설계의 공통 `UserId?` 대신 스트림별).
+- `IS2Protocol`의 header/details/initdata는 이번 단위에서 `object`로 다루고 단위 12에서 공통 인터페이스로 좁힌다.
+- Python tracker 스트림은 gameloop 차이(`SVarUint32`)도 versioned로 읽으므로, tracker가 있는 버전은 `SVarUint32`에 versioned 코덱도 출력한다.
+- 생성기는 `SVarUint32`가 offset 0 정수 경우들의 choice인지, `SGameUserId`가 정수 필드 하나인 struct인지 확인하고 아니면 출력을 실패시킨다. 값 추출은 `VarUInt32Value`, 인코딩 경우 선택은 `VarUInt32`(가장 작은 경우)로 `Protocol`에 private 출력한다.
+- 이벤트 본문 인코딩은 eventid별 `case id when ev.Body is T b`로 타입을 확인하고, 다르면 `ArgumentException`.
+
 `SVarUint32`는 choice(`m_uint6`/`m_uint14`/`m_uint22`/`m_uint32`)이므로 생성기가 `public long GetValue()`(각 경우의 값 반환)를 함께 출력한다. 인코딩은 값이 들어가는 가장 작은 경우를 고른다. 단위 17 왕복에서 원본 바이트와 다르면 원래 경우를 이벤트 메타에 보존하는 방식으로 바꾼다.
 
 이벤트 스트림 인코딩(원본에 없음, 디코딩의 역):

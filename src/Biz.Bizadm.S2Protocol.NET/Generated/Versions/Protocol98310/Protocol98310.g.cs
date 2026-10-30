@@ -241,6 +241,31 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310
             }
         }
 
+        internal static SVarUint32 ReadVersioned(VersionedDecoder d)
+        {
+            long tag = d.ReadChoiceTag();
+            switch (tag)
+            {
+                case 0: return new Uint6 { Value = checked((int)d.ReadInt()) };
+                case 1: return new Uint14 { Value = checked((int)d.ReadInt()) };
+                case 2: return new Uint22 { Value = checked((int)d.ReadInt()) };
+                case 3: return new Uint32 { Value = d.ReadInt() };
+                default: d.SkipInstance(); return new UnknownCase { Tag = tag };
+            }
+        }
+
+        internal static void WriteVersioned(VersionedEncoder e, SVarUint32 v)
+        {
+            switch (v)
+            {
+                case Uint6 c: e.WriteChoiceTag(0); e.WriteInt((long)c.Value); break;
+                case Uint14 c: e.WriteChoiceTag(1); e.WriteInt((long)c.Value); break;
+                case Uint22 c: e.WriteChoiceTag(2); e.WriteInt((long)c.Value); break;
+                case Uint32 c: e.WriteChoiceTag(3); e.WriteInt((long)c.Value); break;
+                default: throw new global::System.InvalidOperationException($"Cannot encode {v?.GetType().Name ?? "null"} as SVarUint32.");
+            }
+        }
+
     }
 
     public sealed partial class SVersion
@@ -5427,5 +5452,421 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.Tracker
             e.WriteInt((long)v.Count);
         }
 
+    }
+}
+
+namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310
+{
+    public sealed class Protocol : global::Biz.Bizadm.S2Protocol.NET.Protocols.IS2Protocol
+    {
+        public int BaseBuild => 98310;
+
+        public object DecodeHeader(global::System.ReadOnlyMemory<byte> data)
+        {
+            var d = new VersionedDecoder(data);
+            return global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.SHeader.ReadVersioned(d);
+        }
+
+        public byte[] EncodeHeader(object value)
+        {
+            var e = new VersionedEncoder();
+            global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.SHeader.WriteVersioned(e, value as global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.SHeader ?? throw new global::System.ArgumentException($"Expected global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.SHeader, got {value?.GetType().FullName ?? "null"}.", nameof(value)));
+            return e.ToArray();
+        }
+
+        public object DecodeDetails(global::System.ReadOnlyMemory<byte> data)
+        {
+            var d = new VersionedDecoder(data);
+            return global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SDetails.ReadVersioned(d);
+        }
+
+        public byte[] EncodeDetails(object value)
+        {
+            var e = new VersionedEncoder();
+            global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SDetails.WriteVersioned(e, value as global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SDetails ?? throw new global::System.ArgumentException($"Expected global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SDetails, got {value?.GetType().FullName ?? "null"}.", nameof(value)));
+            return e.ToArray();
+        }
+
+        public object DecodeInitData(global::System.ReadOnlyMemory<byte> data)
+        {
+            var d = new BitPackedDecoder(data);
+            return global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.SInitData.ReadBitPacked(d);
+        }
+
+        public byte[] EncodeInitData(object value)
+        {
+            var e = new BitPackedEncoder();
+            global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.SInitData.WriteBitPacked(e, value as global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.SInitData ?? throw new global::System.ArgumentException($"Expected global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.SInitData, got {value?.GetType().FullName ?? "null"}.", nameof(value)));
+            return e.ToArray();
+        }
+
+        public global::System.Collections.Generic.IEnumerable<global::Biz.Bizadm.S2Protocol.NET.Events.GameEvent> DecodeGameEvents(global::System.ReadOnlyMemory<byte> data)
+        {
+            var d = new BitPackedDecoder(data);
+            long gameLoop = 0;
+            while (!d.Done)
+            {
+                long start = d.UsedBits;
+                gameLoop += VarUInt32Value(global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.SVarUint32.ReadBitPacked(d));
+                int userId = checked((int)global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.SGameUserId.ReadBitPacked(d).UserId);
+                int eventId = (int)(global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.EEventId)d.ReadInt(0L, 7);
+                object body;
+                string name;
+                switch (eventId)
+                {
+                    case 5: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SUserFinishedLoadingSyncEvent.ReadBitPacked(d); name = "NNet.Game.SUserFinishedLoadingSyncEvent"; break;
+                    case 7: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SUserOptionsEvent.ReadBitPacked(d); name = "NNet.Game.SUserOptionsEvent"; break;
+                    case 9: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SBankFileEvent.ReadBitPacked(d); name = "NNet.Game.SBankFileEvent"; break;
+                    case 10: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SBankSectionEvent.ReadBitPacked(d); name = "NNet.Game.SBankSectionEvent"; break;
+                    case 11: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SBankKeyEvent.ReadBitPacked(d); name = "NNet.Game.SBankKeyEvent"; break;
+                    case 12: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SBankValueEvent.ReadBitPacked(d); name = "NNet.Game.SBankValueEvent"; break;
+                    case 13: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SBankSignatureEvent.ReadBitPacked(d); name = "NNet.Game.SBankSignatureEvent"; break;
+                    case 14: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SCameraSaveEvent.ReadBitPacked(d); name = "NNet.Game.SCameraSaveEvent"; break;
+                    case 21: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SSaveGameEvent.ReadBitPacked(d); name = "NNet.Game.SSaveGameEvent"; break;
+                    case 22: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SSaveGameDoneEvent.ReadBitPacked(d); name = "NNet.Game.SSaveGameDoneEvent"; break;
+                    case 23: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SLoadGameDoneEvent.ReadBitPacked(d); name = "NNet.Game.SLoadGameDoneEvent"; break;
+                    case 25: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SCommandManagerResetEvent.ReadBitPacked(d); name = "NNet.Game.SCommandManagerResetEvent"; break;
+                    case 26: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SGameCheatEvent.ReadBitPacked(d); name = "NNet.Game.SGameCheatEvent"; break;
+                    case 27: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SCmdEvent.ReadBitPacked(d); name = "NNet.Game.SCmdEvent"; break;
+                    case 28: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SSelectionDeltaEvent.ReadBitPacked(d); name = "NNet.Game.SSelectionDeltaEvent"; break;
+                    case 29: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SControlGroupUpdateEvent.ReadBitPacked(d); name = "NNet.Game.SControlGroupUpdateEvent"; break;
+                    case 30: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SSelectionSyncCheckEvent.ReadBitPacked(d); name = "NNet.Game.SSelectionSyncCheckEvent"; break;
+                    case 31: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SResourceTradeEvent.ReadBitPacked(d); name = "NNet.Game.SResourceTradeEvent"; break;
+                    case 32: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerChatMessageEvent.ReadBitPacked(d); name = "NNet.Game.STriggerChatMessageEvent"; break;
+                    case 33: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SAICommunicateEvent.ReadBitPacked(d); name = "NNet.Game.SAICommunicateEvent"; break;
+                    case 34: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SSetAbsoluteGameSpeedEvent.ReadBitPacked(d); name = "NNet.Game.SSetAbsoluteGameSpeedEvent"; break;
+                    case 35: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SAddAbsoluteGameSpeedEvent.ReadBitPacked(d); name = "NNet.Game.SAddAbsoluteGameSpeedEvent"; break;
+                    case 36: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerPingEvent.ReadBitPacked(d); name = "NNet.Game.STriggerPingEvent"; break;
+                    case 37: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SBroadcastCheatEvent.ReadBitPacked(d); name = "NNet.Game.SBroadcastCheatEvent"; break;
+                    case 38: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SAllianceEvent.ReadBitPacked(d); name = "NNet.Game.SAllianceEvent"; break;
+                    case 39: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SUnitClickEvent.ReadBitPacked(d); name = "NNet.Game.SUnitClickEvent"; break;
+                    case 40: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SUnitHighlightEvent.ReadBitPacked(d); name = "NNet.Game.SUnitHighlightEvent"; break;
+                    case 41: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerReplySelectedEvent.ReadBitPacked(d); name = "NNet.Game.STriggerReplySelectedEvent"; break;
+                    case 43: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SHijackReplayGameEvent.ReadBitPacked(d); name = "NNet.Game.SHijackReplayGameEvent"; break;
+                    case 44: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerSkippedEvent.ReadBitPacked(d); name = "NNet.Game.STriggerSkippedEvent"; break;
+                    case 45: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerSoundLengthQueryEvent.ReadBitPacked(d); name = "NNet.Game.STriggerSoundLengthQueryEvent"; break;
+                    case 46: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerSoundOffsetEvent.ReadBitPacked(d); name = "NNet.Game.STriggerSoundOffsetEvent"; break;
+                    case 47: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerTransmissionOffsetEvent.ReadBitPacked(d); name = "NNet.Game.STriggerTransmissionOffsetEvent"; break;
+                    case 48: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerTransmissionCompleteEvent.ReadBitPacked(d); name = "NNet.Game.STriggerTransmissionCompleteEvent"; break;
+                    case 49: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SCameraUpdateEvent.ReadBitPacked(d); name = "NNet.Game.SCameraUpdateEvent"; break;
+                    case 50: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerAbortMissionEvent.ReadBitPacked(d); name = "NNet.Game.STriggerAbortMissionEvent"; break;
+                    case 51: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerPurchaseMadeEvent.ReadBitPacked(d); name = "NNet.Game.STriggerPurchaseMadeEvent"; break;
+                    case 52: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerPurchaseExitEvent.ReadBitPacked(d); name = "NNet.Game.STriggerPurchaseExitEvent"; break;
+                    case 53: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerPlanetMissionLaunchedEvent.ReadBitPacked(d); name = "NNet.Game.STriggerPlanetMissionLaunchedEvent"; break;
+                    case 54: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerPlanetPanelCanceledEvent.ReadBitPacked(d); name = "NNet.Game.STriggerPlanetPanelCanceledEvent"; break;
+                    case 55: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerDialogControlEvent.ReadBitPacked(d); name = "NNet.Game.STriggerDialogControlEvent"; break;
+                    case 56: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerSoundLengthSyncEvent.ReadBitPacked(d); name = "NNet.Game.STriggerSoundLengthSyncEvent"; break;
+                    case 57: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerConversationSkippedEvent.ReadBitPacked(d); name = "NNet.Game.STriggerConversationSkippedEvent"; break;
+                    case 58: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerMouseClickedEvent.ReadBitPacked(d); name = "NNet.Game.STriggerMouseClickedEvent"; break;
+                    case 59: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerMouseMovedEvent.ReadBitPacked(d); name = "NNet.Game.STriggerMouseMovedEvent"; break;
+                    case 60: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SAchievementAwardedEvent.ReadBitPacked(d); name = "NNet.Game.SAchievementAwardedEvent"; break;
+                    case 61: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerHotkeyPressedEvent.ReadBitPacked(d); name = "NNet.Game.STriggerHotkeyPressedEvent"; break;
+                    case 62: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerTargetModeUpdateEvent.ReadBitPacked(d); name = "NNet.Game.STriggerTargetModeUpdateEvent"; break;
+                    case 63: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerPlanetPanelReplayEvent.ReadBitPacked(d); name = "NNet.Game.STriggerPlanetPanelReplayEvent"; break;
+                    case 64: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerSoundtrackDoneEvent.ReadBitPacked(d); name = "NNet.Game.STriggerSoundtrackDoneEvent"; break;
+                    case 65: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerPlanetMissionSelectedEvent.ReadBitPacked(d); name = "NNet.Game.STriggerPlanetMissionSelectedEvent"; break;
+                    case 66: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerKeyPressedEvent.ReadBitPacked(d); name = "NNet.Game.STriggerKeyPressedEvent"; break;
+                    case 67: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerMovieFunctionEvent.ReadBitPacked(d); name = "NNet.Game.STriggerMovieFunctionEvent"; break;
+                    case 68: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerPlanetPanelBirthCompleteEvent.ReadBitPacked(d); name = "NNet.Game.STriggerPlanetPanelBirthCompleteEvent"; break;
+                    case 69: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerPlanetPanelDeathCompleteEvent.ReadBitPacked(d); name = "NNet.Game.STriggerPlanetPanelDeathCompleteEvent"; break;
+                    case 70: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SResourceRequestEvent.ReadBitPacked(d); name = "NNet.Game.SResourceRequestEvent"; break;
+                    case 71: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SResourceRequestFulfillEvent.ReadBitPacked(d); name = "NNet.Game.SResourceRequestFulfillEvent"; break;
+                    case 72: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SResourceRequestCancelEvent.ReadBitPacked(d); name = "NNet.Game.SResourceRequestCancelEvent"; break;
+                    case 73: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerResearchPanelExitEvent.ReadBitPacked(d); name = "NNet.Game.STriggerResearchPanelExitEvent"; break;
+                    case 74: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerResearchPanelPurchaseEvent.ReadBitPacked(d); name = "NNet.Game.STriggerResearchPanelPurchaseEvent"; break;
+                    case 75: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerResearchPanelSelectionChangedEvent.ReadBitPacked(d); name = "NNet.Game.STriggerResearchPanelSelectionChangedEvent"; break;
+                    case 76: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerCommandErrorEvent.ReadBitPacked(d); name = "NNet.Game.STriggerCommandErrorEvent"; break;
+                    case 77: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerMercenaryPanelExitEvent.ReadBitPacked(d); name = "NNet.Game.STriggerMercenaryPanelExitEvent"; break;
+                    case 78: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerMercenaryPanelPurchaseEvent.ReadBitPacked(d); name = "NNet.Game.STriggerMercenaryPanelPurchaseEvent"; break;
+                    case 79: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerMercenaryPanelSelectionChangedEvent.ReadBitPacked(d); name = "NNet.Game.STriggerMercenaryPanelSelectionChangedEvent"; break;
+                    case 80: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerVictoryPanelExitEvent.ReadBitPacked(d); name = "NNet.Game.STriggerVictoryPanelExitEvent"; break;
+                    case 81: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerBattleReportPanelExitEvent.ReadBitPacked(d); name = "NNet.Game.STriggerBattleReportPanelExitEvent"; break;
+                    case 82: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerBattleReportPanelPlayMissionEvent.ReadBitPacked(d); name = "NNet.Game.STriggerBattleReportPanelPlayMissionEvent"; break;
+                    case 83: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerBattleReportPanelPlaySceneEvent.ReadBitPacked(d); name = "NNet.Game.STriggerBattleReportPanelPlaySceneEvent"; break;
+                    case 84: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerBattleReportPanelSelectionChangedEvent.ReadBitPacked(d); name = "NNet.Game.STriggerBattleReportPanelSelectionChangedEvent"; break;
+                    case 85: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerVictoryPanelPlayMissionAgainEvent.ReadBitPacked(d); name = "NNet.Game.STriggerVictoryPanelPlayMissionAgainEvent"; break;
+                    case 86: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerMovieStartedEvent.ReadBitPacked(d); name = "NNet.Game.STriggerMovieStartedEvent"; break;
+                    case 87: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerMovieFinishedEvent.ReadBitPacked(d); name = "NNet.Game.STriggerMovieFinishedEvent"; break;
+                    case 88: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SDecrementGameTimeRemainingEvent.ReadBitPacked(d); name = "NNet.Game.SDecrementGameTimeRemainingEvent"; break;
+                    case 89: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerPortraitLoadedEvent.ReadBitPacked(d); name = "NNet.Game.STriggerPortraitLoadedEvent"; break;
+                    case 90: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerCustomDialogDismissedEvent.ReadBitPacked(d); name = "NNet.Game.STriggerCustomDialogDismissedEvent"; break;
+                    case 91: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerGameMenuItemSelectedEvent.ReadBitPacked(d); name = "NNet.Game.STriggerGameMenuItemSelectedEvent"; break;
+                    case 92: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerMouseWheelEvent.ReadBitPacked(d); name = "NNet.Game.STriggerMouseWheelEvent"; break;
+                    case 93: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerPurchasePanelSelectedPurchaseItemChangedEvent.ReadBitPacked(d); name = "NNet.Game.STriggerPurchasePanelSelectedPurchaseItemChangedEvent"; break;
+                    case 94: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerPurchasePanelSelectedPurchaseCategoryChangedEvent.ReadBitPacked(d); name = "NNet.Game.STriggerPurchasePanelSelectedPurchaseCategoryChangedEvent"; break;
+                    case 95: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerButtonPressedEvent.ReadBitPacked(d); name = "NNet.Game.STriggerButtonPressedEvent"; break;
+                    case 96: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerGameCreditsFinishedEvent.ReadBitPacked(d); name = "NNet.Game.STriggerGameCreditsFinishedEvent"; break;
+                    case 97: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerCutsceneBookmarkFiredEvent.ReadBitPacked(d); name = "NNet.Game.STriggerCutsceneBookmarkFiredEvent"; break;
+                    case 98: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerCutsceneEndSceneFiredEvent.ReadBitPacked(d); name = "NNet.Game.STriggerCutsceneEndSceneFiredEvent"; break;
+                    case 99: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerCutsceneConversationLineEvent.ReadBitPacked(d); name = "NNet.Game.STriggerCutsceneConversationLineEvent"; break;
+                    case 100: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerCutsceneConversationLineMissingEvent.ReadBitPacked(d); name = "NNet.Game.STriggerCutsceneConversationLineMissingEvent"; break;
+                    case 101: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SGameUserLeaveEvent.ReadBitPacked(d); name = "NNet.Game.SGameUserLeaveEvent"; break;
+                    case 102: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SGameUserJoinEvent.ReadBitPacked(d); name = "NNet.Game.SGameUserJoinEvent"; break;
+                    case 103: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SCommandManagerStateEvent.ReadBitPacked(d); name = "NNet.Game.SCommandManagerStateEvent"; break;
+                    case 104: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SCmdUpdateTargetPointEvent.ReadBitPacked(d); name = "NNet.Game.SCmdUpdateTargetPointEvent"; break;
+                    case 105: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SCmdUpdateTargetUnitEvent.ReadBitPacked(d); name = "NNet.Game.SCmdUpdateTargetUnitEvent"; break;
+                    case 106: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerAnimLengthQueryByNameEvent.ReadBitPacked(d); name = "NNet.Game.STriggerAnimLengthQueryByNameEvent"; break;
+                    case 107: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerAnimLengthQueryByPropsEvent.ReadBitPacked(d); name = "NNet.Game.STriggerAnimLengthQueryByPropsEvent"; break;
+                    case 108: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerAnimOffsetEvent.ReadBitPacked(d); name = "NNet.Game.STriggerAnimOffsetEvent"; break;
+                    case 109: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SCatalogModifyEvent.ReadBitPacked(d); name = "NNet.Game.SCatalogModifyEvent"; break;
+                    case 110: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SHeroTalentTreeSelectedEvent.ReadBitPacked(d); name = "NNet.Game.SHeroTalentTreeSelectedEvent"; break;
+                    case 111: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerProfilerLoggingFinishedEvent.ReadBitPacked(d); name = "NNet.Game.STriggerProfilerLoggingFinishedEvent"; break;
+                    case 112: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SHeroTalentTreeSelectionPanelToggledEvent.ReadBitPacked(d); name = "NNet.Game.SHeroTalentTreeSelectionPanelToggledEvent"; break;
+                    case 116: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SSetSyncLoadingTimeEvent.ReadBitPacked(d); name = "NNet.Game.SSetSyncLoadingTimeEvent"; break;
+                    case 117: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SSetSyncPlayingTimeEvent.ReadBitPacked(d); name = "NNet.Game.SSetSyncPlayingTimeEvent"; break;
+                    case 118: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SPeerSetSyncLoadingTimeEvent.ReadBitPacked(d); name = "NNet.Game.SPeerSetSyncLoadingTimeEvent"; break;
+                    case 119: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SPeerSetSyncPlayingTimeEvent.ReadBitPacked(d); name = "NNet.Game.SPeerSetSyncPlayingTimeEvent"; break;
+                    default: throw new CorruptedReplayException($"Unknown game event id {eventId} for build 98310.");
+                }
+                d.ByteAlign();
+                yield return new global::Biz.Bizadm.S2Protocol.NET.Events.GameEvent(eventId, name, gameLoop, userId, d.UsedBits - start, body);
+            }
+        }
+
+        public byte[] EncodeGameEvents(global::System.Collections.Generic.IEnumerable<global::Biz.Bizadm.S2Protocol.NET.Events.GameEvent> events)
+        {
+            var e = new BitPackedEncoder();
+            long gameLoop = 0;
+            foreach (var ev in events)
+            {
+                global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.SVarUint32.WriteBitPacked(e, VarUInt32(ev.GameLoop - gameLoop));
+                gameLoop = ev.GameLoop;
+                global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.SGameUserId.WriteBitPacked(e, new global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.SGameUserId { UserId = ev.UserId });
+                e.WriteInt((long)(global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.EEventId)ev.EventId, 0L, 7);
+                switch (ev.EventId)
+                {
+                    case 5 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SUserFinishedLoadingSyncEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SUserFinishedLoadingSyncEvent.WriteBitPacked(e, b); break;
+                    case 7 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SUserOptionsEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SUserOptionsEvent.WriteBitPacked(e, b); break;
+                    case 9 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SBankFileEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SBankFileEvent.WriteBitPacked(e, b); break;
+                    case 10 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SBankSectionEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SBankSectionEvent.WriteBitPacked(e, b); break;
+                    case 11 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SBankKeyEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SBankKeyEvent.WriteBitPacked(e, b); break;
+                    case 12 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SBankValueEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SBankValueEvent.WriteBitPacked(e, b); break;
+                    case 13 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SBankSignatureEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SBankSignatureEvent.WriteBitPacked(e, b); break;
+                    case 14 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SCameraSaveEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SCameraSaveEvent.WriteBitPacked(e, b); break;
+                    case 21 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SSaveGameEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SSaveGameEvent.WriteBitPacked(e, b); break;
+                    case 22 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SSaveGameDoneEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SSaveGameDoneEvent.WriteBitPacked(e, b); break;
+                    case 23 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SLoadGameDoneEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SLoadGameDoneEvent.WriteBitPacked(e, b); break;
+                    case 25 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SCommandManagerResetEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SCommandManagerResetEvent.WriteBitPacked(e, b); break;
+                    case 26 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SGameCheatEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SGameCheatEvent.WriteBitPacked(e, b); break;
+                    case 27 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SCmdEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SCmdEvent.WriteBitPacked(e, b); break;
+                    case 28 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SSelectionDeltaEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SSelectionDeltaEvent.WriteBitPacked(e, b); break;
+                    case 29 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SControlGroupUpdateEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SControlGroupUpdateEvent.WriteBitPacked(e, b); break;
+                    case 30 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SSelectionSyncCheckEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SSelectionSyncCheckEvent.WriteBitPacked(e, b); break;
+                    case 31 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SResourceTradeEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SResourceTradeEvent.WriteBitPacked(e, b); break;
+                    case 32 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerChatMessageEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerChatMessageEvent.WriteBitPacked(e, b); break;
+                    case 33 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SAICommunicateEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SAICommunicateEvent.WriteBitPacked(e, b); break;
+                    case 34 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SSetAbsoluteGameSpeedEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SSetAbsoluteGameSpeedEvent.WriteBitPacked(e, b); break;
+                    case 35 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SAddAbsoluteGameSpeedEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SAddAbsoluteGameSpeedEvent.WriteBitPacked(e, b); break;
+                    case 36 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerPingEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerPingEvent.WriteBitPacked(e, b); break;
+                    case 37 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SBroadcastCheatEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SBroadcastCheatEvent.WriteBitPacked(e, b); break;
+                    case 38 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SAllianceEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SAllianceEvent.WriteBitPacked(e, b); break;
+                    case 39 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SUnitClickEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SUnitClickEvent.WriteBitPacked(e, b); break;
+                    case 40 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SUnitHighlightEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SUnitHighlightEvent.WriteBitPacked(e, b); break;
+                    case 41 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerReplySelectedEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerReplySelectedEvent.WriteBitPacked(e, b); break;
+                    case 43 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SHijackReplayGameEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SHijackReplayGameEvent.WriteBitPacked(e, b); break;
+                    case 44 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerSkippedEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerSkippedEvent.WriteBitPacked(e, b); break;
+                    case 45 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerSoundLengthQueryEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerSoundLengthQueryEvent.WriteBitPacked(e, b); break;
+                    case 46 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerSoundOffsetEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerSoundOffsetEvent.WriteBitPacked(e, b); break;
+                    case 47 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerTransmissionOffsetEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerTransmissionOffsetEvent.WriteBitPacked(e, b); break;
+                    case 48 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerTransmissionCompleteEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerTransmissionCompleteEvent.WriteBitPacked(e, b); break;
+                    case 49 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SCameraUpdateEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SCameraUpdateEvent.WriteBitPacked(e, b); break;
+                    case 50 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerAbortMissionEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerAbortMissionEvent.WriteBitPacked(e, b); break;
+                    case 51 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerPurchaseMadeEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerPurchaseMadeEvent.WriteBitPacked(e, b); break;
+                    case 52 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerPurchaseExitEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerPurchaseExitEvent.WriteBitPacked(e, b); break;
+                    case 53 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerPlanetMissionLaunchedEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerPlanetMissionLaunchedEvent.WriteBitPacked(e, b); break;
+                    case 54 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerPlanetPanelCanceledEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerPlanetPanelCanceledEvent.WriteBitPacked(e, b); break;
+                    case 55 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerDialogControlEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerDialogControlEvent.WriteBitPacked(e, b); break;
+                    case 56 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerSoundLengthSyncEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerSoundLengthSyncEvent.WriteBitPacked(e, b); break;
+                    case 57 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerConversationSkippedEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerConversationSkippedEvent.WriteBitPacked(e, b); break;
+                    case 58 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerMouseClickedEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerMouseClickedEvent.WriteBitPacked(e, b); break;
+                    case 59 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerMouseMovedEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerMouseMovedEvent.WriteBitPacked(e, b); break;
+                    case 60 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SAchievementAwardedEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SAchievementAwardedEvent.WriteBitPacked(e, b); break;
+                    case 61 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerHotkeyPressedEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerHotkeyPressedEvent.WriteBitPacked(e, b); break;
+                    case 62 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerTargetModeUpdateEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerTargetModeUpdateEvent.WriteBitPacked(e, b); break;
+                    case 63 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerPlanetPanelReplayEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerPlanetPanelReplayEvent.WriteBitPacked(e, b); break;
+                    case 64 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerSoundtrackDoneEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerSoundtrackDoneEvent.WriteBitPacked(e, b); break;
+                    case 65 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerPlanetMissionSelectedEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerPlanetMissionSelectedEvent.WriteBitPacked(e, b); break;
+                    case 66 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerKeyPressedEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerKeyPressedEvent.WriteBitPacked(e, b); break;
+                    case 67 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerMovieFunctionEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerMovieFunctionEvent.WriteBitPacked(e, b); break;
+                    case 68 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerPlanetPanelBirthCompleteEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerPlanetPanelBirthCompleteEvent.WriteBitPacked(e, b); break;
+                    case 69 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerPlanetPanelDeathCompleteEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerPlanetPanelDeathCompleteEvent.WriteBitPacked(e, b); break;
+                    case 70 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SResourceRequestEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SResourceRequestEvent.WriteBitPacked(e, b); break;
+                    case 71 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SResourceRequestFulfillEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SResourceRequestFulfillEvent.WriteBitPacked(e, b); break;
+                    case 72 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SResourceRequestCancelEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SResourceRequestCancelEvent.WriteBitPacked(e, b); break;
+                    case 73 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerResearchPanelExitEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerResearchPanelExitEvent.WriteBitPacked(e, b); break;
+                    case 74 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerResearchPanelPurchaseEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerResearchPanelPurchaseEvent.WriteBitPacked(e, b); break;
+                    case 75 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerResearchPanelSelectionChangedEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerResearchPanelSelectionChangedEvent.WriteBitPacked(e, b); break;
+                    case 76 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerCommandErrorEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerCommandErrorEvent.WriteBitPacked(e, b); break;
+                    case 77 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerMercenaryPanelExitEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerMercenaryPanelExitEvent.WriteBitPacked(e, b); break;
+                    case 78 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerMercenaryPanelPurchaseEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerMercenaryPanelPurchaseEvent.WriteBitPacked(e, b); break;
+                    case 79 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerMercenaryPanelSelectionChangedEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerMercenaryPanelSelectionChangedEvent.WriteBitPacked(e, b); break;
+                    case 80 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerVictoryPanelExitEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerVictoryPanelExitEvent.WriteBitPacked(e, b); break;
+                    case 81 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerBattleReportPanelExitEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerBattleReportPanelExitEvent.WriteBitPacked(e, b); break;
+                    case 82 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerBattleReportPanelPlayMissionEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerBattleReportPanelPlayMissionEvent.WriteBitPacked(e, b); break;
+                    case 83 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerBattleReportPanelPlaySceneEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerBattleReportPanelPlaySceneEvent.WriteBitPacked(e, b); break;
+                    case 84 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerBattleReportPanelSelectionChangedEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerBattleReportPanelSelectionChangedEvent.WriteBitPacked(e, b); break;
+                    case 85 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerVictoryPanelPlayMissionAgainEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerVictoryPanelPlayMissionAgainEvent.WriteBitPacked(e, b); break;
+                    case 86 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerMovieStartedEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerMovieStartedEvent.WriteBitPacked(e, b); break;
+                    case 87 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerMovieFinishedEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerMovieFinishedEvent.WriteBitPacked(e, b); break;
+                    case 88 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SDecrementGameTimeRemainingEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SDecrementGameTimeRemainingEvent.WriteBitPacked(e, b); break;
+                    case 89 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerPortraitLoadedEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerPortraitLoadedEvent.WriteBitPacked(e, b); break;
+                    case 90 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerCustomDialogDismissedEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerCustomDialogDismissedEvent.WriteBitPacked(e, b); break;
+                    case 91 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerGameMenuItemSelectedEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerGameMenuItemSelectedEvent.WriteBitPacked(e, b); break;
+                    case 92 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerMouseWheelEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerMouseWheelEvent.WriteBitPacked(e, b); break;
+                    case 93 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerPurchasePanelSelectedPurchaseItemChangedEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerPurchasePanelSelectedPurchaseItemChangedEvent.WriteBitPacked(e, b); break;
+                    case 94 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerPurchasePanelSelectedPurchaseCategoryChangedEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerPurchasePanelSelectedPurchaseCategoryChangedEvent.WriteBitPacked(e, b); break;
+                    case 95 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerButtonPressedEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerButtonPressedEvent.WriteBitPacked(e, b); break;
+                    case 96 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerGameCreditsFinishedEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerGameCreditsFinishedEvent.WriteBitPacked(e, b); break;
+                    case 97 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerCutsceneBookmarkFiredEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerCutsceneBookmarkFiredEvent.WriteBitPacked(e, b); break;
+                    case 98 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerCutsceneEndSceneFiredEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerCutsceneEndSceneFiredEvent.WriteBitPacked(e, b); break;
+                    case 99 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerCutsceneConversationLineEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerCutsceneConversationLineEvent.WriteBitPacked(e, b); break;
+                    case 100 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerCutsceneConversationLineMissingEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerCutsceneConversationLineMissingEvent.WriteBitPacked(e, b); break;
+                    case 101 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SGameUserLeaveEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SGameUserLeaveEvent.WriteBitPacked(e, b); break;
+                    case 102 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SGameUserJoinEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SGameUserJoinEvent.WriteBitPacked(e, b); break;
+                    case 103 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SCommandManagerStateEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SCommandManagerStateEvent.WriteBitPacked(e, b); break;
+                    case 104 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SCmdUpdateTargetPointEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SCmdUpdateTargetPointEvent.WriteBitPacked(e, b); break;
+                    case 105 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SCmdUpdateTargetUnitEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SCmdUpdateTargetUnitEvent.WriteBitPacked(e, b); break;
+                    case 106 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerAnimLengthQueryByNameEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerAnimLengthQueryByNameEvent.WriteBitPacked(e, b); break;
+                    case 107 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerAnimLengthQueryByPropsEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerAnimLengthQueryByPropsEvent.WriteBitPacked(e, b); break;
+                    case 108 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerAnimOffsetEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerAnimOffsetEvent.WriteBitPacked(e, b); break;
+                    case 109 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SCatalogModifyEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SCatalogModifyEvent.WriteBitPacked(e, b); break;
+                    case 110 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SHeroTalentTreeSelectedEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SHeroTalentTreeSelectedEvent.WriteBitPacked(e, b); break;
+                    case 111 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerProfilerLoggingFinishedEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.STriggerProfilerLoggingFinishedEvent.WriteBitPacked(e, b); break;
+                    case 112 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SHeroTalentTreeSelectionPanelToggledEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SHeroTalentTreeSelectionPanelToggledEvent.WriteBitPacked(e, b); break;
+                    case 116 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SSetSyncLoadingTimeEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SSetSyncLoadingTimeEvent.WriteBitPacked(e, b); break;
+                    case 117 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SSetSyncPlayingTimeEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SSetSyncPlayingTimeEvent.WriteBitPacked(e, b); break;
+                    case 118 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SPeerSetSyncLoadingTimeEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SPeerSetSyncLoadingTimeEvent.WriteBitPacked(e, b); break;
+                    case 119 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SPeerSetSyncPlayingTimeEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SPeerSetSyncPlayingTimeEvent.WriteBitPacked(e, b); break;
+                    default: throw new global::System.ArgumentException($"game event {ev.EventId} body {ev.Body?.GetType().FullName ?? "null"} does not match build 98310.", nameof(events));
+                }
+                e.ByteAlign();
+            }
+            return e.ToArray();
+        }
+
+        public global::System.Collections.Generic.IEnumerable<global::Biz.Bizadm.S2Protocol.NET.Events.MessageEvent> DecodeMessageEvents(global::System.ReadOnlyMemory<byte> data)
+        {
+            var d = new BitPackedDecoder(data);
+            long gameLoop = 0;
+            while (!d.Done)
+            {
+                long start = d.UsedBits;
+                gameLoop += VarUInt32Value(global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.SVarUint32.ReadBitPacked(d));
+                int userId = checked((int)global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.SGameUserId.ReadBitPacked(d).UserId);
+                int eventId = (int)(global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.EMessageId)d.ReadInt(0L, 4);
+                object body;
+                string name;
+                switch (eventId)
+                {
+                    case 0: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SChatMessage.ReadBitPacked(d); name = "NNet.Game.SChatMessage"; break;
+                    case 1: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SPingMessage.ReadBitPacked(d); name = "NNet.Game.SPingMessage"; break;
+                    case 2: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SLoadingProgressMessage.ReadBitPacked(d); name = "NNet.Game.SLoadingProgressMessage"; break;
+                    case 3: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SServerPingMessage.ReadBitPacked(d); name = "NNet.Game.SServerPingMessage"; break;
+                    case 4: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SReconnectNotifyMessage.ReadBitPacked(d); name = "NNet.Game.SReconnectNotifyMessage"; break;
+                    default: throw new CorruptedReplayException($"Unknown message event id {eventId} for build 98310.");
+                }
+                d.ByteAlign();
+                yield return new global::Biz.Bizadm.S2Protocol.NET.Events.MessageEvent(eventId, name, gameLoop, userId, d.UsedBits - start, body);
+            }
+        }
+
+        public byte[] EncodeMessageEvents(global::System.Collections.Generic.IEnumerable<global::Biz.Bizadm.S2Protocol.NET.Events.MessageEvent> events)
+        {
+            var e = new BitPackedEncoder();
+            long gameLoop = 0;
+            foreach (var ev in events)
+            {
+                global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.SVarUint32.WriteBitPacked(e, VarUInt32(ev.GameLoop - gameLoop));
+                gameLoop = ev.GameLoop;
+                global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.SGameUserId.WriteBitPacked(e, new global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.SGameUserId { UserId = ev.UserId });
+                e.WriteInt((long)(global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.EMessageId)ev.EventId, 0L, 4);
+                switch (ev.EventId)
+                {
+                    case 0 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SChatMessage b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SChatMessage.WriteBitPacked(e, b); break;
+                    case 1 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SPingMessage b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SPingMessage.WriteBitPacked(e, b); break;
+                    case 2 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SLoadingProgressMessage b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SLoadingProgressMessage.WriteBitPacked(e, b); break;
+                    case 3 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SServerPingMessage b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SServerPingMessage.WriteBitPacked(e, b); break;
+                    case 4 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SReconnectNotifyMessage b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Game.SReconnectNotifyMessage.WriteBitPacked(e, b); break;
+                    default: throw new global::System.ArgumentException($"message event {ev.EventId} body {ev.Body?.GetType().FullName ?? "null"} does not match build 98310.", nameof(events));
+                }
+                e.ByteAlign();
+            }
+            return e.ToArray();
+        }
+
+        public global::System.Collections.Generic.IEnumerable<global::Biz.Bizadm.S2Protocol.NET.Events.TrackerEvent> DecodeTrackerEvents(global::System.ReadOnlyMemory<byte> data)
+        {
+            var d = new VersionedDecoder(data);
+            long gameLoop = 0;
+            while (!d.Done)
+            {
+                long start = d.UsedBits;
+                gameLoop += VarUInt32Value(global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.SVarUint32.ReadVersioned(d));
+                int eventId = (int)checked((global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.Tracker.EEventId)d.ReadInt());
+                object body;
+                string name;
+                switch (eventId)
+                {
+                    case 0: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.Tracker.SPlayerStatsEvent.ReadVersioned(d); name = "NNet.Replay.Tracker.SPlayerStatsEvent"; break;
+                    case 1: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.Tracker.SUnitBornEvent.ReadVersioned(d); name = "NNet.Replay.Tracker.SUnitBornEvent"; break;
+                    case 2: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.Tracker.SUnitDiedEvent.ReadVersioned(d); name = "NNet.Replay.Tracker.SUnitDiedEvent"; break;
+                    case 3: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.Tracker.SUnitOwnerChangeEvent.ReadVersioned(d); name = "NNet.Replay.Tracker.SUnitOwnerChangeEvent"; break;
+                    case 4: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.Tracker.SUnitTypeChangeEvent.ReadVersioned(d); name = "NNet.Replay.Tracker.SUnitTypeChangeEvent"; break;
+                    case 5: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.Tracker.SUpgradeEvent.ReadVersioned(d); name = "NNet.Replay.Tracker.SUpgradeEvent"; break;
+                    case 6: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.Tracker.SUnitInitEvent.ReadVersioned(d); name = "NNet.Replay.Tracker.SUnitInitEvent"; break;
+                    case 7: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.Tracker.SUnitDoneEvent.ReadVersioned(d); name = "NNet.Replay.Tracker.SUnitDoneEvent"; break;
+                    case 8: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.Tracker.SUnitPositionsEvent.ReadVersioned(d); name = "NNet.Replay.Tracker.SUnitPositionsEvent"; break;
+                    case 9: body = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.Tracker.SPlayerSetupEvent.ReadVersioned(d); name = "NNet.Replay.Tracker.SPlayerSetupEvent"; break;
+                    default: throw new CorruptedReplayException($"Unknown tracker event id {eventId} for build 98310.");
+                }
+                d.ByteAlign();
+                yield return new global::Biz.Bizadm.S2Protocol.NET.Events.TrackerEvent(eventId, name, gameLoop, d.UsedBits - start, body);
+            }
+        }
+
+        public byte[] EncodeTrackerEvents(global::System.Collections.Generic.IEnumerable<global::Biz.Bizadm.S2Protocol.NET.Events.TrackerEvent> events)
+        {
+            var e = new VersionedEncoder();
+            long gameLoop = 0;
+            foreach (var ev in events)
+            {
+                global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.SVarUint32.WriteVersioned(e, VarUInt32(ev.GameLoop - gameLoop));
+                gameLoop = ev.GameLoop;
+                e.WriteInt((long)(global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.Tracker.EEventId)ev.EventId);
+                switch (ev.EventId)
+                {
+                    case 0 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.Tracker.SPlayerStatsEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.Tracker.SPlayerStatsEvent.WriteVersioned(e, b); break;
+                    case 1 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.Tracker.SUnitBornEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.Tracker.SUnitBornEvent.WriteVersioned(e, b); break;
+                    case 2 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.Tracker.SUnitDiedEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.Tracker.SUnitDiedEvent.WriteVersioned(e, b); break;
+                    case 3 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.Tracker.SUnitOwnerChangeEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.Tracker.SUnitOwnerChangeEvent.WriteVersioned(e, b); break;
+                    case 4 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.Tracker.SUnitTypeChangeEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.Tracker.SUnitTypeChangeEvent.WriteVersioned(e, b); break;
+                    case 5 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.Tracker.SUpgradeEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.Tracker.SUpgradeEvent.WriteVersioned(e, b); break;
+                    case 6 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.Tracker.SUnitInitEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.Tracker.SUnitInitEvent.WriteVersioned(e, b); break;
+                    case 7 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.Tracker.SUnitDoneEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.Tracker.SUnitDoneEvent.WriteVersioned(e, b); break;
+                    case 8 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.Tracker.SUnitPositionsEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.Tracker.SUnitPositionsEvent.WriteVersioned(e, b); break;
+                    case 9 when ev.Body is global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.Tracker.SPlayerSetupEvent b: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.Replay.Tracker.SPlayerSetupEvent.WriteVersioned(e, b); break;
+                    default: throw new global::System.ArgumentException($"tracker event {ev.EventId} body {ev.Body?.GetType().FullName ?? "null"} does not match build 98310.", nameof(events));
+                }
+            }
+            return e.ToArray();
+        }
+
+        private static long VarUInt32Value(global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.SVarUint32 v) => v switch
+        {
+            global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.SVarUint32.Uint6 c => c.Value,
+            global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.SVarUint32.Uint14 c => c.Value,
+            global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.SVarUint32.Uint22 c => c.Value,
+            global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.SVarUint32.Uint32 c => c.Value,
+            _ => throw new CorruptedReplayException("Unknown SVarUint32 case."),
+        };
+
+        private static global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.SVarUint32 VarUInt32(long value) => value switch
+        {
+            >= 0 and < 64L => new global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.SVarUint32.Uint6 { Value = (int)value },
+            >= 0 and < 16384L => new global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.SVarUint32.Uint14 { Value = (int)value },
+            >= 0 and < 4194304L => new global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.SVarUint32.Uint22 { Value = (int)value },
+            >= 0 and < 4294967296L => new global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol98310.SVarUint32.Uint32 { Value = (long)value },
+            _ => throw new global::System.ArgumentOutOfRangeException(nameof(value), value, "Game loop delta does not fit SVarUint32."),
+        };
     }
 }
