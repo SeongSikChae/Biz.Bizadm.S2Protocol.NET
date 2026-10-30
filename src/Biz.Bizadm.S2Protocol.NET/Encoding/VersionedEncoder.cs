@@ -112,6 +112,26 @@ public sealed class VersionedEncoder
         _writer.WriteAlignedBytes(bytes);
     }
 
+    // 생성 코드용: 길이(vint) 뒤 요소들.
+    public void WriteArray<T>(T[] values, Action<T> writeElement)
+    {
+        WriteArrayLength(values.Length);
+        foreach (var value in values)
+            writeElement(value);
+    }
+
+    public void WriteOptional<T>(T? value, Action<T> write) where T : class
+    {
+        WriteOptionalExists(value is not null);
+        if (value is not null) write(value);
+    }
+
+    public void WriteOptionalValue<T>(T? value, Action<T> write) where T : struct
+    {
+        WriteOptionalExists(value.HasValue);
+        if (value.HasValue) write(value.Value);
+    }
+
     private void WriteSkip(int code) => _writer.WriteBits((ulong)code, 8);
 
     // 첫 바이트: bit0 부호, bit1~6 하위 6비트, bit7 계속. 이후 바이트: 7비트씩.

@@ -61,15 +61,15 @@ internal sealed class LayoutBuilder(ProtocolDocument document, ConstantEvaluator
     // bounds가 없으면 멤버 값의 최소~최대 범위를 쓴다.
     private WInt Enum(JsonElement typeInfo)
     {
+        var members = typeInfo.GetProperty("fields").EnumerateArray()
+            .Select(m => new WEnumMember(m.GetProperty("name").GetString()!, evaluator.Eval(m.GetProperty("value"))))
+            .ToList();
         var bounds = typeInfo.GetProperty("bounds");
         if (bounds.ValueKind != JsonValueKind.Null)
-            return Ranged(typeInfo, (o, b) => new WInt(o, b));
+            return Ranged(typeInfo, (o, b) => new WInt(o, b)) with { Members = members };
 
-        var values = typeInfo.GetProperty("fields").EnumerateArray()
-            .Select(m => evaluator.Eval(m.GetProperty("value")))
-            .ToList();
-        BigInteger min = values.Min(), max = values.Max();
-        return new WInt(min, Bits(min, max));
+        BigInteger min = members.Min(m => m.Value), max = members.Max(m => m.Value);
+        return new WInt(min, Bits(min, max)) { Members = members };
     }
 
     private WStruct Struct(JsonElement typeInfo)

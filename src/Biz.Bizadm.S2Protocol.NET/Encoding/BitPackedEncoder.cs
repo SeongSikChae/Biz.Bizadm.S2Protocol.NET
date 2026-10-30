@@ -65,4 +65,24 @@ public sealed class BitPackedEncoder
         BinaryPrimitives.WriteDoubleBigEndian(bytes, value);
         _writer.WriteUnalignedBytes(bytes);
     }
+
+    // 생성 코드용: 길이(offset, bits) 뒤 요소들.
+    public void WriteArray<T>(T[] values, long offset, int bits, Action<T> writeElement)
+    {
+        WriteInt(values.Length, offset, bits);
+        foreach (var value in values)
+            writeElement(value);
+    }
+
+    public void WriteOptional<T>(T? value, Action<T> write) where T : class
+    {
+        WriteOptionalExists(value is not null);
+        if (value is not null) write(value);
+    }
+
+    public void WriteOptionalValue<T>(T? value, Action<T> write) where T : struct
+    {
+        WriteOptionalExists(value.HasValue);
+        if (value.HasValue) write(value.Value);
+    }
 }

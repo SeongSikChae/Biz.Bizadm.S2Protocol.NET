@@ -394,7 +394,18 @@ public abstract partial class SCmdData
 
 메서드는 타입이 도달하는 코덱(bitpacked/versioned)만 출력한다.
 
-- **검증**: `emit --build 98310` 후 `dotnet build` 성공. 단위 테스트에서 98310 타입으로 손 인코딩한 값 → 디코딩 왕복
+구현에서 정한 세부(98310 출력 176개 타입, 5,431줄):
+
+- 배열·optional은 디코더·인코더에 추가한 제네릭 도우미(`ReadArray`, `ReadOptional`/`ReadOptionalValue`, `WriteArray`, `WriteOptional`/`WriteOptionalValue`)로 식 하나에 출력한다.
+- 정수 C# 타입은 와이어 범위(`offset ~ offset + 2^bits - 1`)로 int/long/ulong을 고른다. 이름 있는 EnumType/InumType decl은 enum, 인라인 enum은 정수.
+- 클래스는 이름 있는 StructType/ChoiceType decl만 만들고, 별칭 decl(정수·blob·배열)은 대상 타입으로 펼친다. 인라인 struct/choice(98310은 `m_eventData` 1건)는 소유 클래스의 중첩 타입 `{속성}Struct`/`{속성}Choice`.
+- choice 경우 클래스에 `[S2Field("원본 경우 이름")]`을 붙인다(`S2FieldAttribute`를 클래스에도 허용). 모든 choice에 `UnknownCase(Tag)`를 두어 versioned에서 모르는 태그를 Python처럼 건너뛴 결과로 쓰고, 인코딩 시 예외를 던진다.
+- `__parent` 필드는 설계의 기반 클래스 대신 `Parent` 속성으로 출력한다(와이어 순서 동일). 해당 버전은 15405의 단일 부모 1건이다.
+- `emit`은 `verify`와 같은 py 대조를 먼저 수행하고 실패한 버전은 출력하지 않는다(`ProtocolModel`로 공통화).
+- versioned 정수를 int·enum으로 좁힐 때는 `checked` 캐스트를 쓴다(vint는 bounds를 강제하지 않으므로 잘림 대신 예외). ulong 코덱은 offset 0인 범위에만 쓴다.
+- 미결(단위 16): Python은 versioned에서 빠진 필드를 dict에 넣지 않지만 C# 객체는 기본값을 가진다. 골든 비교에서 이 차이를 어떻게 다룰지 정해야 한다.
+
+- **검증**: `emit --build 98310` 후 `dotnet build` 성공. 단위 테스트에서 98310 타입으로 손 인코딩한 값 → 디코딩 왕복. 추가로 모든 bitpacked 생성 타입에 무작위 바이트 디코딩 → 인코딩 안정성(정렬 패딩 비트는 원본과 직접 비교하지 않음)
 - **선행 단위**: 6, 9
 
 ## 단위 11. 이벤트 스트림·IS2Protocol

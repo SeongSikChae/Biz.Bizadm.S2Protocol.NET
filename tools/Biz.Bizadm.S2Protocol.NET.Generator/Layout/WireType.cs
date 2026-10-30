@@ -9,7 +9,13 @@ internal abstract record WireType
     public string? DeclName { get; init; }
 }
 
-internal sealed record WInt(BigInteger Offset, int Bits) : WireType;
+internal sealed record WInt(BigInteger Offset, int Bits) : WireType
+{
+    // json EnumType/InumType에서 온 경우의 멤버(코드 출력용, 대조에는 쓰지 않음).
+    public IReadOnlyList<WEnumMember>? Members { get; init; }
+}
+
+internal sealed record WEnumMember(string Name, BigInteger Value);
 
 internal sealed record WBlob(BigInteger Offset, int Bits) : WireType;
 

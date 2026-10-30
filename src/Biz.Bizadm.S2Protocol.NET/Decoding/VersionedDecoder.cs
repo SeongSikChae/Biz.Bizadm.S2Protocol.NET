@@ -117,6 +117,19 @@ public sealed class VersionedDecoder(ReadOnlyMemory<byte> data)
         return BinaryPrimitives.ReadDoubleBigEndian(_buffer.ReadAlignedBytes(8));
     }
 
+    // 생성 코드용: 길이(vint) 뒤 요소들.
+    public T[] ReadArray<T>(Func<T> readElement)
+    {
+        var result = new T[checked((int)ReadArrayLength())];
+        for (int i = 0; i < result.Length; i++)
+            result[i] = readElement();
+        return result;
+    }
+
+    public T? ReadOptional<T>(Func<T> read) where T : class => ReadOptionalExists() ? read() : null;
+
+    public T? ReadOptionalValue<T>(Func<T> read) where T : struct => ReadOptionalExists() ? read() : null;
+
     public void SkipInstance()
     {
         switch ((int)_buffer.ReadBits(8))

@@ -38,4 +38,17 @@ public sealed class BitPackedDecoder(ReadOnlyMemory<byte> data)
     public float ReadReal32() => BinaryPrimitives.ReadSingleBigEndian(_buffer.ReadUnalignedBytes(4));
 
     public double ReadReal64() => BinaryPrimitives.ReadDoubleBigEndian(_buffer.ReadUnalignedBytes(8));
+
+    // 생성 코드용: 길이(offset, bits) 뒤 요소들.
+    public T[] ReadArray<T>(long offset, int bits, Func<T> readElement)
+    {
+        var result = new T[checked((int)ReadInt(offset, bits))];
+        for (int i = 0; i < result.Length; i++)
+            result[i] = readElement();
+        return result;
+    }
+
+    public T? ReadOptional<T>(Func<T> read) where T : class => ReadOptionalExists() ? read() : null;
+
+    public T? ReadOptionalValue<T>(Func<T> read) where T : struct => ReadOptionalExists() ? read() : null;
 }
