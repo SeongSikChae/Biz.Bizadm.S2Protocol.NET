@@ -85,11 +85,11 @@ public sealed class S2FieldAttribute(string name) : Attribute
     public string Name { get; } = name;   // 원본 필드명(m_...). 골든 직렬화에 쓴다
 }
 
-public static class UnitTag
+public static class UnitTag   // 태그는 32비트 부호 없는 값이므로 long (index >= 0x2000이면 int는 음수)
 {
-    public static int Create(int index, int recycle) => (index << 18) + recycle;
-    public static int Index(int tag) => (tag >> 18) & 0x3fff;
-    public static int Recycle(int tag) => tag & 0x3ffff;
+    public static long Create(int index, int recycle) => ((long)index << 18) + recycle;
+    public static int Index(long tag) => (int)((tag >> 18) & 0x3fff);
+    public static int Recycle(long tag) => (int)(tag & 0x3ffff);
 }
 ```
 
