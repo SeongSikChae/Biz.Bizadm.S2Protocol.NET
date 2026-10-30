@@ -127,17 +127,16 @@ public bool Done => _nextBits == 0 && _used >= _data.Length;
 public long UsedBits => _used * 8L - _nextBits;
 ```
 
-64비트를 넘는 읽기(`S2BitArray`)는 `ReadBitsToBytes(int bits)`로 따로 둔다. Python bitpacked `read_bits(length)`가 만드는 정수를 빅엔디언 바이트로 표현한다(길이 `(bits+7)/8`, 상위 바이트의 남는 비트는 0). 즉 처음 읽은 비트가 정수의 최상위 비트다. versioned는 정렬 바이트를 그대로 쓴다.
+64비트를 넘는 읽기(`S2BitArray`)는 `ReadBitsToBytes(int bits)`로 따로 둔다. Python bitpacked `read_bits(length)`가 만드는 정수를 빅엔디언 바이트로 표현한다(길이 `(bits+7)/8`, 상위 바이트의 남는 비트는 0). versioned는 정렬 바이트를 그대로 쓴다.
+
+빅엔디언 `read_bits`는 분할 읽기로 합성되지 않는다(13비트 한 번 ≠ 5비트 후 8비트: 청크 크기가 현재 바이트 위치로 정해지기 때문). 따라서 `ReadBits`를 나눠 부르지 않고 같은 청크 배치를 바이트 배열에 직접 OR 한다.
 
 ```csharp
-public byte[] ReadBitsToBytes(int bits)
-{
-    var result = new byte[(bits + 7) / 8];
-    int head = bits % 8 == 0 ? 8 : bits % 8;   // 첫 바이트(최상위)에 들어갈 비트 수
-    result[0] = (byte)ReadBits(head);
-    for (int i = 1; i < result.Length; i++) result[i] = (byte)ReadBits(8);
-    return result;
-}
+int copyBits = ReadChunk(bits - resultBits, out int copy);   // ReadBits와 공유
+int shift = _bigEndian ? bits - resultBits - copyBits : resultBits;
+int index = result.Length - 1 - shift / 8, offset = shift % 8;
+result[index] |= (byte)(copy << offset);
+if (offset + copyBits > 8) result[index - 1] |= (byte)(copy >> (8 - offset));
 ```
 
 - **검증**: `BitPackedBufferTests` — 손으로 만든 바이트열에서 3·5·13비트 읽기, `ReadBitsToBytes(13)`이 `ReadBits(13)` 정수의 빅엔디언 2바이트와 같음, `ByteAlign` 후 정렬 읽기, 끝에서 읽으면 예외, 리틀엔디언 모드
