@@ -284,8 +284,15 @@ internal sealed class VersionEmitter
         {
             string name = ClrNames.Member(field.Name);
             Claim(members, name, type);
-            w.Line($"[{Lib}.S2Field(\"{field.Name}\")]");
+            w.Line($"[{Lib}.S2Field(\"{field.Name}\", Tag = {field.Tag})]");
             w.Line($"public {TypeName(field.Type)} {name} {{ get; set; }}{Initializer(field.Type)}");
+            w.Line();
+        }
+        if (type.Codecs.HasFlag(Codecs.Versioned))
+        {
+            // 설계 D10: versioned로 읽은 필드 태그. null(직접 만든 객체)이면 모든 필드가 있는 것으로 본다.
+            Claim(members, "PresentTags", type);
+            w.Line("internal global::System.Collections.Generic.HashSet<long>? PresentTags { get; set; }");
             w.Line();
         }
         if (common is not null)
@@ -322,23 +329,26 @@ internal sealed class VersionEmitter
         if (type.Codecs.HasFlag(Codecs.Versioned))
         {
             w.Open($"internal static {type.Name} ReadVersioned(VersionedDecoder d)");
-            w.Line($"var r = new {type.Name}();");
+            w.Line($"var r = new {type.Name} {{ PresentTags = [] }};");
             w.Open("for (long n = d.ReadStructFieldCount(); n > 0; n--)");
             w.Open("switch (d.ReadVInt())");
             foreach (var field in structType.Fields)
-                w.Line($"case {field.Tag}: r.{ClrNames.Member(field.Name)} = {ReadVersioned(field.Type)}; break;");
+                w.Line($"case {field.Tag}: r.{ClrNames.Member(field.Name)} = {ReadVersioned(field.Type)}; r.PresentTags.Add({field.Tag}); break;");
             w.Line("default: d.SkipInstance(); break;");
             w.Close();
             w.Close();
             w.Line("return r;");
             w.Close();
             w.Line();
+            // 기록된 필드만 쓴다(설계 D10). 모르는 태그는 읽을 때 건너뛰어 기록되지 않는다.
             w.Open($"internal static void WriteVersioned(VersionedEncoder e, {type.Name} v)");
-            w.Line($"e.WriteStructFieldCount({structType.Fields.Count});");
+            w.Line($"e.WriteStructFieldCount(v.PresentTags?.Count ?? {structType.Fields.Count});");
             foreach (var field in structType.Fields)
             {
+                w.Open($"if (v.PresentTags is null || v.PresentTags.Contains({field.Tag}))");
                 w.Line($"e.WriteVInt({field.Tag});");
                 w.Line(WriteVersioned(field.Type, $"v.{ClrNames.Member(field.Name)}", 0) + ";");
+                w.Close();
             }
             w.Close();
             w.Line();

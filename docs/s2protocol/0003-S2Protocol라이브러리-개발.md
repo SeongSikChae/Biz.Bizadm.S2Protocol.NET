@@ -403,7 +403,7 @@ public abstract partial class SCmdData
 - `__parent` 필드는 설계의 기반 클래스 대신 `Parent` 속성으로 출력한다(와이어 순서 동일). 해당 버전은 15405의 단일 부모 1건이다.
 - `emit`은 `verify`와 같은 py 대조를 먼저 수행하고 실패한 버전은 출력하지 않는다(`ProtocolModel`로 공통화).
 - versioned 정수를 int·enum으로 좁힐 때는 `checked` 캐스트를 쓴다(vint는 bounds를 강제하지 않으므로 잘림 대신 예외). ulong 코덱은 offset 0인 범위에만 쓴다.
-- 미결(단위 16): Python은 versioned에서 빠진 필드를 dict에 넣지 않지만 C# 객체는 기본값을 가진다. 골든 비교에서 이 차이를 어떻게 다룰지 정해야 한다.
+- versioned에서 빠진 필드: 설계 D10으로 결정(2026-10-31). 필드 존재 기록은 단위 16에서 생성기에 추가한다.
 
 - **검증**: `emit --build 98310` 후 `dotnet build` 성공. 단위 테스트에서 98310 타입으로 손 인코딩한 값 → 디코딩 왕복. 추가로 모든 bitpacked 생성 타입에 무작위 바이트 디코딩 → 인코딩 안정성(정렬 패딩 비트는 원본과 직접 비교하지 않음)
 - **선행 단위**: 6, 9
@@ -643,6 +643,32 @@ JsonNode ToGolden(object? value);
 ```
 
 먼저 각 샘플의 header base build가 `S2ProtocolRegistry.Builds`에 있는지 확인한다. 없는 샘플은 골든 비교·왕복 대상에서 빼고 빌드 번호와 함께 보고한다.
+
+설계 D10(필드 존재 기록) 구현을 이 단위에 포함한다. 순서: 골든 생성 → 샘플에서 빠진 versioned 필드 실측·보고 → 생성기에 존재 기록 추가 → 직렬화기·비교.
+
+```csharp
+// 생성 versioned struct (개념)
+internal global::System.Collections.Generic.HashSet<long>? PresentTags { get; set; }   // null = 모든 필드 있음
+
+// ReadVersioned: 읽은 태그를 기록
+r.PresentTags ??= [];
+switch (tag) { case 0: r.Flags = ...; r.PresentTags.Add(0); break; ... }
+
+// WriteVersioned: 기록된 필드만
+bool Has(long t) => v.PresentTags is null || v.PresentTags.Contains(t);
+e.WriteStructFieldCount((Has(0) ? 1 : 0) + (Has(1) ? 1 : 0) + ...);
+if (Has(0)) { e.WriteVInt(0); ... }
+```
+
+골든 직렬화기는 `PresentTags`에 없는 필드를 내보내지 않는다(Python dict와 같은 모양).
+
+결과(2026-10-31):
+
+- 포터블 Python 3.11.18(PBS 20261026)을 `H:\.agents\tools\python-3.11`에 설치·등록하고 mpyq 0.2.5를 설치했다.
+- 골든은 gzip으로 `tests/.../TestData/Golden/<리플레이>/`에 둔다(긴 리플레이 원문 81MB → 1.24MB, 4개 합계 1.35MB). 재생성: `python-3.11 -I tools/golden/make_golden.py <.upstream> <TestData/Replays> <TestData/Golden>`.
+- 실측: 네 샘플 모두 versioned 누락 필드가 4개(`m_dataDeprecated` 2, `m_name` 2)다. 그래서 D10이 실제로 필요하다. Python 이벤트 수는 .NET과 같다.
+- 생성기: versioned 코덱이 있는 struct에 `PresentTags`, `[S2Field(..., Tag = n)]`을 둔다.
+- 비교: 네 샘플 모두 header/details/initdata/attributes와 game/message/tracker 전 이벤트(최대 165,025건)가 골든과 일치한다.
 
 - **검증**: 지원 빌드 샘플 전체에서 header/details/initdata/3종 이벤트/attributes가 골든과 JSON 동등
 - **선행 단위**: 15

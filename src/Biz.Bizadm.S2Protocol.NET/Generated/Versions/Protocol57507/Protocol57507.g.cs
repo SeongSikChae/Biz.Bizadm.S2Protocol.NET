@@ -43,24 +43,26 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507
 
     public sealed partial class SMD5 : global::Biz.Bizadm.S2Protocol.NET.Common.IMD5
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_dataDeprecated")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_dataDeprecated", Tag = 0)]
         public int[]? DataDeprecated { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_data")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_data", Tag = 1)]
         public byte[] Data { get; set; } = [];
+
+        internal global::System.Collections.Generic.HashSet<long>? PresentTags { get; set; }
 
         global::System.Collections.Generic.IReadOnlyList<int>? global::Biz.Bizadm.S2Protocol.NET.Common.IMD5.DataDeprecated => DataDeprecated;
         byte[] global::Biz.Bizadm.S2Protocol.NET.Common.IMD5.Data => Data;
 
         internal static SMD5 ReadVersioned(VersionedDecoder d)
         {
-            var r = new SMD5();
+            var r = new SMD5 { PresentTags = [] };
             for (long n = d.ReadStructFieldCount(); n > 0; n--)
             {
                 switch (d.ReadVInt())
                 {
-                    case 0: r.DataDeprecated = d.ReadOptional(() => d.ReadArray(() => checked((int)d.ReadInt()))); break;
-                    case 1: r.Data = d.ReadBlob(); break;
+                    case 0: r.DataDeprecated = d.ReadOptional(() => d.ReadArray(() => checked((int)d.ReadInt()))); r.PresentTags.Add(0); break;
+                    case 1: r.Data = d.ReadBlob(); r.PresentTags.Add(1); break;
                     default: d.SkipInstance(); break;
                 }
             }
@@ -69,72 +71,78 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507
 
         internal static void WriteVersioned(VersionedEncoder e, SMD5 v)
         {
-            e.WriteStructFieldCount(2);
-            e.WriteVInt(0);
-            e.WriteOptional(v.DataDeprecated, x0 => e.WriteArray(x0, x1 => e.WriteInt((long)x1)));
-            e.WriteVInt(1);
-            e.WriteBlob(v.Data);
+            e.WriteStructFieldCount(v.PresentTags?.Count ?? 2);
+            if (v.PresentTags is null || v.PresentTags.Contains(0))
+            {
+                e.WriteVInt(0);
+                e.WriteOptional(v.DataDeprecated, x0 => e.WriteArray(x0, x1 => e.WriteInt((long)x1)));
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(1))
+            {
+                e.WriteVInt(1);
+                e.WriteBlob(v.Data);
+            }
         }
 
     }
 
     public sealed partial class SUserInitialData : global::Biz.Bizadm.S2Protocol.NET.Common.IUserInitialData
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_name")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_name", Tag = -19)]
         public byte[] Name { get; set; } = [];
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_clanTag")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_clanTag", Tag = -18)]
         public byte[]? ClanTag { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_clanLogo")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_clanLogo", Tag = -17)]
         public byte[]? ClanLogo { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_highestLeague")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_highestLeague", Tag = -16)]
         public int? HighestLeague { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_combinedRaceLevels")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_combinedRaceLevels", Tag = -15)]
         public long? CombinedRaceLevels { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_randomSeed")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_randomSeed", Tag = -14)]
         public long RandomSeed { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_racePreference")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_racePreference", Tag = -13)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.TRacePreference RacePreference { get; set; } = new();
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_teamPreference")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_teamPreference", Tag = -12)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.TTeamPreference TeamPreference { get; set; } = new();
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_testMap")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_testMap", Tag = -11)]
         public bool TestMap { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_testAuto")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_testAuto", Tag = -10)]
         public bool TestAuto { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_examine")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_examine", Tag = -9)]
         public bool Examine { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_customInterface")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_customInterface", Tag = -8)]
         public bool CustomInterface { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_testType")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_testType", Tag = -7)]
         public long TestType { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_observe")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_observe", Tag = -6)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.EObserve Observe { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_hero")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_hero", Tag = -5)]
         public byte[] Hero { get; set; } = [];
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_skin")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_skin", Tag = -4)]
         public byte[] Skin { get; set; } = [];
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_mount")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_mount", Tag = -3)]
         public byte[] Mount { get; set; } = [];
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_toonHandle")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_toonHandle", Tag = -2)]
         public byte[] ToonHandle { get; set; } = [];
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scaledRating")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scaledRating", Tag = -1)]
         public int? ScaledRating { get; set; }
 
         byte[] global::Biz.Bizadm.S2Protocol.NET.Common.IUserInitialData.Name => Name;
@@ -280,23 +288,25 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507
 
     public sealed partial class SVersion : global::Biz.Bizadm.S2Protocol.NET.Common.IVersion
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_flags")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_flags", Tag = 0)]
         public int Flags { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_major")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_major", Tag = 1)]
         public int Major { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_minor")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_minor", Tag = 2)]
         public int Minor { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_revision")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_revision", Tag = 3)]
         public int Revision { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_build")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_build", Tag = 4)]
         public long Build { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_baseBuild")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_baseBuild", Tag = 5)]
         public long BaseBuild { get; set; }
+
+        internal global::System.Collections.Generic.HashSet<long>? PresentTags { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.IVersion.Flags => Flags;
         int global::Biz.Bizadm.S2Protocol.NET.Common.IVersion.Major => Major;
@@ -307,17 +317,17 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507
 
         internal static SVersion ReadVersioned(VersionedDecoder d)
         {
-            var r = new SVersion();
+            var r = new SVersion { PresentTags = [] };
             for (long n = d.ReadStructFieldCount(); n > 0; n--)
             {
                 switch (d.ReadVInt())
                 {
-                    case 0: r.Flags = checked((int)d.ReadInt()); break;
-                    case 1: r.Major = checked((int)d.ReadInt()); break;
-                    case 2: r.Minor = checked((int)d.ReadInt()); break;
-                    case 3: r.Revision = checked((int)d.ReadInt()); break;
-                    case 4: r.Build = d.ReadInt(); break;
-                    case 5: r.BaseBuild = d.ReadInt(); break;
+                    case 0: r.Flags = checked((int)d.ReadInt()); r.PresentTags.Add(0); break;
+                    case 1: r.Major = checked((int)d.ReadInt()); r.PresentTags.Add(1); break;
+                    case 2: r.Minor = checked((int)d.ReadInt()); r.PresentTags.Add(2); break;
+                    case 3: r.Revision = checked((int)d.ReadInt()); r.PresentTags.Add(3); break;
+                    case 4: r.Build = d.ReadInt(); r.PresentTags.Add(4); break;
+                    case 5: r.BaseBuild = d.ReadInt(); r.PresentTags.Add(5); break;
                     default: d.SkipInstance(); break;
                 }
             }
@@ -326,26 +336,44 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507
 
         internal static void WriteVersioned(VersionedEncoder e, SVersion v)
         {
-            e.WriteStructFieldCount(6);
-            e.WriteVInt(0);
-            e.WriteInt((long)v.Flags);
-            e.WriteVInt(1);
-            e.WriteInt((long)v.Major);
-            e.WriteVInt(2);
-            e.WriteInt((long)v.Minor);
-            e.WriteVInt(3);
-            e.WriteInt((long)v.Revision);
-            e.WriteVInt(4);
-            e.WriteInt((long)v.Build);
-            e.WriteVInt(5);
-            e.WriteInt((long)v.BaseBuild);
+            e.WriteStructFieldCount(v.PresentTags?.Count ?? 6);
+            if (v.PresentTags is null || v.PresentTags.Contains(0))
+            {
+                e.WriteVInt(0);
+                e.WriteInt((long)v.Flags);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(1))
+            {
+                e.WriteVInt(1);
+                e.WriteInt((long)v.Major);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(2))
+            {
+                e.WriteVInt(2);
+                e.WriteInt((long)v.Minor);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(3))
+            {
+                e.WriteVInt(3);
+                e.WriteInt((long)v.Revision);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(4))
+            {
+                e.WriteVInt(4);
+                e.WriteInt((long)v.Build);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(5))
+            {
+                e.WriteVInt(5);
+                e.WriteInt((long)v.BaseBuild);
+            }
         }
 
     }
 
     public sealed partial class TRacePreference : global::Biz.Bizadm.S2Protocol.NET.Common.ITRacePreference
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_race")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_race", Tag = -1)]
         public int? Race { get; set; }
 
         int? global::Biz.Bizadm.S2Protocol.NET.Common.ITRacePreference.Race => Race;
@@ -366,7 +394,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507
 
     public sealed partial class TTeamPreference : global::Biz.Bizadm.S2Protocol.NET.Common.ITTeamPreference
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_team")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_team", Tag = -1)]
         public int? Team { get; set; }
 
         int? global::Biz.Bizadm.S2Protocol.NET.Common.ITTeamPreference.Team => Team;
@@ -390,10 +418,10 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 {
     public sealed partial class CRewardOverride : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICRewardOverride
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_key")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_key", Tag = -2)]
         public long Key { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_rewards")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_rewards", Tag = -1)]
         public long[] Rewards { get; set; } = [];
 
         long global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICRewardOverride.Key => Key;
@@ -658,31 +686,31 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class SAICommunicateEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IAICommunicateEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_beacon")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_beacon", Tag = -14)]
         public int Beacon { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_ally")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_ally", Tag = -13)]
         public int Ally { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_flags")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_flags", Tag = -12)]
         public int Flags { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_build")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_build", Tag = -11)]
         public int Build { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_targetUnitTag")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_targetUnitTag", Tag = -10)]
         public long TargetUnitTag { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_targetUnitSnapshotUnitLink")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_targetUnitSnapshotUnitLink", Tag = -9)]
         public int TargetUnitSnapshotUnitLink { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_targetUnitSnapshotUpkeepPlayerId")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_targetUnitSnapshotUpkeepPlayerId", Tag = -8)]
         public int TargetUnitSnapshotUpkeepPlayerId { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_targetUnitSnapshotControlPlayerId")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_targetUnitSnapshotControlPlayerId", Tag = -7)]
         public int TargetUnitSnapshotControlPlayerId { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_targetPoint")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_targetPoint", Tag = -6)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.SPoint3 TargetPoint { get; set; } = new();
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IAICommunicateEvent.Beacon => Beacon;
@@ -723,7 +751,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class SAchievementAwardedEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IAchievementAwardedEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_achievementLink")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_achievementLink", Tag = -6)]
         public int AchievementLink { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IAchievementAwardedEvent.AchievementLink => AchievementLink;
@@ -744,7 +772,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class SAddAbsoluteGameSpeedEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IAddAbsoluteGameSpeedEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_delta")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_delta", Tag = -6)]
         public int Delta { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IAddAbsoluteGameSpeedEvent.Delta => Delta;
@@ -765,10 +793,10 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class SAllianceEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IAllianceEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_alliance")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_alliance", Tag = -7)]
         public long Alliance { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_control")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_control", Tag = -6)]
         public long Control { get; set; }
 
         long global::Biz.Bizadm.S2Protocol.NET.Common.Game.IAllianceEvent.Alliance => Alliance;
@@ -792,7 +820,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class SBankFileEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IBankFileEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_name")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_name", Tag = -6)]
         public byte[] Name { get; set; } = [];
 
         byte[] global::Biz.Bizadm.S2Protocol.NET.Common.Game.IBankFileEvent.Name => Name;
@@ -813,13 +841,13 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class SBankKeyEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IBankKeyEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_name")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_name", Tag = -8)]
         public byte[] Name { get; set; } = [];
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_type")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_type", Tag = -7)]
         public long Type { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_data")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_data", Tag = -6)]
         public byte[] Data { get; set; } = [];
 
         byte[] global::Biz.Bizadm.S2Protocol.NET.Common.Game.IBankKeyEvent.Name => Name;
@@ -846,7 +874,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class SBankSectionEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IBankSectionEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_name")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_name", Tag = -6)]
         public byte[] Name { get; set; } = [];
 
         byte[] global::Biz.Bizadm.S2Protocol.NET.Common.Game.IBankSectionEvent.Name => Name;
@@ -867,10 +895,10 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class SBankSignatureEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IBankSignatureEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_signature")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_signature", Tag = -7)]
         public int[] Signature { get; set; } = [];
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_toonHandle")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_toonHandle", Tag = -6)]
         public byte[] ToonHandle { get; set; } = [];
 
         global::System.Collections.Generic.IReadOnlyList<int> global::Biz.Bizadm.S2Protocol.NET.Common.Game.IBankSignatureEvent.Signature => Signature;
@@ -893,13 +921,13 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class SBankValueEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IBankValueEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_type")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_type", Tag = -8)]
         public long Type { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_name")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_name", Tag = -7)]
         public byte[] Name { get; set; } = [];
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_data")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_data", Tag = -6)]
         public byte[] Data { get; set; } = [];
 
         long global::Biz.Bizadm.S2Protocol.NET.Common.Game.IBankValueEvent.Type => Type;
@@ -926,10 +954,10 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class SBroadcastCheatEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IBroadcastCheatEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_verb")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_verb", Tag = -7)]
         public byte[] Verb { get; set; } = [];
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_arguments")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_arguments", Tag = -6)]
         public byte[] Arguments { get; set; } = [];
 
         byte[] global::Biz.Bizadm.S2Protocol.NET.Common.Game.IBroadcastCheatEvent.Verb => Verb;
@@ -953,10 +981,10 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class SCameraSaveEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICameraSaveEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_which")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_which", Tag = -7)]
         public int Which { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_target")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_target", Tag = -6)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.SPointMini Target { get; set; } = new();
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICameraSaveEvent.Which => Which;
@@ -980,22 +1008,22 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class SCameraUpdateEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICameraUpdateEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_target")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_target", Tag = -11)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.SPointMini? Target { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_distance")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_distance", Tag = -10)]
         public int? Distance { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_pitch")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_pitch", Tag = -9)]
         public int? Pitch { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_yaw")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_yaw", Tag = -8)]
         public int? Yaw { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_reason")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_reason", Tag = -7)]
         public int? Reason { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_follow")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_follow", Tag = -6)]
         public bool Follow { get; set; }
 
         internal static SCameraUpdateEvent ReadBitPacked(BitPackedDecoder d)
@@ -1024,16 +1052,16 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class SCatalogModifyEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICatalogModifyEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_catalog")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_catalog", Tag = -9)]
         public int Catalog { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_entry")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_entry", Tag = -8)]
         public int Entry { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_field")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_field", Tag = -7)]
         public byte[] Field { get; set; } = [];
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_value")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_value", Tag = -6)]
         public byte[] Value { get; set; } = [];
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICatalogModifyEvent.Catalog => Catalog;
@@ -1063,10 +1091,10 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class SChatMessage : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IChatMessage
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_recipient")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_recipient", Tag = -3)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.EMessageRecipient Recipient { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_string")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_string", Tag = -2)]
         public byte[] String { get; set; } = [];
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IChatMessage.Recipient => (int)Recipient;
@@ -1090,16 +1118,16 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class SCheatEventData : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICheatEventData
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_point")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_point", Tag = -4)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.SPoint Point { get; set; } = new();
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_time")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_time", Tag = -3)]
         public int Time { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_verb")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_verb", Tag = -2)]
         public byte[] Verb { get; set; } = [];
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_arguments")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_arguments", Tag = -1)]
         public byte[] Arguments { get; set; } = [];
 
         global::Biz.Bizadm.S2Protocol.NET.Common.Game.IPoint global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICheatEventData.Point => Point;
@@ -1129,13 +1157,13 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class SCmdAbil : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICmdAbil
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_abilLink")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_abilLink", Tag = -3)]
         public int AbilLink { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_abilCmdIndex")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_abilCmdIndex", Tag = -2)]
         public int AbilCmdIndex { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_abilCmdData")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_abilCmdData", Tag = -1)]
         public int? AbilCmdData { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICmdAbil.AbilLink => AbilLink;
@@ -1218,25 +1246,25 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class SCmdDataTargetUnit : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICmdDataTargetUnit
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_targetUnitFlags")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_targetUnitFlags", Tag = -7)]
         public int TargetUnitFlags { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_timer")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_timer", Tag = -6)]
         public int Timer { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_tag")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_tag", Tag = -5)]
         public long Tag { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_snapshotUnitLink")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_snapshotUnitLink", Tag = -4)]
         public int SnapshotUnitLink { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_snapshotControlPlayerId")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_snapshotControlPlayerId", Tag = -3)]
         public int? SnapshotControlPlayerId { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_snapshotUpkeepPlayerId")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_snapshotUpkeepPlayerId", Tag = -2)]
         public int? SnapshotUpkeepPlayerId { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_snapshotPoint")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_snapshotPoint", Tag = -1)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.SMapCoord3D SnapshotPoint { get; set; } = new();
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICmdDataTargetUnit.TargetUnitFlags => TargetUnitFlags;
@@ -1273,22 +1301,22 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class SCmdEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICmdEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_cmdFlags")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_cmdFlags", Tag = -11)]
         public int CmdFlags { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_abil")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_abil", Tag = -10)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.SCmdAbil? Abil { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_data")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_data", Tag = -9)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.SCmdData Data { get; set; } = null!;
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_sequence")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_sequence", Tag = -8)]
         public long Sequence { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_otherUnit")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_otherUnit", Tag = -7)]
         public long? OtherUnit { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitGroup")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitGroup", Tag = -6)]
         public long? UnitGroup { get; set; }
 
         internal static SCmdEvent ReadBitPacked(BitPackedDecoder d)
@@ -1317,7 +1345,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class SCmdUpdateTargetPointEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICmdUpdateTargetPointEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_target")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_target", Tag = -6)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.SMapCoord3D Target { get; set; } = new();
 
         global::Biz.Bizadm.S2Protocol.NET.Common.Game.IMapCoord3D global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICmdUpdateTargetPointEvent.Target => Target;
@@ -1338,7 +1366,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class SCmdUpdateTargetUnitEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICmdUpdateTargetUnitEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_target")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_target", Tag = -6)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.SCmdDataTargetUnit Target { get; set; } = new();
 
         global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICmdDataTargetUnit global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICmdUpdateTargetUnitEvent.Target => Target;
@@ -1359,17 +1387,19 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class SColor : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IColor
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_a")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_a", Tag = 0)]
         public int A { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_r")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_r", Tag = 1)]
         public int R { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_g")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_g", Tag = 2)]
         public int G { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_b")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_b", Tag = 3)]
         public int B { get; set; }
+
+        internal global::System.Collections.Generic.HashSet<long>? PresentTags { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IColor.A => A;
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IColor.R => R;
@@ -1378,15 +1408,15 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
         internal static SColor ReadVersioned(VersionedDecoder d)
         {
-            var r = new SColor();
+            var r = new SColor { PresentTags = [] };
             for (long n = d.ReadStructFieldCount(); n > 0; n--)
             {
                 switch (d.ReadVInt())
                 {
-                    case 0: r.A = checked((int)d.ReadInt()); break;
-                    case 1: r.R = checked((int)d.ReadInt()); break;
-                    case 2: r.G = checked((int)d.ReadInt()); break;
-                    case 3: r.B = checked((int)d.ReadInt()); break;
+                    case 0: r.A = checked((int)d.ReadInt()); r.PresentTags.Add(0); break;
+                    case 1: r.R = checked((int)d.ReadInt()); r.PresentTags.Add(1); break;
+                    case 2: r.G = checked((int)d.ReadInt()); r.PresentTags.Add(2); break;
+                    case 3: r.B = checked((int)d.ReadInt()); r.PresentTags.Add(3); break;
                     default: d.SkipInstance(); break;
                 }
             }
@@ -1395,22 +1425,34 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
         internal static void WriteVersioned(VersionedEncoder e, SColor v)
         {
-            e.WriteStructFieldCount(4);
-            e.WriteVInt(0);
-            e.WriteInt((long)v.A);
-            e.WriteVInt(1);
-            e.WriteInt((long)v.R);
-            e.WriteVInt(2);
-            e.WriteInt((long)v.G);
-            e.WriteVInt(3);
-            e.WriteInt((long)v.B);
+            e.WriteStructFieldCount(v.PresentTags?.Count ?? 4);
+            if (v.PresentTags is null || v.PresentTags.Contains(0))
+            {
+                e.WriteVInt(0);
+                e.WriteInt((long)v.A);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(1))
+            {
+                e.WriteVInt(1);
+                e.WriteInt((long)v.R);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(2))
+            {
+                e.WriteVInt(2);
+                e.WriteInt((long)v.G);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(3))
+            {
+                e.WriteVInt(3);
+                e.WriteInt((long)v.B);
+            }
         }
 
     }
 
     public sealed partial class SCommandManagerResetEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICommandManagerResetEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_sequence")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_sequence", Tag = -6)]
         public long Sequence { get; set; }
 
         long global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICommandManagerResetEvent.Sequence => Sequence;
@@ -1431,10 +1473,10 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class SCommandManagerStateEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICommandManagerStateEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_state")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_state", Tag = -7)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.ECommandManagerState State { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_sequence")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_sequence", Tag = -6)]
         public long? Sequence { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICommandManagerStateEvent.State => (int)State;
@@ -1458,13 +1500,13 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class SControlGroupUpdateEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IControlGroupUpdateEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_controlGroupIndex")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_controlGroupIndex", Tag = -8)]
         public int ControlGroupIndex { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_controlGroupUpdate")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_controlGroupUpdate", Tag = -7)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.EControlGroupUpdate ControlGroupUpdate { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_mask")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_mask", Tag = -6)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.SSelectionMask Mask { get; set; } = null!;
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IControlGroupUpdateEvent.ControlGroupIndex => ControlGroupIndex;
@@ -1490,7 +1532,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class SDecrementGameTimeRemainingEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IDecrementGameTimeRemainingEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_decrementSeconds")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_decrementSeconds", Tag = -6)]
         public int DecrementSeconds { get; set; }
 
         internal static SDecrementGameTimeRemainingEvent ReadBitPacked(BitPackedDecoder d)
@@ -1509,59 +1551,61 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class SDetails : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IDetails
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_playerList")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_playerList", Tag = 0)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.SPlayerDetails[]? PlayerList { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_title")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_title", Tag = 1)]
         public byte[] Title { get; set; } = [];
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_difficulty")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_difficulty", Tag = 2)]
         public byte[] Difficulty { get; set; } = [];
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_thumbnail")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_thumbnail", Tag = 3)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.SThumbnail Thumbnail { get; set; } = new();
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_isBlizzardMap")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_isBlizzardMap", Tag = 4)]
         public bool IsBlizzardMap { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_timeUTC")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_timeUTC", Tag = 5)]
         public long TimeUTC { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_timeLocalOffset")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_timeLocalOffset", Tag = 6)]
         public long TimeLocalOffset { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_restartAsTransitionMap")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_restartAsTransitionMap", Tag = 16)]
         public bool? RestartAsTransitionMap { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_disableRecoverGame")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_disableRecoverGame", Tag = 17)]
         public bool DisableRecoverGame { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_description")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_description", Tag = 7)]
         public byte[] Description { get; set; } = [];
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_imageFilePath")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_imageFilePath", Tag = 8)]
         public byte[] ImageFilePath { get; set; } = [];
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_campaignIndex")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_campaignIndex", Tag = 15)]
         public int CampaignIndex { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_mapFileName")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_mapFileName", Tag = 9)]
         public byte[] MapFileName { get; set; } = [];
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_cacheHandles")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_cacheHandles", Tag = 10)]
         public byte[][]? CacheHandles { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_miniSave")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_miniSave", Tag = 11)]
         public bool MiniSave { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_gameSpeed")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_gameSpeed", Tag = 12)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.EGameSpeed GameSpeed { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_defaultDifficulty")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_defaultDifficulty", Tag = 13)]
         public int DefaultDifficulty { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_modPaths")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_modPaths", Tag = 14)]
         public byte[][]? ModPaths { get; set; }
+
+        internal global::System.Collections.Generic.HashSet<long>? PresentTags { get; set; }
 
         global::System.Collections.Generic.IReadOnlyList<global::Biz.Bizadm.S2Protocol.NET.Common.Game.IPlayerDetails>? global::Biz.Bizadm.S2Protocol.NET.Common.Game.IDetails.PlayerList => PlayerList;
         byte[] global::Biz.Bizadm.S2Protocol.NET.Common.Game.IDetails.Title => Title;
@@ -1580,29 +1624,29 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
         internal static SDetails ReadVersioned(VersionedDecoder d)
         {
-            var r = new SDetails();
+            var r = new SDetails { PresentTags = [] };
             for (long n = d.ReadStructFieldCount(); n > 0; n--)
             {
                 switch (d.ReadVInt())
                 {
-                    case 0: r.PlayerList = d.ReadOptional(() => d.ReadArray(() => global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.SPlayerDetails.ReadVersioned(d))); break;
-                    case 1: r.Title = d.ReadBlob(); break;
-                    case 2: r.Difficulty = d.ReadBlob(); break;
-                    case 3: r.Thumbnail = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.SThumbnail.ReadVersioned(d); break;
-                    case 4: r.IsBlizzardMap = d.ReadBool(); break;
-                    case 5: r.TimeUTC = d.ReadInt(); break;
-                    case 6: r.TimeLocalOffset = d.ReadInt(); break;
-                    case 16: r.RestartAsTransitionMap = d.ReadOptionalValue(() => d.ReadBool()); break;
-                    case 17: r.DisableRecoverGame = d.ReadBool(); break;
-                    case 7: r.Description = d.ReadBlob(); break;
-                    case 8: r.ImageFilePath = d.ReadBlob(); break;
-                    case 15: r.CampaignIndex = checked((int)d.ReadInt()); break;
-                    case 9: r.MapFileName = d.ReadBlob(); break;
-                    case 10: r.CacheHandles = d.ReadOptional(() => d.ReadArray(() => d.ReadBlob())); break;
-                    case 11: r.MiniSave = d.ReadBool(); break;
-                    case 12: r.GameSpeed = checked((global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.EGameSpeed)d.ReadInt()); break;
-                    case 13: r.DefaultDifficulty = checked((int)d.ReadInt()); break;
-                    case 14: r.ModPaths = d.ReadOptional(() => d.ReadArray(() => d.ReadBlob())); break;
+                    case 0: r.PlayerList = d.ReadOptional(() => d.ReadArray(() => global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.SPlayerDetails.ReadVersioned(d))); r.PresentTags.Add(0); break;
+                    case 1: r.Title = d.ReadBlob(); r.PresentTags.Add(1); break;
+                    case 2: r.Difficulty = d.ReadBlob(); r.PresentTags.Add(2); break;
+                    case 3: r.Thumbnail = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.SThumbnail.ReadVersioned(d); r.PresentTags.Add(3); break;
+                    case 4: r.IsBlizzardMap = d.ReadBool(); r.PresentTags.Add(4); break;
+                    case 5: r.TimeUTC = d.ReadInt(); r.PresentTags.Add(5); break;
+                    case 6: r.TimeLocalOffset = d.ReadInt(); r.PresentTags.Add(6); break;
+                    case 16: r.RestartAsTransitionMap = d.ReadOptionalValue(() => d.ReadBool()); r.PresentTags.Add(16); break;
+                    case 17: r.DisableRecoverGame = d.ReadBool(); r.PresentTags.Add(17); break;
+                    case 7: r.Description = d.ReadBlob(); r.PresentTags.Add(7); break;
+                    case 8: r.ImageFilePath = d.ReadBlob(); r.PresentTags.Add(8); break;
+                    case 15: r.CampaignIndex = checked((int)d.ReadInt()); r.PresentTags.Add(15); break;
+                    case 9: r.MapFileName = d.ReadBlob(); r.PresentTags.Add(9); break;
+                    case 10: r.CacheHandles = d.ReadOptional(() => d.ReadArray(() => d.ReadBlob())); r.PresentTags.Add(10); break;
+                    case 11: r.MiniSave = d.ReadBool(); r.PresentTags.Add(11); break;
+                    case 12: r.GameSpeed = checked((global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.EGameSpeed)d.ReadInt()); r.PresentTags.Add(12); break;
+                    case 13: r.DefaultDifficulty = checked((int)d.ReadInt()); r.PresentTags.Add(13); break;
+                    case 14: r.ModPaths = d.ReadOptional(() => d.ReadArray(() => d.ReadBlob())); r.PresentTags.Add(14); break;
                     default: d.SkipInstance(); break;
                 }
             }
@@ -1611,50 +1655,104 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
         internal static void WriteVersioned(VersionedEncoder e, SDetails v)
         {
-            e.WriteStructFieldCount(18);
-            e.WriteVInt(0);
-            e.WriteOptional(v.PlayerList, x0 => e.WriteArray(x0, x1 => global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.SPlayerDetails.WriteVersioned(e, x1)));
-            e.WriteVInt(1);
-            e.WriteBlob(v.Title);
-            e.WriteVInt(2);
-            e.WriteBlob(v.Difficulty);
-            e.WriteVInt(3);
-            global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.SThumbnail.WriteVersioned(e, v.Thumbnail);
-            e.WriteVInt(4);
-            e.WriteBool(v.IsBlizzardMap);
-            e.WriteVInt(5);
-            e.WriteInt((long)v.TimeUTC);
-            e.WriteVInt(6);
-            e.WriteInt((long)v.TimeLocalOffset);
-            e.WriteVInt(16);
-            e.WriteOptionalValue(v.RestartAsTransitionMap, x0 => e.WriteBool(x0));
-            e.WriteVInt(17);
-            e.WriteBool(v.DisableRecoverGame);
-            e.WriteVInt(7);
-            e.WriteBlob(v.Description);
-            e.WriteVInt(8);
-            e.WriteBlob(v.ImageFilePath);
-            e.WriteVInt(15);
-            e.WriteInt((long)v.CampaignIndex);
-            e.WriteVInt(9);
-            e.WriteBlob(v.MapFileName);
-            e.WriteVInt(10);
-            e.WriteOptional(v.CacheHandles, x0 => e.WriteArray(x0, x1 => e.WriteBlob(x1)));
-            e.WriteVInt(11);
-            e.WriteBool(v.MiniSave);
-            e.WriteVInt(12);
-            e.WriteInt((long)v.GameSpeed);
-            e.WriteVInt(13);
-            e.WriteInt((long)v.DefaultDifficulty);
-            e.WriteVInt(14);
-            e.WriteOptional(v.ModPaths, x0 => e.WriteArray(x0, x1 => e.WriteBlob(x1)));
+            e.WriteStructFieldCount(v.PresentTags?.Count ?? 18);
+            if (v.PresentTags is null || v.PresentTags.Contains(0))
+            {
+                e.WriteVInt(0);
+                e.WriteOptional(v.PlayerList, x0 => e.WriteArray(x0, x1 => global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.SPlayerDetails.WriteVersioned(e, x1)));
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(1))
+            {
+                e.WriteVInt(1);
+                e.WriteBlob(v.Title);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(2))
+            {
+                e.WriteVInt(2);
+                e.WriteBlob(v.Difficulty);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(3))
+            {
+                e.WriteVInt(3);
+                global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.SThumbnail.WriteVersioned(e, v.Thumbnail);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(4))
+            {
+                e.WriteVInt(4);
+                e.WriteBool(v.IsBlizzardMap);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(5))
+            {
+                e.WriteVInt(5);
+                e.WriteInt((long)v.TimeUTC);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(6))
+            {
+                e.WriteVInt(6);
+                e.WriteInt((long)v.TimeLocalOffset);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(16))
+            {
+                e.WriteVInt(16);
+                e.WriteOptionalValue(v.RestartAsTransitionMap, x0 => e.WriteBool(x0));
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(17))
+            {
+                e.WriteVInt(17);
+                e.WriteBool(v.DisableRecoverGame);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(7))
+            {
+                e.WriteVInt(7);
+                e.WriteBlob(v.Description);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(8))
+            {
+                e.WriteVInt(8);
+                e.WriteBlob(v.ImageFilePath);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(15))
+            {
+                e.WriteVInt(15);
+                e.WriteInt((long)v.CampaignIndex);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(9))
+            {
+                e.WriteVInt(9);
+                e.WriteBlob(v.MapFileName);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(10))
+            {
+                e.WriteVInt(10);
+                e.WriteOptional(v.CacheHandles, x0 => e.WriteArray(x0, x1 => e.WriteBlob(x1)));
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(11))
+            {
+                e.WriteVInt(11);
+                e.WriteBool(v.MiniSave);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(12))
+            {
+                e.WriteVInt(12);
+                e.WriteInt((long)v.GameSpeed);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(13))
+            {
+                e.WriteVInt(13);
+                e.WriteInt((long)v.DefaultDifficulty);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(14))
+            {
+                e.WriteVInt(14);
+                e.WriteOptional(v.ModPaths, x0 => e.WriteArray(x0, x1 => e.WriteBlob(x1)));
+            }
         }
 
     }
 
     public sealed partial class SGameCheatEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IGameCheatEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_data")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_data", Tag = -6)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.SCheatEventData Data { get; set; } = new();
 
         global::Biz.Bizadm.S2Protocol.NET.Common.Game.ICheatEventData global::Biz.Bizadm.S2Protocol.NET.Common.Game.IGameCheatEvent.Data => Data;
@@ -1675,88 +1773,88 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class SGameDescription : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IGameDescription
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_randomValue")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_randomValue", Tag = -28)]
         public long RandomValue { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_gameCacheName")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_gameCacheName", Tag = -27)]
         public byte[] GameCacheName { get; set; } = [];
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_gameOptions")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_gameOptions", Tag = -26)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.SGameOptions GameOptions { get; set; } = new();
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_gameSpeed")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_gameSpeed", Tag = -25)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.EGameSpeed GameSpeed { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_gameType")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_gameType", Tag = -24)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.EGameType GameType { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_maxUsers")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_maxUsers", Tag = -23)]
         public int MaxUsers { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_maxObservers")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_maxObservers", Tag = -22)]
         public int MaxObservers { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_maxPlayers")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_maxPlayers", Tag = -21)]
         public int MaxPlayers { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_maxTeams")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_maxTeams", Tag = -20)]
         public int MaxTeams { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_maxColors")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_maxColors", Tag = -19)]
         public int MaxColors { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_maxRaces")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_maxRaces", Tag = -18)]
         public int MaxRaces { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_maxControls")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_maxControls", Tag = -17)]
         public int MaxControls { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_mapSizeX")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_mapSizeX", Tag = -16)]
         public int MapSizeX { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_mapSizeY")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_mapSizeY", Tag = -15)]
         public int MapSizeY { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_mapFileSyncChecksum")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_mapFileSyncChecksum", Tag = -14)]
         public long MapFileSyncChecksum { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_mapFileName")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_mapFileName", Tag = -13)]
         public byte[] MapFileName { get; set; } = [];
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_mapAuthorName")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_mapAuthorName", Tag = -12)]
         public byte[] MapAuthorName { get; set; } = [];
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_modFileSyncChecksum")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_modFileSyncChecksum", Tag = -11)]
         public long ModFileSyncChecksum { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_slotDescriptions")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_slotDescriptions", Tag = -10)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.SSlotDescription[] SlotDescriptions { get; set; } = [];
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_defaultDifficulty")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_defaultDifficulty", Tag = -9)]
         public int DefaultDifficulty { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_defaultAIBuild")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_defaultAIBuild", Tag = -8)]
         public int DefaultAIBuild { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_cacheHandles")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_cacheHandles", Tag = -7)]
         public byte[][] CacheHandles { get; set; } = [];
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_hasExtensionMod")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_hasExtensionMod", Tag = -6)]
         public bool HasExtensionMod { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_hasNonBlizzardExtensionMod")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_hasNonBlizzardExtensionMod", Tag = -5)]
         public bool HasNonBlizzardExtensionMod { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_isBlizzardMap")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_isBlizzardMap", Tag = -4)]
         public bool IsBlizzardMap { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_isPremadeFFA")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_isPremadeFFA", Tag = -3)]
         public bool IsPremadeFFA { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_isCoopMode")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_isCoopMode", Tag = -2)]
         public bool IsCoopMode { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_isRealtimeMode")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_isRealtimeMode", Tag = -1)]
         public bool IsRealtimeMode { get; set; }
 
         long global::Biz.Bizadm.S2Protocol.NET.Common.Game.IGameDescription.RandomValue => RandomValue;
@@ -1851,49 +1949,49 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class SGameOptions : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IGameOptions
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_lockTeams")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_lockTeams", Tag = -15)]
         public bool LockTeams { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_teamsTogether")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_teamsTogether", Tag = -14)]
         public bool TeamsTogether { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_advancedSharedControl")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_advancedSharedControl", Tag = -13)]
         public bool AdvancedSharedControl { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_randomRaces")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_randomRaces", Tag = -12)]
         public bool RandomRaces { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_battleNet")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_battleNet", Tag = -11)]
         public bool BattleNet { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_amm")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_amm", Tag = -10)]
         public bool Amm { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_competitive")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_competitive", Tag = -9)]
         public bool Competitive { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_practice")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_practice", Tag = -8)]
         public bool Practice { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_cooperative")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_cooperative", Tag = -7)]
         public bool Cooperative { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_noVictoryOrDefeat")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_noVictoryOrDefeat", Tag = -6)]
         public bool NoVictoryOrDefeat { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_heroDuplicatesAllowed")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_heroDuplicatesAllowed", Tag = -5)]
         public bool HeroDuplicatesAllowed { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_fog")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_fog", Tag = -4)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.EOptionFog Fog { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_observers")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_observers", Tag = -3)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.EOptionObservers Observers { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_userDifficulty")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_userDifficulty", Tag = -2)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.EOptionUserDifficulty UserDifficulty { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_clientDebugFlags")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_clientDebugFlags", Tag = -1)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.EClientDebugFlags ClientDebugFlags { get; set; }
 
         bool global::Biz.Bizadm.S2Protocol.NET.Common.Game.IGameOptions.LockTeams => LockTeams;
@@ -1951,25 +2049,25 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class SGameUserJoinEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IGameUserJoinEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_observe")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_observe", Tag = -12)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.EObserve Observe { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_name")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_name", Tag = -11)]
         public byte[] Name { get; set; } = [];
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_toonHandle")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_toonHandle", Tag = -10)]
         public byte[]? ToonHandle { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_clanTag")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_clanTag", Tag = -9)]
         public byte[]? ClanTag { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_clanLogo")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_clanLogo", Tag = -8)]
         public byte[]? ClanLogo { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_hijack")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_hijack", Tag = -7)]
         public bool Hijack { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_hijackCloneGameUserId")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_hijackCloneGameUserId", Tag = -6)]
         public int? HijackCloneGameUserId { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IGameUserJoinEvent.Observe => (int)Observe;
@@ -2005,7 +2103,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class SGameUserLeaveEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IGameUserLeaveEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_leaveReason")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_leaveReason", Tag = -6)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.ELeaveReason LeaveReason { get; set; }
 
         internal static SGameUserLeaveEvent ReadBitPacked(BitPackedDecoder d)
@@ -2024,7 +2122,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class SHeroTalentTreeSelectedEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IHeroTalentTreeSelectedEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_index")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_index", Tag = -6)]
         public long Index { get; set; }
 
         long global::Biz.Bizadm.S2Protocol.NET.Common.Game.IHeroTalentTreeSelectedEvent.Index => Index;
@@ -2045,7 +2143,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class SHeroTalentTreeSelectionPanelToggledEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IHeroTalentTreeSelectionPanelToggledEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_shown")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_shown", Tag = -6)]
         public bool Shown { get; set; }
 
         bool global::Biz.Bizadm.S2Protocol.NET.Common.Game.IHeroTalentTreeSelectionPanelToggledEvent.Shown => Shown;
@@ -2066,10 +2164,10 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class SHijackReplayGameEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IHijackReplayGameEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_userInfos")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_userInfos", Tag = -7)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.SHijackReplayGameUserInfo[] UserInfos { get; set; } = [];
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_method")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_method", Tag = -6)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.EHijackMethod Method { get; set; }
 
         global::System.Collections.Generic.IReadOnlyList<global::Biz.Bizadm.S2Protocol.NET.Common.Game.IHijackReplayGameUserInfo> global::Biz.Bizadm.S2Protocol.NET.Common.Game.IHijackReplayGameEvent.UserInfos => UserInfos;
@@ -2093,22 +2191,22 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class SHijackReplayGameUserInfo : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IHijackReplayGameUserInfo
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_gameUserId")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_gameUserId", Tag = -6)]
         public int GameUserId { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_observe")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_observe", Tag = -5)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.EObserve Observe { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_name")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_name", Tag = -4)]
         public byte[] Name { get; set; } = [];
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_toonHandle")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_toonHandle", Tag = -3)]
         public byte[]? ToonHandle { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_clanTag")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_clanTag", Tag = -2)]
         public byte[]? ClanTag { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_clanLogo")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_clanLogo", Tag = -1)]
         public byte[]? ClanLogo { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IHijackReplayGameUserInfo.GameUserId => GameUserId;
@@ -2157,7 +2255,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class SLoadingProgressMessage : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ILoadingProgressMessage
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_progress")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_progress", Tag = -2)]
         public int Progress { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ILoadingProgressMessage.Progress => Progress;
@@ -2178,82 +2276,82 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class SLobbySlot : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ILobbySlot
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_control")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_control", Tag = -26)]
         public int Control { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_userId")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_userId", Tag = -25)]
         public int? UserId { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_teamId")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_teamId", Tag = -24)]
         public int TeamId { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_colorPref")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_colorPref", Tag = -23)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.TColorPreference ColorPref { get; set; } = new();
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_racePref")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_racePref", Tag = -22)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.TRacePreference RacePref { get; set; } = new();
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_difficulty")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_difficulty", Tag = -21)]
         public int Difficulty { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_aiBuild")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_aiBuild", Tag = -20)]
         public int AiBuild { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_handicap")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_handicap", Tag = -19)]
         public int Handicap { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_observe")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_observe", Tag = -18)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.EObserve Observe { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_logoIndex")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_logoIndex", Tag = -17)]
         public long LogoIndex { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_hero")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_hero", Tag = -16)]
         public byte[] Hero { get; set; } = [];
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_skin")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_skin", Tag = -15)]
         public byte[] Skin { get; set; } = [];
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_mount")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_mount", Tag = -14)]
         public byte[] Mount { get; set; } = [];
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_artifacts")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_artifacts", Tag = -13)]
         public byte[][] Artifacts { get; set; } = [];
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_workingSetSlotId")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_workingSetSlotId", Tag = -12)]
         public int? WorkingSetSlotId { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_rewards")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_rewards", Tag = -11)]
         public long[] Rewards { get; set; } = [];
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_toonHandle")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_toonHandle", Tag = -10)]
         public byte[] ToonHandle { get; set; } = [];
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_licenses")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_licenses", Tag = -9)]
         public long[] Licenses { get; set; } = [];
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_tandemLeaderId")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_tandemLeaderId", Tag = -8)]
         public int? TandemLeaderId { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_commander")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_commander", Tag = -7)]
         public byte[] Commander { get; set; } = [];
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_commanderLevel")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_commanderLevel", Tag = -6)]
         public long CommanderLevel { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_hasSilencePenalty")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_hasSilencePenalty", Tag = -5)]
         public bool HasSilencePenalty { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_tandemId")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_tandemId", Tag = -4)]
         public int? TandemId { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_commanderMasteryLevel")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_commanderMasteryLevel", Tag = -3)]
         public long CommanderMasteryLevel { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_commanderMasteryTalents")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_commanderMasteryTalents", Tag = -2)]
         public long[] CommanderMasteryTalents { get; set; } = [];
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_rewardOverrides")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_rewardOverrides", Tag = -1)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.CRewardOverride[] RewardOverrides { get; set; } = [];
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ILobbySlot.Control => Control;
@@ -2330,37 +2428,37 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class SLobbyState : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ILobbyState
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_phase")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_phase", Tag = -11)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.EPhase Phase { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_maxUsers")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_maxUsers", Tag = -10)]
         public int MaxUsers { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_maxObservers")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_maxObservers", Tag = -9)]
         public int MaxObservers { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_slots")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_slots", Tag = -8)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.SLobbySlot[] Slots { get; set; } = [];
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_randomSeed")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_randomSeed", Tag = -7)]
         public long RandomSeed { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_hostUserId")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_hostUserId", Tag = -6)]
         public int? HostUserId { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_isSinglePlayer")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_isSinglePlayer", Tag = -5)]
         public bool IsSinglePlayer { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_pickedMapTag")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_pickedMapTag", Tag = -4)]
         public int PickedMapTag { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_gameDuration")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_gameDuration", Tag = -3)]
         public long GameDuration { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_defaultDifficulty")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_defaultDifficulty", Tag = -2)]
         public int DefaultDifficulty { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_defaultAIBuild")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_defaultAIBuild", Tag = -1)]
         public int DefaultAIBuild { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ILobbyState.Phase => (int)Phase;
@@ -2409,13 +2507,13 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class SLobbySyncState : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ILobbySyncState
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_userInitialData")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_userInitialData", Tag = -3)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.SUserInitialData[] UserInitialData { get; set; } = [];
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_gameDescription")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_gameDescription", Tag = -2)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.SGameDescription GameDescription { get; set; } = new();
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_lobbyState")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_lobbyState", Tag = -1)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.SLobbyState LobbyState { get; set; } = new();
 
         global::System.Collections.Generic.IReadOnlyList<global::Biz.Bizadm.S2Protocol.NET.Common.IUserInitialData> global::Biz.Bizadm.S2Protocol.NET.Common.Game.ILobbySyncState.UserInitialData => UserInitialData;
@@ -2442,13 +2540,13 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class SMapCoord3D : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IMapCoord3D
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("x")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("x", Tag = -3)]
         public int X { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("y")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("y", Tag = -2)]
         public int Y { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("z")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("z", Tag = -1)]
         public int Z { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IMapCoord3D.X => X;
@@ -2475,10 +2573,10 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class SPingMessage : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IPingMessage
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_recipient")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_recipient", Tag = -3)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.EMessageRecipient Recipient { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_point")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_point", Tag = -2)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.SPoint Point { get; set; } = new();
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IPingMessage.Recipient => (int)Recipient;
@@ -2502,38 +2600,40 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class SPlayerDetails : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IPlayerDetails
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_name")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_name", Tag = 0)]
         public byte[] Name { get; set; } = [];
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_toon")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_toon", Tag = 1)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.SToonNameDetails Toon { get; set; } = new();
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_race")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_race", Tag = 2)]
         public byte[] Race { get; set; } = [];
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_color")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_color", Tag = 3)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.SColor Color { get; set; } = new();
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_control")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_control", Tag = 4)]
         public int Control { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_teamId")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_teamId", Tag = 5)]
         public int TeamId { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_handicap")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_handicap", Tag = 6)]
         public int Handicap { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_observe")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_observe", Tag = 7)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.EObserve Observe { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_result")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_result", Tag = 8)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.EResultDetails Result { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_workingSetSlotId")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_workingSetSlotId", Tag = 9)]
         public int? WorkingSetSlotId { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_hero")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_hero", Tag = 10)]
         public byte[] Hero { get; set; } = [];
+
+        internal global::System.Collections.Generic.HashSet<long>? PresentTags { get; set; }
 
         byte[] global::Biz.Bizadm.S2Protocol.NET.Common.Game.IPlayerDetails.Name => Name;
         global::Biz.Bizadm.S2Protocol.NET.Common.Game.IToonNameDetails global::Biz.Bizadm.S2Protocol.NET.Common.Game.IPlayerDetails.Toon => Toon;
@@ -2546,22 +2646,22 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
         internal static SPlayerDetails ReadVersioned(VersionedDecoder d)
         {
-            var r = new SPlayerDetails();
+            var r = new SPlayerDetails { PresentTags = [] };
             for (long n = d.ReadStructFieldCount(); n > 0; n--)
             {
                 switch (d.ReadVInt())
                 {
-                    case 0: r.Name = d.ReadBlob(); break;
-                    case 1: r.Toon = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.SToonNameDetails.ReadVersioned(d); break;
-                    case 2: r.Race = d.ReadBlob(); break;
-                    case 3: r.Color = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.SColor.ReadVersioned(d); break;
-                    case 4: r.Control = checked((int)d.ReadInt()); break;
-                    case 5: r.TeamId = checked((int)d.ReadInt()); break;
-                    case 6: r.Handicap = checked((int)d.ReadInt()); break;
-                    case 7: r.Observe = checked((global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.EObserve)d.ReadInt()); break;
-                    case 8: r.Result = checked((global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.EResultDetails)d.ReadInt()); break;
-                    case 9: r.WorkingSetSlotId = d.ReadOptionalValue(() => checked((int)d.ReadInt())); break;
-                    case 10: r.Hero = d.ReadBlob(); break;
+                    case 0: r.Name = d.ReadBlob(); r.PresentTags.Add(0); break;
+                    case 1: r.Toon = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.SToonNameDetails.ReadVersioned(d); r.PresentTags.Add(1); break;
+                    case 2: r.Race = d.ReadBlob(); r.PresentTags.Add(2); break;
+                    case 3: r.Color = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.SColor.ReadVersioned(d); r.PresentTags.Add(3); break;
+                    case 4: r.Control = checked((int)d.ReadInt()); r.PresentTags.Add(4); break;
+                    case 5: r.TeamId = checked((int)d.ReadInt()); r.PresentTags.Add(5); break;
+                    case 6: r.Handicap = checked((int)d.ReadInt()); r.PresentTags.Add(6); break;
+                    case 7: r.Observe = checked((global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.EObserve)d.ReadInt()); r.PresentTags.Add(7); break;
+                    case 8: r.Result = checked((global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.EResultDetails)d.ReadInt()); r.PresentTags.Add(8); break;
+                    case 9: r.WorkingSetSlotId = d.ReadOptionalValue(() => checked((int)d.ReadInt())); r.PresentTags.Add(9); break;
+                    case 10: r.Hero = d.ReadBlob(); r.PresentTags.Add(10); break;
                     default: d.SkipInstance(); break;
                 }
             }
@@ -2570,39 +2670,72 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
         internal static void WriteVersioned(VersionedEncoder e, SPlayerDetails v)
         {
-            e.WriteStructFieldCount(11);
-            e.WriteVInt(0);
-            e.WriteBlob(v.Name);
-            e.WriteVInt(1);
-            global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.SToonNameDetails.WriteVersioned(e, v.Toon);
-            e.WriteVInt(2);
-            e.WriteBlob(v.Race);
-            e.WriteVInt(3);
-            global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.SColor.WriteVersioned(e, v.Color);
-            e.WriteVInt(4);
-            e.WriteInt((long)v.Control);
-            e.WriteVInt(5);
-            e.WriteInt((long)v.TeamId);
-            e.WriteVInt(6);
-            e.WriteInt((long)v.Handicap);
-            e.WriteVInt(7);
-            e.WriteInt((long)v.Observe);
-            e.WriteVInt(8);
-            e.WriteInt((long)v.Result);
-            e.WriteVInt(9);
-            e.WriteOptionalValue(v.WorkingSetSlotId, x0 => e.WriteInt((long)x0));
-            e.WriteVInt(10);
-            e.WriteBlob(v.Hero);
+            e.WriteStructFieldCount(v.PresentTags?.Count ?? 11);
+            if (v.PresentTags is null || v.PresentTags.Contains(0))
+            {
+                e.WriteVInt(0);
+                e.WriteBlob(v.Name);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(1))
+            {
+                e.WriteVInt(1);
+                global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.SToonNameDetails.WriteVersioned(e, v.Toon);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(2))
+            {
+                e.WriteVInt(2);
+                e.WriteBlob(v.Race);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(3))
+            {
+                e.WriteVInt(3);
+                global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.SColor.WriteVersioned(e, v.Color);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(4))
+            {
+                e.WriteVInt(4);
+                e.WriteInt((long)v.Control);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(5))
+            {
+                e.WriteVInt(5);
+                e.WriteInt((long)v.TeamId);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(6))
+            {
+                e.WriteVInt(6);
+                e.WriteInt((long)v.Handicap);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(7))
+            {
+                e.WriteVInt(7);
+                e.WriteInt((long)v.Observe);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(8))
+            {
+                e.WriteVInt(8);
+                e.WriteInt((long)v.Result);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(9))
+            {
+                e.WriteVInt(9);
+                e.WriteOptionalValue(v.WorkingSetSlotId, x0 => e.WriteInt((long)x0));
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(10))
+            {
+                e.WriteVInt(10);
+                e.WriteBlob(v.Hero);
+            }
         }
 
     }
 
     public sealed partial class SPoint : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IPoint
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("x")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("x", Tag = -2)]
         public int X { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("y")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("y", Tag = -1)]
         public int Y { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IPoint.X => X;
@@ -2626,13 +2759,13 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class SPoint3 : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IPoint3
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("x")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("x", Tag = -3)]
         public int X { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("y")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("y", Tag = -2)]
         public int Y { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("z")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("z", Tag = -1)]
         public int Z { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IPoint3.X => X;
@@ -2659,10 +2792,10 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class SPointMini : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IPointMini
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("x")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("x", Tag = -2)]
         public int X { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("y")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("y", Tag = -1)]
         public int Y { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IPointMini.X => X;
@@ -2686,7 +2819,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class SReconnectNotifyMessage : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IReconnectNotifyMessage
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_status")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_status", Tag = -2)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.EReconnectStatus Status { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IReconnectNotifyMessage.Status => (int)Status;
@@ -2707,7 +2840,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class SResourceRequestCancelEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IResourceRequestCancelEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_cancelRequestId")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_cancelRequestId", Tag = -6)]
         public int CancelRequestId { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IResourceRequestCancelEvent.CancelRequestId => CancelRequestId;
@@ -2728,7 +2861,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class SResourceRequestEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IResourceRequestEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_resources")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_resources", Tag = -6)]
         public int[] Resources { get; set; } = [];
 
         global::System.Collections.Generic.IReadOnlyList<int> global::Biz.Bizadm.S2Protocol.NET.Common.Game.IResourceRequestEvent.Resources => Resources;
@@ -2749,7 +2882,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class SResourceRequestFulfillEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IResourceRequestFulfillEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_fulfillRequestId")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_fulfillRequestId", Tag = -6)]
         public int FulfillRequestId { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IResourceRequestFulfillEvent.FulfillRequestId => FulfillRequestId;
@@ -2770,10 +2903,10 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class SResourceTradeEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IResourceTradeEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_recipientId")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_recipientId", Tag = -7)]
         public int RecipientId { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_resources")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_resources", Tag = -6)]
         public int[] Resources { get; set; } = [];
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IResourceTradeEvent.RecipientId => RecipientId;
@@ -2811,19 +2944,19 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class SSaveGameEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISaveGameEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_fileName")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_fileName", Tag = -10)]
         public byte[] FileName { get; set; } = [];
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_automatic")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_automatic", Tag = -9)]
         public bool Automatic { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_overwrite")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_overwrite", Tag = -8)]
         public bool Overwrite { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_name")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_name", Tag = -7)]
         public byte[] Name { get; set; } = [];
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_description")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_description", Tag = -6)]
         public byte[] Description { get; set; } = [];
 
         byte[] global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISaveGameEvent.FileName => FileName;
@@ -2856,16 +2989,16 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class SSelectionDelta : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISelectionDelta
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_subgroupIndex")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_subgroupIndex", Tag = -4)]
         public int SubgroupIndex { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_removeMask")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_removeMask", Tag = -3)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.SSelectionMask RemoveMask { get; set; } = null!;
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_addSubgroups")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_addSubgroups", Tag = -2)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.SSelectionDeltaSubgroup[] AddSubgroups { get; set; } = [];
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_addUnitTags")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_addUnitTags", Tag = -1)]
         public long[] AddUnitTags { get; set; } = [];
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISelectionDelta.SubgroupIndex => SubgroupIndex;
@@ -2894,10 +3027,10 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class SSelectionDeltaEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISelectionDeltaEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_controlGroupId")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_controlGroupId", Tag = -7)]
         public int ControlGroupId { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_delta")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_delta", Tag = -6)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.SSelectionDelta Delta { get; set; } = new();
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISelectionDeltaEvent.ControlGroupId => ControlGroupId;
@@ -2921,16 +3054,16 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class SSelectionDeltaSubgroup : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISelectionDeltaSubgroup
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitLink")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitLink", Tag = -4)]
         public int UnitLink { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_subgroupPriority")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_subgroupPriority", Tag = -3)]
         public int SubgroupPriority { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_intraSubgroupPriority")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_intraSubgroupPriority", Tag = -2)]
         public int IntraSubgroupPriority { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_count")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_count", Tag = -1)]
         public int Count { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISelectionDeltaSubgroup.UnitLink => UnitLink;
@@ -3015,10 +3148,10 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class SSelectionSyncCheckEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISelectionSyncCheckEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_controlGroupId")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_controlGroupId", Tag = -7)]
         public int ControlGroupId { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_selectionSyncData")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_selectionSyncData", Tag = -6)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.SSelectionSyncData SelectionSyncData { get; set; } = new();
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISelectionSyncCheckEvent.ControlGroupId => ControlGroupId;
@@ -3042,22 +3175,22 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class SSelectionSyncData : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISelectionSyncData
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_count")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_count", Tag = -6)]
         public int Count { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_subgroupCount")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_subgroupCount", Tag = -5)]
         public int SubgroupCount { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_activeSubgroupIndex")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_activeSubgroupIndex", Tag = -4)]
         public int ActiveSubgroupIndex { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitTagsChecksum")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitTagsChecksum", Tag = -3)]
         public long UnitTagsChecksum { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_subgroupIndicesChecksum")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_subgroupIndicesChecksum", Tag = -2)]
         public long SubgroupIndicesChecksum { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_subgroupsChecksum")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_subgroupsChecksum", Tag = -1)]
         public long SubgroupsChecksum { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISelectionSyncData.Count => Count;
@@ -3107,7 +3240,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class SSetAbsoluteGameSpeedEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISetAbsoluteGameSpeedEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_speed")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_speed", Tag = -6)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.EGameSpeed Speed { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISetAbsoluteGameSpeedEvent.Speed => (int)Speed;
@@ -3128,22 +3261,22 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class SSlotDescription : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISlotDescription
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_allowedColors")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_allowedColors", Tag = -6)]
         public global::Biz.Bizadm.S2Protocol.NET.S2BitArray AllowedColors { get; set; } = new(0, []);
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_allowedRaces")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_allowedRaces", Tag = -5)]
         public global::Biz.Bizadm.S2Protocol.NET.S2BitArray AllowedRaces { get; set; } = new(0, []);
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_allowedDifficulty")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_allowedDifficulty", Tag = -4)]
         public global::Biz.Bizadm.S2Protocol.NET.S2BitArray AllowedDifficulty { get; set; } = new(0, []);
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_allowedControls")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_allowedControls", Tag = -3)]
         public global::Biz.Bizadm.S2Protocol.NET.S2BitArray AllowedControls { get; set; } = new(0, []);
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_allowedObserveTypes")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_allowedObserveTypes", Tag = -2)]
         public global::Biz.Bizadm.S2Protocol.NET.S2BitArray AllowedObserveTypes { get; set; } = new(0, []);
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_allowedAIBuilds")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_allowedAIBuilds", Tag = -1)]
         public global::Biz.Bizadm.S2Protocol.NET.S2BitArray AllowedAIBuilds { get; set; } = new(0, []);
 
         global::Biz.Bizadm.S2Protocol.NET.S2BitArray global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISlotDescription.AllowedColors => AllowedColors;
@@ -3178,10 +3311,10 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class SSyncSoundLength : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISyncSoundLength
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_soundHash")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_soundHash", Tag = -2)]
         public long[] SoundHash { get; set; } = [];
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_length")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_length", Tag = -1)]
         public long[] Length { get; set; } = [];
 
         global::System.Collections.Generic.IReadOnlyList<long> global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISyncSoundLength.SoundHash => SoundHash;
@@ -3205,19 +3338,21 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class SThumbnail : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IThumbnail
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_file")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_file", Tag = 0)]
         public byte[] File { get; set; } = [];
+
+        internal global::System.Collections.Generic.HashSet<long>? PresentTags { get; set; }
 
         byte[] global::Biz.Bizadm.S2Protocol.NET.Common.Game.IThumbnail.File => File;
 
         internal static SThumbnail ReadVersioned(VersionedDecoder d)
         {
-            var r = new SThumbnail();
+            var r = new SThumbnail { PresentTags = [] };
             for (long n = d.ReadStructFieldCount(); n > 0; n--)
             {
                 switch (d.ReadVInt())
                 {
-                    case 0: r.File = d.ReadBlob(); break;
+                    case 0: r.File = d.ReadBlob(); r.PresentTags.Add(0); break;
                     default: d.SkipInstance(); break;
                 }
             }
@@ -3226,29 +3361,34 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
         internal static void WriteVersioned(VersionedEncoder e, SThumbnail v)
         {
-            e.WriteStructFieldCount(1);
-            e.WriteVInt(0);
-            e.WriteBlob(v.File);
+            e.WriteStructFieldCount(v.PresentTags?.Count ?? 1);
+            if (v.PresentTags is null || v.PresentTags.Contains(0))
+            {
+                e.WriteVInt(0);
+                e.WriteBlob(v.File);
+            }
         }
 
     }
 
     public sealed partial class SToonNameDetails : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IToonNameDetails
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_region")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_region", Tag = 0)]
         public int Region { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_programId")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_programId", Tag = 1)]
         public global::Biz.Bizadm.S2Protocol.NET.FourCC ProgramId { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_realm")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_realm", Tag = 2)]
         public long Realm { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_name")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_name", Tag = 3)]
         public byte[] Name { get; set; } = [];
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_id")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_id", Tag = 4)]
         public ulong Id { get; set; }
+
+        internal global::System.Collections.Generic.HashSet<long>? PresentTags { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IToonNameDetails.Region => Region;
         global::Biz.Bizadm.S2Protocol.NET.FourCC global::Biz.Bizadm.S2Protocol.NET.Common.Game.IToonNameDetails.ProgramId => ProgramId;
@@ -3257,16 +3397,16 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
         internal static SToonNameDetails ReadVersioned(VersionedDecoder d)
         {
-            var r = new SToonNameDetails();
+            var r = new SToonNameDetails { PresentTags = [] };
             for (long n = d.ReadStructFieldCount(); n > 0; n--)
             {
                 switch (d.ReadVInt())
                 {
-                    case 0: r.Region = checked((int)d.ReadInt()); break;
-                    case 1: r.ProgramId = d.ReadFourCC(); break;
-                    case 2: r.Realm = d.ReadInt(); break;
-                    case 3: r.Name = d.ReadBlob(); break;
-                    case 4: r.Id = d.ReadUInt64(); break;
+                    case 0: r.Region = checked((int)d.ReadInt()); r.PresentTags.Add(0); break;
+                    case 1: r.ProgramId = d.ReadFourCC(); r.PresentTags.Add(1); break;
+                    case 2: r.Realm = d.ReadInt(); r.PresentTags.Add(2); break;
+                    case 3: r.Name = d.ReadBlob(); r.PresentTags.Add(3); break;
+                    case 4: r.Id = d.ReadUInt64(); r.PresentTags.Add(4); break;
                     default: d.SkipInstance(); break;
                 }
             }
@@ -3275,17 +3415,32 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
         internal static void WriteVersioned(VersionedEncoder e, SToonNameDetails v)
         {
-            e.WriteStructFieldCount(5);
-            e.WriteVInt(0);
-            e.WriteInt((long)v.Region);
-            e.WriteVInt(1);
-            e.WriteFourCC(v.ProgramId);
-            e.WriteVInt(2);
-            e.WriteInt((long)v.Realm);
-            e.WriteVInt(3);
-            e.WriteBlob(v.Name);
-            e.WriteVInt(4);
-            e.WriteUInt64((ulong)v.Id);
+            e.WriteStructFieldCount(v.PresentTags?.Count ?? 5);
+            if (v.PresentTags is null || v.PresentTags.Contains(0))
+            {
+                e.WriteVInt(0);
+                e.WriteInt((long)v.Region);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(1))
+            {
+                e.WriteVInt(1);
+                e.WriteFourCC(v.ProgramId);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(2))
+            {
+                e.WriteVInt(2);
+                e.WriteInt((long)v.Realm);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(3))
+            {
+                e.WriteVInt(3);
+                e.WriteBlob(v.Name);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(4))
+            {
+                e.WriteVInt(4);
+                e.WriteUInt64((ulong)v.Id);
+            }
         }
 
     }
@@ -3306,13 +3461,13 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class STriggerAnimLengthQueryByNameEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerAnimLengthQueryByNameEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_queryId")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_queryId", Tag = -8)]
         public int QueryId { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_lengthMs")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_lengthMs", Tag = -7)]
         public long LengthMs { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_finishGameLoop")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_finishGameLoop", Tag = -6)]
         public long FinishGameLoop { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerAnimLengthQueryByNameEvent.QueryId => QueryId;
@@ -3339,10 +3494,10 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class STriggerAnimLengthQueryByPropsEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerAnimLengthQueryByPropsEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_queryId")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_queryId", Tag = -7)]
         public int QueryId { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_lengthMs")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_lengthMs", Tag = -6)]
         public long LengthMs { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerAnimLengthQueryByPropsEvent.QueryId => QueryId;
@@ -3366,7 +3521,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class STriggerAnimOffsetEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerAnimOffsetEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_animWaitQueryId")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_animWaitQueryId", Tag = -6)]
         public int AnimWaitQueryId { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerAnimOffsetEvent.AnimWaitQueryId => AnimWaitQueryId;
@@ -3401,10 +3556,10 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class STriggerBattleReportPanelPlayMissionEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerBattleReportPanelPlayMissionEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_battleReportId")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_battleReportId", Tag = -7)]
         public int BattleReportId { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_difficultyLevel")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_difficultyLevel", Tag = -6)]
         public int DifficultyLevel { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerBattleReportPanelPlayMissionEvent.BattleReportId => BattleReportId;
@@ -3428,7 +3583,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class STriggerBattleReportPanelPlaySceneEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerBattleReportPanelPlaySceneEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_battleReportId")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_battleReportId", Tag = -6)]
         public int BattleReportId { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerBattleReportPanelPlaySceneEvent.BattleReportId => BattleReportId;
@@ -3449,7 +3604,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class STriggerBattleReportPanelSelectionChangedEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerBattleReportPanelSelectionChangedEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_battleReportId")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_battleReportId", Tag = -6)]
         public int BattleReportId { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerBattleReportPanelSelectionChangedEvent.BattleReportId => BattleReportId;
@@ -3470,7 +3625,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class STriggerButtonPressedEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerButtonPressedEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_button")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_button", Tag = -6)]
         public int Button { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerButtonPressedEvent.Button => Button;
@@ -3491,7 +3646,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class STriggerChatMessageEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerChatMessageEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_chatMessage")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_chatMessage", Tag = -6)]
         public byte[] ChatMessage { get; set; } = [];
 
         byte[] global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerChatMessageEvent.ChatMessage => ChatMessage;
@@ -3512,10 +3667,10 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class STriggerCommandErrorEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerCommandErrorEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_error")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_error", Tag = -7)]
         public int Error { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_abil")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_abil", Tag = -6)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.SCmdAbil? Abil { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerCommandErrorEvent.Error => Error;
@@ -3539,7 +3694,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class STriggerConversationSkippedEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerConversationSkippedEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_skipType")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_skipType", Tag = -6)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.EConversationSkip SkipType { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerConversationSkippedEvent.SkipType => (int)SkipType;
@@ -3560,7 +3715,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class STriggerCustomDialogDismissedEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerCustomDialogDismissedEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_result")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_result", Tag = -6)]
         public int Result { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerCustomDialogDismissedEvent.Result => Result;
@@ -3581,10 +3736,10 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class STriggerCutsceneBookmarkFiredEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerCutsceneBookmarkFiredEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_cutsceneId")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_cutsceneId", Tag = -7)]
         public int CutsceneId { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_bookmarkName")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_bookmarkName", Tag = -6)]
         public byte[] BookmarkName { get; set; } = [];
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerCutsceneBookmarkFiredEvent.CutsceneId => CutsceneId;
@@ -3608,13 +3763,13 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class STriggerCutsceneConversationLineEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerCutsceneConversationLineEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_cutsceneId")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_cutsceneId", Tag = -8)]
         public int CutsceneId { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_conversationLine")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_conversationLine", Tag = -7)]
         public byte[] ConversationLine { get; set; } = [];
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_altConversationLine")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_altConversationLine", Tag = -6)]
         public byte[] AltConversationLine { get; set; } = [];
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerCutsceneConversationLineEvent.CutsceneId => CutsceneId;
@@ -3641,10 +3796,10 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class STriggerCutsceneConversationLineMissingEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerCutsceneConversationLineMissingEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_cutsceneId")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_cutsceneId", Tag = -7)]
         public int CutsceneId { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_conversationLine")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_conversationLine", Tag = -6)]
         public byte[] ConversationLine { get; set; } = [];
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerCutsceneConversationLineMissingEvent.CutsceneId => CutsceneId;
@@ -3668,7 +3823,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class STriggerCutsceneEndSceneFiredEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerCutsceneEndSceneFiredEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_cutsceneId")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_cutsceneId", Tag = -6)]
         public int CutsceneId { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerCutsceneEndSceneFiredEvent.CutsceneId => CutsceneId;
@@ -3689,13 +3844,13 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class STriggerDialogControlEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerDialogControlEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_controlId")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_controlId", Tag = -8)]
         public int ControlId { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_eventType")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_eventType", Tag = -7)]
         public int EventType { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_eventData")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_eventData", Tag = -6)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.STriggerDialogControlEvent.EventDataChoice EventData { get; set; } = null!;
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerDialogControlEvent.ControlId => ControlId;
@@ -3807,7 +3962,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class STriggerGameMenuItemSelectedEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerGameMenuItemSelectedEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_gameMenuItemIndex")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_gameMenuItemIndex", Tag = -6)]
         public int GameMenuItemIndex { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerGameMenuItemSelectedEvent.GameMenuItemIndex => GameMenuItemIndex;
@@ -3828,10 +3983,10 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class STriggerHotkeyPressedEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerHotkeyPressedEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_hotkey")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_hotkey", Tag = -7)]
         public long Hotkey { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_down")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_down", Tag = -6)]
         public bool Down { get; set; }
 
         long global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerHotkeyPressedEvent.Hotkey => Hotkey;
@@ -3855,10 +4010,10 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class STriggerKeyPressedEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerKeyPressedEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_key")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_key", Tag = -7)]
         public int Key { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_flags")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_flags", Tag = -6)]
         public int Flags { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerKeyPressedEvent.Key => Key;
@@ -3910,7 +4065,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class STriggerMercenaryPanelSelectionChangedEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerMercenaryPanelSelectionChangedEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_mercenaryId")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_mercenaryId", Tag = -6)]
         public int MercenaryId { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerMercenaryPanelSelectionChangedEvent.MercenaryId => MercenaryId;
@@ -3931,19 +4086,19 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class STriggerMouseClickedEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerMouseClickedEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_button")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_button", Tag = -10)]
         public long Button { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_down")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_down", Tag = -9)]
         public bool Down { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_posUI")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_posUI", Tag = -8)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.SUICoord PosUI { get; set; } = new();
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_posWorld")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_posWorld", Tag = -7)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.SMapCoord3D PosWorld { get; set; } = new();
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_flags")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_flags", Tag = -6)]
         public int Flags { get; set; }
 
         long global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerMouseClickedEvent.Button => Button;
@@ -3973,13 +4128,13 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class STriggerMouseMovedEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerMouseMovedEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_posUI")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_posUI", Tag = -8)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.SUICoord PosUI { get; set; } = new();
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_posWorld")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_posWorld", Tag = -7)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.SMapCoord3D PosWorld { get; set; } = new();
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_flags")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_flags", Tag = -6)]
         public int Flags { get; set; }
 
         global::Biz.Bizadm.S2Protocol.NET.Common.Game.IUICoord global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerMouseMovedEvent.PosUI => PosUI;
@@ -4005,10 +4160,10 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class STriggerMouseWheelEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerMouseWheelEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_wheelSpin")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_wheelSpin", Tag = -7)]
         public int WheelSpin { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_flags")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_flags", Tag = -6)]
         public int Flags { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerMouseWheelEvent.WheelSpin => WheelSpin;
@@ -4046,7 +4201,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class STriggerMovieFunctionEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerMovieFunctionEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_functionName")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_functionName", Tag = -6)]
         public byte[] FunctionName { get; set; } = [];
 
         byte[] global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerMovieFunctionEvent.FunctionName => FunctionName;
@@ -4081,31 +4236,31 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class STriggerPingEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerPingEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_point")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_point", Tag = -14)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.SPoint Point { get; set; } = new();
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unit")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unit", Tag = -13)]
         public long Unit { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitLink")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitLink", Tag = -12)]
         public int UnitLink { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitControlPlayerId")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitControlPlayerId", Tag = -11)]
         public int? UnitControlPlayerId { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitUpkeepPlayerId")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitUpkeepPlayerId", Tag = -10)]
         public int? UnitUpkeepPlayerId { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitPosition")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitPosition", Tag = -9)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.SMapCoord3D UnitPosition { get; set; } = new();
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitIsUnderConstruction")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitIsUnderConstruction", Tag = -8)]
         public bool UnitIsUnderConstruction { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_pingedMinimap")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_pingedMinimap", Tag = -7)]
         public bool PingedMinimap { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_option")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_option", Tag = -6)]
         public int Option { get; set; }
 
         global::Biz.Bizadm.S2Protocol.NET.Common.Game.IPoint global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerPingEvent.Point => Point;
@@ -4144,7 +4299,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class STriggerPlanetMissionLaunchedEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerPlanetMissionLaunchedEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_difficultyLevel")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_difficultyLevel", Tag = -6)]
         public int DifficultyLevel { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerPlanetMissionLaunchedEvent.DifficultyLevel => DifficultyLevel;
@@ -4165,7 +4320,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class STriggerPlanetMissionSelectedEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerPlanetMissionSelectedEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_planetId")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_planetId", Tag = -6)]
         public int PlanetId { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerPlanetMissionSelectedEvent.PlanetId => PlanetId;
@@ -4242,7 +4397,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class STriggerPortraitLoadedEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerPortraitLoadedEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_portraitId")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_portraitId", Tag = -6)]
         public int PortraitId { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerPortraitLoadedEvent.PortraitId => PortraitId;
@@ -4291,7 +4446,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class STriggerPurchaseMadeEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerPurchaseMadeEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_purchaseItemId")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_purchaseItemId", Tag = -6)]
         public int PurchaseItemId { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerPurchaseMadeEvent.PurchaseItemId => PurchaseItemId;
@@ -4312,7 +4467,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class STriggerPurchasePanelSelectedPurchaseCategoryChangedEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerPurchasePanelSelectedPurchaseCategoryChangedEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_purchaseCategoryId")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_purchaseCategoryId", Tag = -6)]
         public int PurchaseCategoryId { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerPurchasePanelSelectedPurchaseCategoryChangedEvent.PurchaseCategoryId => PurchaseCategoryId;
@@ -4333,7 +4488,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class STriggerPurchasePanelSelectedPurchaseItemChangedEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerPurchasePanelSelectedPurchaseItemChangedEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_purchaseItemId")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_purchaseItemId", Tag = -6)]
         public int PurchaseItemId { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerPurchasePanelSelectedPurchaseItemChangedEvent.PurchaseItemId => PurchaseItemId;
@@ -4354,10 +4509,10 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class STriggerReplySelectedEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerReplySelectedEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_conversationId")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_conversationId", Tag = -7)]
         public int ConversationId { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_replyId")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_replyId", Tag = -6)]
         public int ReplyId { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerReplySelectedEvent.ConversationId => ConversationId;
@@ -4409,7 +4564,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class STriggerResearchPanelSelectionChangedEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerResearchPanelSelectionChangedEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_researchItemId")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_researchItemId", Tag = -6)]
         public int ResearchItemId { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerResearchPanelSelectionChangedEvent.ResearchItemId => ResearchItemId;
@@ -4444,10 +4599,10 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class STriggerSoundLengthQueryEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerSoundLengthQueryEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_soundHash")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_soundHash", Tag = -7)]
         public long SoundHash { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_length")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_length", Tag = -6)]
         public long Length { get; set; }
 
         long global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerSoundLengthQueryEvent.SoundHash => SoundHash;
@@ -4471,7 +4626,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class STriggerSoundLengthSyncEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerSoundLengthSyncEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_syncInfo")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_syncInfo", Tag = -6)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.SSyncSoundLength SyncInfo { get; set; } = new();
 
         global::Biz.Bizadm.S2Protocol.NET.Common.Game.ISyncSoundLength global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerSoundLengthSyncEvent.SyncInfo => SyncInfo;
@@ -4492,7 +4647,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class STriggerSoundOffsetEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerSoundOffsetEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_sound")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_sound", Tag = -6)]
         public long Sound { get; set; }
 
         long global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerSoundOffsetEvent.Sound => Sound;
@@ -4513,7 +4668,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class STriggerSoundtrackDoneEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerSoundtrackDoneEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_soundtrack")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_soundtrack", Tag = -6)]
         public long Soundtrack { get; set; }
 
         long global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerSoundtrackDoneEvent.Soundtrack => Soundtrack;
@@ -4534,13 +4689,13 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class STriggerTargetModeUpdateEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerTargetModeUpdateEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_abilLink")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_abilLink", Tag = -8)]
         public int AbilLink { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_abilCmdIndex")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_abilCmdIndex", Tag = -7)]
         public int AbilCmdIndex { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_state")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_state", Tag = -6)]
         public int State { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerTargetModeUpdateEvent.AbilLink => AbilLink;
@@ -4567,7 +4722,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class STriggerTransmissionCompleteEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerTransmissionCompleteEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_transmissionId")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_transmissionId", Tag = -6)]
         public int TransmissionId { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerTransmissionCompleteEvent.TransmissionId => TransmissionId;
@@ -4588,10 +4743,10 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class STriggerTransmissionOffsetEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerTransmissionOffsetEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_transmissionId")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_transmissionId", Tag = -7)]
         public int TransmissionId { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_thread")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_thread", Tag = -6)]
         public long Thread { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerTransmissionOffsetEvent.TransmissionId => TransmissionId;
@@ -4628,7 +4783,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class STriggerVictoryPanelPlayMissionAgainEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerVictoryPanelPlayMissionAgainEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_difficultyLevel")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_difficultyLevel", Tag = -6)]
         public int DifficultyLevel { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITriggerVictoryPanelPlayMissionAgainEvent.DifficultyLevel => DifficultyLevel;
@@ -4649,10 +4804,10 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class SUICoord : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IUICoord
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("x")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("x", Tag = -2)]
         public int X { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("y")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("y", Tag = -1)]
         public int Y { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IUICoord.X => X;
@@ -4676,7 +4831,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class SUnitClickEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IUnitClickEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitTag")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitTag", Tag = -6)]
         public long UnitTag { get; set; }
 
         long global::Biz.Bizadm.S2Protocol.NET.Common.Game.IUnitClickEvent.UnitTag => UnitTag;
@@ -4697,10 +4852,10 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class SUnitHighlightEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IUnitHighlightEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitTag")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitTag", Tag = -7)]
         public long UnitTag { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_flags")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_flags", Tag = -6)]
         public int Flags { get; set; }
 
         long global::Biz.Bizadm.S2Protocol.NET.Common.Game.IUnitHighlightEvent.UnitTag => UnitTag;
@@ -4738,46 +4893,46 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class SUserOptionsEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Game.IUserOptionsEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_gameFullyDownloaded")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_gameFullyDownloaded", Tag = -19)]
         public bool GameFullyDownloaded { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_developmentCheatsEnabled")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_developmentCheatsEnabled", Tag = -18)]
         public bool DevelopmentCheatsEnabled { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_testCheatsEnabled")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_testCheatsEnabled", Tag = -17)]
         public bool TestCheatsEnabled { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_multiplayerCheatsEnabled")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_multiplayerCheatsEnabled", Tag = -16)]
         public bool MultiplayerCheatsEnabled { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_syncChecksummingEnabled")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_syncChecksummingEnabled", Tag = -15)]
         public bool SyncChecksummingEnabled { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_isMapToMapTransition")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_isMapToMapTransition", Tag = -14)]
         public bool IsMapToMapTransition { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_debugPauseEnabled")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_debugPauseEnabled", Tag = -13)]
         public bool DebugPauseEnabled { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_useGalaxyAsserts")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_useGalaxyAsserts", Tag = -12)]
         public bool UseGalaxyAsserts { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_platformMac")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_platformMac", Tag = -11)]
         public bool PlatformMac { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_cameraFollow")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_cameraFollow", Tag = -10)]
         public bool CameraFollow { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_baseBuildNum")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_baseBuildNum", Tag = -9)]
         public long BaseBuildNum { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_buildNum")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_buildNum", Tag = -8)]
         public long BuildNum { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_versionFlags")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_versionFlags", Tag = -7)]
         public long VersionFlags { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_hotkeyProfile")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_hotkeyProfile", Tag = -6)]
         public byte[] HotkeyProfile { get; set; } = [];
 
         bool global::Biz.Bizadm.S2Protocol.NET.Common.Game.IUserOptionsEvent.DevelopmentCheatsEnabled => DevelopmentCheatsEnabled;
@@ -4827,7 +4982,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game
 
     public sealed partial class TColorPreference : global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITColorPreference
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_color")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_color", Tag = -1)]
         public int? Color { get; set; }
 
         int? global::Biz.Bizadm.S2Protocol.NET.Common.Game.ITColorPreference.Color => Color;
@@ -4859,7 +5014,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Replay
 
     public sealed partial class SGameUserId : global::Biz.Bizadm.S2Protocol.NET.Common.Replay.IGameUserId
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_userId")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_userId", Tag = -1)]
         public int UserId { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.IGameUserId.UserId => UserId;
@@ -4880,32 +5035,34 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Replay
 
     public sealed partial class SHeader : global::Biz.Bizadm.S2Protocol.NET.Common.Replay.IHeader
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_signature")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_signature", Tag = 0)]
         public byte[] Signature { get; set; } = [];
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_version")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_version", Tag = 1)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.SVersion Version { get; set; } = new();
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_type")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_type", Tag = 2)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Replay.EReplayType Type { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_elapsedGameLoops")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_elapsedGameLoops", Tag = 3)]
         public long ElapsedGameLoops { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_useScaledTime")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_useScaledTime", Tag = 4)]
         public bool UseScaledTime { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_ngdpRootKey")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_ngdpRootKey", Tag = 5)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.SMD5 NgdpRootKey { get; set; } = new();
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_dataBuildNum")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_dataBuildNum", Tag = 6)]
         public long DataBuildNum { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_replayCompatibilityHash")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_replayCompatibilityHash", Tag = 7)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.SMD5 ReplayCompatibilityHash { get; set; } = new();
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_ngdpRootKeyIsDevData")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_ngdpRootKeyIsDevData", Tag = 8)]
         public bool NgdpRootKeyIsDevData { get; set; }
+
+        internal global::System.Collections.Generic.HashSet<long>? PresentTags { get; set; }
 
         byte[] global::Biz.Bizadm.S2Protocol.NET.Common.Replay.IHeader.Signature => Signature;
         global::Biz.Bizadm.S2Protocol.NET.Common.IVersion global::Biz.Bizadm.S2Protocol.NET.Common.Replay.IHeader.Version => Version;
@@ -4914,20 +5071,20 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Replay
 
         internal static SHeader ReadVersioned(VersionedDecoder d)
         {
-            var r = new SHeader();
+            var r = new SHeader { PresentTags = [] };
             for (long n = d.ReadStructFieldCount(); n > 0; n--)
             {
                 switch (d.ReadVInt())
                 {
-                    case 0: r.Signature = d.ReadBlob(); break;
-                    case 1: r.Version = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.SVersion.ReadVersioned(d); break;
-                    case 2: r.Type = checked((global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Replay.EReplayType)d.ReadInt()); break;
-                    case 3: r.ElapsedGameLoops = d.ReadInt(); break;
-                    case 4: r.UseScaledTime = d.ReadBool(); break;
-                    case 5: r.NgdpRootKey = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.SMD5.ReadVersioned(d); break;
-                    case 6: r.DataBuildNum = d.ReadInt(); break;
-                    case 7: r.ReplayCompatibilityHash = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.SMD5.ReadVersioned(d); break;
-                    case 8: r.NgdpRootKeyIsDevData = d.ReadBool(); break;
+                    case 0: r.Signature = d.ReadBlob(); r.PresentTags.Add(0); break;
+                    case 1: r.Version = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.SVersion.ReadVersioned(d); r.PresentTags.Add(1); break;
+                    case 2: r.Type = checked((global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Replay.EReplayType)d.ReadInt()); r.PresentTags.Add(2); break;
+                    case 3: r.ElapsedGameLoops = d.ReadInt(); r.PresentTags.Add(3); break;
+                    case 4: r.UseScaledTime = d.ReadBool(); r.PresentTags.Add(4); break;
+                    case 5: r.NgdpRootKey = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.SMD5.ReadVersioned(d); r.PresentTags.Add(5); break;
+                    case 6: r.DataBuildNum = d.ReadInt(); r.PresentTags.Add(6); break;
+                    case 7: r.ReplayCompatibilityHash = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.SMD5.ReadVersioned(d); r.PresentTags.Add(7); break;
+                    case 8: r.NgdpRootKeyIsDevData = d.ReadBool(); r.PresentTags.Add(8); break;
                     default: d.SkipInstance(); break;
                 }
             }
@@ -4936,32 +5093,59 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Replay
 
         internal static void WriteVersioned(VersionedEncoder e, SHeader v)
         {
-            e.WriteStructFieldCount(9);
-            e.WriteVInt(0);
-            e.WriteBlob(v.Signature);
-            e.WriteVInt(1);
-            global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.SVersion.WriteVersioned(e, v.Version);
-            e.WriteVInt(2);
-            e.WriteInt((long)v.Type);
-            e.WriteVInt(3);
-            e.WriteInt((long)v.ElapsedGameLoops);
-            e.WriteVInt(4);
-            e.WriteBool(v.UseScaledTime);
-            e.WriteVInt(5);
-            global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.SMD5.WriteVersioned(e, v.NgdpRootKey);
-            e.WriteVInt(6);
-            e.WriteInt((long)v.DataBuildNum);
-            e.WriteVInt(7);
-            global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.SMD5.WriteVersioned(e, v.ReplayCompatibilityHash);
-            e.WriteVInt(8);
-            e.WriteBool(v.NgdpRootKeyIsDevData);
+            e.WriteStructFieldCount(v.PresentTags?.Count ?? 9);
+            if (v.PresentTags is null || v.PresentTags.Contains(0))
+            {
+                e.WriteVInt(0);
+                e.WriteBlob(v.Signature);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(1))
+            {
+                e.WriteVInt(1);
+                global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.SVersion.WriteVersioned(e, v.Version);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(2))
+            {
+                e.WriteVInt(2);
+                e.WriteInt((long)v.Type);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(3))
+            {
+                e.WriteVInt(3);
+                e.WriteInt((long)v.ElapsedGameLoops);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(4))
+            {
+                e.WriteVInt(4);
+                e.WriteBool(v.UseScaledTime);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(5))
+            {
+                e.WriteVInt(5);
+                global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.SMD5.WriteVersioned(e, v.NgdpRootKey);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(6))
+            {
+                e.WriteVInt(6);
+                e.WriteInt((long)v.DataBuildNum);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(7))
+            {
+                e.WriteVInt(7);
+                global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.SMD5.WriteVersioned(e, v.ReplayCompatibilityHash);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(8))
+            {
+                e.WriteVInt(8);
+                e.WriteBool(v.NgdpRootKeyIsDevData);
+            }
         }
 
     }
 
     public sealed partial class SInitData : global::Biz.Bizadm.S2Protocol.NET.Common.Replay.IInitData
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_syncLobbyState")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_syncLobbyState", Tag = -1)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Game.SLobbySyncState SyncLobbyState { get; set; } = new();
 
         global::Biz.Bizadm.S2Protocol.NET.Common.Game.ILobbySyncState global::Biz.Bizadm.S2Protocol.NET.Common.Replay.IInitData.SyncLobbyState => SyncLobbyState;
@@ -4999,17 +5183,19 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Replay.Tracker
 
     public sealed partial class SPlayerSetupEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerSetupEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_playerId")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_playerId", Tag = 0)]
         public int PlayerId { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_type")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_type", Tag = 1)]
         public long Type { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_userId")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_userId", Tag = 2)]
         public long? UserId { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_slotId")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_slotId", Tag = 3)]
         public long? SlotId { get; set; }
+
+        internal global::System.Collections.Generic.HashSet<long>? PresentTags { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerSetupEvent.PlayerId => PlayerId;
         long global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerSetupEvent.Type => Type;
@@ -5018,15 +5204,15 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Replay.Tracker
 
         internal static SPlayerSetupEvent ReadVersioned(VersionedDecoder d)
         {
-            var r = new SPlayerSetupEvent();
+            var r = new SPlayerSetupEvent { PresentTags = [] };
             for (long n = d.ReadStructFieldCount(); n > 0; n--)
             {
                 switch (d.ReadVInt())
                 {
-                    case 0: r.PlayerId = checked((int)d.ReadInt()); break;
-                    case 1: r.Type = d.ReadInt(); break;
-                    case 2: r.UserId = d.ReadOptionalValue(() => d.ReadInt()); break;
-                    case 3: r.SlotId = d.ReadOptionalValue(() => d.ReadInt()); break;
+                    case 0: r.PlayerId = checked((int)d.ReadInt()); r.PresentTags.Add(0); break;
+                    case 1: r.Type = d.ReadInt(); r.PresentTags.Add(1); break;
+                    case 2: r.UserId = d.ReadOptionalValue(() => d.ReadInt()); r.PresentTags.Add(2); break;
+                    case 3: r.SlotId = d.ReadOptionalValue(() => d.ReadInt()); r.PresentTags.Add(3); break;
                     default: d.SkipInstance(); break;
                 }
             }
@@ -5035,137 +5221,151 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Replay.Tracker
 
         internal static void WriteVersioned(VersionedEncoder e, SPlayerSetupEvent v)
         {
-            e.WriteStructFieldCount(4);
-            e.WriteVInt(0);
-            e.WriteInt((long)v.PlayerId);
-            e.WriteVInt(1);
-            e.WriteInt((long)v.Type);
-            e.WriteVInt(2);
-            e.WriteOptionalValue(v.UserId, x0 => e.WriteInt((long)x0));
-            e.WriteVInt(3);
-            e.WriteOptionalValue(v.SlotId, x0 => e.WriteInt((long)x0));
+            e.WriteStructFieldCount(v.PresentTags?.Count ?? 4);
+            if (v.PresentTags is null || v.PresentTags.Contains(0))
+            {
+                e.WriteVInt(0);
+                e.WriteInt((long)v.PlayerId);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(1))
+            {
+                e.WriteVInt(1);
+                e.WriteInt((long)v.Type);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(2))
+            {
+                e.WriteVInt(2);
+                e.WriteOptionalValue(v.UserId, x0 => e.WriteInt((long)x0));
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(3))
+            {
+                e.WriteVInt(3);
+                e.WriteOptionalValue(v.SlotId, x0 => e.WriteInt((long)x0));
+            }
         }
 
     }
 
     public sealed partial class SPlayerStats : global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerStats
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueMineralsCurrent")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueMineralsCurrent", Tag = 0)]
         public int ScoreValueMineralsCurrent { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueVespeneCurrent")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueVespeneCurrent", Tag = 1)]
         public int ScoreValueVespeneCurrent { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueMineralsCollectionRate")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueMineralsCollectionRate", Tag = 2)]
         public int ScoreValueMineralsCollectionRate { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueVespeneCollectionRate")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueVespeneCollectionRate", Tag = 3)]
         public int ScoreValueVespeneCollectionRate { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueWorkersActiveCount")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueWorkersActiveCount", Tag = 4)]
         public int ScoreValueWorkersActiveCount { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueMineralsUsedInProgressArmy")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueMineralsUsedInProgressArmy", Tag = 5)]
         public int ScoreValueMineralsUsedInProgressArmy { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueMineralsUsedInProgressEconomy")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueMineralsUsedInProgressEconomy", Tag = 6)]
         public int ScoreValueMineralsUsedInProgressEconomy { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueMineralsUsedInProgressTechnology")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueMineralsUsedInProgressTechnology", Tag = 7)]
         public int ScoreValueMineralsUsedInProgressTechnology { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueVespeneUsedInProgressArmy")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueVespeneUsedInProgressArmy", Tag = 8)]
         public int ScoreValueVespeneUsedInProgressArmy { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueVespeneUsedInProgressEconomy")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueVespeneUsedInProgressEconomy", Tag = 9)]
         public int ScoreValueVespeneUsedInProgressEconomy { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueVespeneUsedInProgressTechnology")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueVespeneUsedInProgressTechnology", Tag = 10)]
         public int ScoreValueVespeneUsedInProgressTechnology { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueMineralsUsedCurrentArmy")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueMineralsUsedCurrentArmy", Tag = 11)]
         public int ScoreValueMineralsUsedCurrentArmy { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueMineralsUsedCurrentEconomy")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueMineralsUsedCurrentEconomy", Tag = 12)]
         public int ScoreValueMineralsUsedCurrentEconomy { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueMineralsUsedCurrentTechnology")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueMineralsUsedCurrentTechnology", Tag = 13)]
         public int ScoreValueMineralsUsedCurrentTechnology { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueVespeneUsedCurrentArmy")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueVespeneUsedCurrentArmy", Tag = 14)]
         public int ScoreValueVespeneUsedCurrentArmy { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueVespeneUsedCurrentEconomy")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueVespeneUsedCurrentEconomy", Tag = 15)]
         public int ScoreValueVespeneUsedCurrentEconomy { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueVespeneUsedCurrentTechnology")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueVespeneUsedCurrentTechnology", Tag = 16)]
         public int ScoreValueVespeneUsedCurrentTechnology { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueMineralsLostArmy")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueMineralsLostArmy", Tag = 17)]
         public int ScoreValueMineralsLostArmy { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueMineralsLostEconomy")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueMineralsLostEconomy", Tag = 18)]
         public int ScoreValueMineralsLostEconomy { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueMineralsLostTechnology")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueMineralsLostTechnology", Tag = 19)]
         public int ScoreValueMineralsLostTechnology { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueVespeneLostArmy")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueVespeneLostArmy", Tag = 20)]
         public int ScoreValueVespeneLostArmy { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueVespeneLostEconomy")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueVespeneLostEconomy", Tag = 21)]
         public int ScoreValueVespeneLostEconomy { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueVespeneLostTechnology")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueVespeneLostTechnology", Tag = 22)]
         public int ScoreValueVespeneLostTechnology { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueMineralsKilledArmy")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueMineralsKilledArmy", Tag = 23)]
         public int ScoreValueMineralsKilledArmy { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueMineralsKilledEconomy")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueMineralsKilledEconomy", Tag = 24)]
         public int ScoreValueMineralsKilledEconomy { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueMineralsKilledTechnology")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueMineralsKilledTechnology", Tag = 25)]
         public int ScoreValueMineralsKilledTechnology { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueVespeneKilledArmy")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueVespeneKilledArmy", Tag = 26)]
         public int ScoreValueVespeneKilledArmy { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueVespeneKilledEconomy")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueVespeneKilledEconomy", Tag = 27)]
         public int ScoreValueVespeneKilledEconomy { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueVespeneKilledTechnology")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueVespeneKilledTechnology", Tag = 28)]
         public int ScoreValueVespeneKilledTechnology { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueFoodUsed")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueFoodUsed", Tag = 29)]
         public int ScoreValueFoodUsed { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueFoodMade")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueFoodMade", Tag = 30)]
         public int ScoreValueFoodMade { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueMineralsUsedActiveForces")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueMineralsUsedActiveForces", Tag = 31)]
         public int ScoreValueMineralsUsedActiveForces { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueVespeneUsedActiveForces")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueVespeneUsedActiveForces", Tag = 32)]
         public int ScoreValueVespeneUsedActiveForces { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueMineralsFriendlyFireArmy")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueMineralsFriendlyFireArmy", Tag = 33)]
         public int ScoreValueMineralsFriendlyFireArmy { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueMineralsFriendlyFireEconomy")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueMineralsFriendlyFireEconomy", Tag = 34)]
         public int ScoreValueMineralsFriendlyFireEconomy { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueMineralsFriendlyFireTechnology")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueMineralsFriendlyFireTechnology", Tag = 35)]
         public int ScoreValueMineralsFriendlyFireTechnology { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueVespeneFriendlyFireArmy")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueVespeneFriendlyFireArmy", Tag = 36)]
         public int ScoreValueVespeneFriendlyFireArmy { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueVespeneFriendlyFireEconomy")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueVespeneFriendlyFireEconomy", Tag = 37)]
         public int ScoreValueVespeneFriendlyFireEconomy { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueVespeneFriendlyFireTechnology")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueVespeneFriendlyFireTechnology", Tag = 38)]
         public int ScoreValueVespeneFriendlyFireTechnology { get; set; }
+
+        internal global::System.Collections.Generic.HashSet<long>? PresentTags { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerStats.ScoreValueMineralsCurrent => ScoreValueMineralsCurrent;
         int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerStats.ScoreValueVespeneCurrent => ScoreValueVespeneCurrent;
@@ -5209,50 +5409,50 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Replay.Tracker
 
         internal static SPlayerStats ReadVersioned(VersionedDecoder d)
         {
-            var r = new SPlayerStats();
+            var r = new SPlayerStats { PresentTags = [] };
             for (long n = d.ReadStructFieldCount(); n > 0; n--)
             {
                 switch (d.ReadVInt())
                 {
-                    case 0: r.ScoreValueMineralsCurrent = checked((int)d.ReadInt()); break;
-                    case 1: r.ScoreValueVespeneCurrent = checked((int)d.ReadInt()); break;
-                    case 2: r.ScoreValueMineralsCollectionRate = checked((int)d.ReadInt()); break;
-                    case 3: r.ScoreValueVespeneCollectionRate = checked((int)d.ReadInt()); break;
-                    case 4: r.ScoreValueWorkersActiveCount = checked((int)d.ReadInt()); break;
-                    case 5: r.ScoreValueMineralsUsedInProgressArmy = checked((int)d.ReadInt()); break;
-                    case 6: r.ScoreValueMineralsUsedInProgressEconomy = checked((int)d.ReadInt()); break;
-                    case 7: r.ScoreValueMineralsUsedInProgressTechnology = checked((int)d.ReadInt()); break;
-                    case 8: r.ScoreValueVespeneUsedInProgressArmy = checked((int)d.ReadInt()); break;
-                    case 9: r.ScoreValueVespeneUsedInProgressEconomy = checked((int)d.ReadInt()); break;
-                    case 10: r.ScoreValueVespeneUsedInProgressTechnology = checked((int)d.ReadInt()); break;
-                    case 11: r.ScoreValueMineralsUsedCurrentArmy = checked((int)d.ReadInt()); break;
-                    case 12: r.ScoreValueMineralsUsedCurrentEconomy = checked((int)d.ReadInt()); break;
-                    case 13: r.ScoreValueMineralsUsedCurrentTechnology = checked((int)d.ReadInt()); break;
-                    case 14: r.ScoreValueVespeneUsedCurrentArmy = checked((int)d.ReadInt()); break;
-                    case 15: r.ScoreValueVespeneUsedCurrentEconomy = checked((int)d.ReadInt()); break;
-                    case 16: r.ScoreValueVespeneUsedCurrentTechnology = checked((int)d.ReadInt()); break;
-                    case 17: r.ScoreValueMineralsLostArmy = checked((int)d.ReadInt()); break;
-                    case 18: r.ScoreValueMineralsLostEconomy = checked((int)d.ReadInt()); break;
-                    case 19: r.ScoreValueMineralsLostTechnology = checked((int)d.ReadInt()); break;
-                    case 20: r.ScoreValueVespeneLostArmy = checked((int)d.ReadInt()); break;
-                    case 21: r.ScoreValueVespeneLostEconomy = checked((int)d.ReadInt()); break;
-                    case 22: r.ScoreValueVespeneLostTechnology = checked((int)d.ReadInt()); break;
-                    case 23: r.ScoreValueMineralsKilledArmy = checked((int)d.ReadInt()); break;
-                    case 24: r.ScoreValueMineralsKilledEconomy = checked((int)d.ReadInt()); break;
-                    case 25: r.ScoreValueMineralsKilledTechnology = checked((int)d.ReadInt()); break;
-                    case 26: r.ScoreValueVespeneKilledArmy = checked((int)d.ReadInt()); break;
-                    case 27: r.ScoreValueVespeneKilledEconomy = checked((int)d.ReadInt()); break;
-                    case 28: r.ScoreValueVespeneKilledTechnology = checked((int)d.ReadInt()); break;
-                    case 29: r.ScoreValueFoodUsed = checked((int)d.ReadInt()); break;
-                    case 30: r.ScoreValueFoodMade = checked((int)d.ReadInt()); break;
-                    case 31: r.ScoreValueMineralsUsedActiveForces = checked((int)d.ReadInt()); break;
-                    case 32: r.ScoreValueVespeneUsedActiveForces = checked((int)d.ReadInt()); break;
-                    case 33: r.ScoreValueMineralsFriendlyFireArmy = checked((int)d.ReadInt()); break;
-                    case 34: r.ScoreValueMineralsFriendlyFireEconomy = checked((int)d.ReadInt()); break;
-                    case 35: r.ScoreValueMineralsFriendlyFireTechnology = checked((int)d.ReadInt()); break;
-                    case 36: r.ScoreValueVespeneFriendlyFireArmy = checked((int)d.ReadInt()); break;
-                    case 37: r.ScoreValueVespeneFriendlyFireEconomy = checked((int)d.ReadInt()); break;
-                    case 38: r.ScoreValueVespeneFriendlyFireTechnology = checked((int)d.ReadInt()); break;
+                    case 0: r.ScoreValueMineralsCurrent = checked((int)d.ReadInt()); r.PresentTags.Add(0); break;
+                    case 1: r.ScoreValueVespeneCurrent = checked((int)d.ReadInt()); r.PresentTags.Add(1); break;
+                    case 2: r.ScoreValueMineralsCollectionRate = checked((int)d.ReadInt()); r.PresentTags.Add(2); break;
+                    case 3: r.ScoreValueVespeneCollectionRate = checked((int)d.ReadInt()); r.PresentTags.Add(3); break;
+                    case 4: r.ScoreValueWorkersActiveCount = checked((int)d.ReadInt()); r.PresentTags.Add(4); break;
+                    case 5: r.ScoreValueMineralsUsedInProgressArmy = checked((int)d.ReadInt()); r.PresentTags.Add(5); break;
+                    case 6: r.ScoreValueMineralsUsedInProgressEconomy = checked((int)d.ReadInt()); r.PresentTags.Add(6); break;
+                    case 7: r.ScoreValueMineralsUsedInProgressTechnology = checked((int)d.ReadInt()); r.PresentTags.Add(7); break;
+                    case 8: r.ScoreValueVespeneUsedInProgressArmy = checked((int)d.ReadInt()); r.PresentTags.Add(8); break;
+                    case 9: r.ScoreValueVespeneUsedInProgressEconomy = checked((int)d.ReadInt()); r.PresentTags.Add(9); break;
+                    case 10: r.ScoreValueVespeneUsedInProgressTechnology = checked((int)d.ReadInt()); r.PresentTags.Add(10); break;
+                    case 11: r.ScoreValueMineralsUsedCurrentArmy = checked((int)d.ReadInt()); r.PresentTags.Add(11); break;
+                    case 12: r.ScoreValueMineralsUsedCurrentEconomy = checked((int)d.ReadInt()); r.PresentTags.Add(12); break;
+                    case 13: r.ScoreValueMineralsUsedCurrentTechnology = checked((int)d.ReadInt()); r.PresentTags.Add(13); break;
+                    case 14: r.ScoreValueVespeneUsedCurrentArmy = checked((int)d.ReadInt()); r.PresentTags.Add(14); break;
+                    case 15: r.ScoreValueVespeneUsedCurrentEconomy = checked((int)d.ReadInt()); r.PresentTags.Add(15); break;
+                    case 16: r.ScoreValueVespeneUsedCurrentTechnology = checked((int)d.ReadInt()); r.PresentTags.Add(16); break;
+                    case 17: r.ScoreValueMineralsLostArmy = checked((int)d.ReadInt()); r.PresentTags.Add(17); break;
+                    case 18: r.ScoreValueMineralsLostEconomy = checked((int)d.ReadInt()); r.PresentTags.Add(18); break;
+                    case 19: r.ScoreValueMineralsLostTechnology = checked((int)d.ReadInt()); r.PresentTags.Add(19); break;
+                    case 20: r.ScoreValueVespeneLostArmy = checked((int)d.ReadInt()); r.PresentTags.Add(20); break;
+                    case 21: r.ScoreValueVespeneLostEconomy = checked((int)d.ReadInt()); r.PresentTags.Add(21); break;
+                    case 22: r.ScoreValueVespeneLostTechnology = checked((int)d.ReadInt()); r.PresentTags.Add(22); break;
+                    case 23: r.ScoreValueMineralsKilledArmy = checked((int)d.ReadInt()); r.PresentTags.Add(23); break;
+                    case 24: r.ScoreValueMineralsKilledEconomy = checked((int)d.ReadInt()); r.PresentTags.Add(24); break;
+                    case 25: r.ScoreValueMineralsKilledTechnology = checked((int)d.ReadInt()); r.PresentTags.Add(25); break;
+                    case 26: r.ScoreValueVespeneKilledArmy = checked((int)d.ReadInt()); r.PresentTags.Add(26); break;
+                    case 27: r.ScoreValueVespeneKilledEconomy = checked((int)d.ReadInt()); r.PresentTags.Add(27); break;
+                    case 28: r.ScoreValueVespeneKilledTechnology = checked((int)d.ReadInt()); r.PresentTags.Add(28); break;
+                    case 29: r.ScoreValueFoodUsed = checked((int)d.ReadInt()); r.PresentTags.Add(29); break;
+                    case 30: r.ScoreValueFoodMade = checked((int)d.ReadInt()); r.PresentTags.Add(30); break;
+                    case 31: r.ScoreValueMineralsUsedActiveForces = checked((int)d.ReadInt()); r.PresentTags.Add(31); break;
+                    case 32: r.ScoreValueVespeneUsedActiveForces = checked((int)d.ReadInt()); r.PresentTags.Add(32); break;
+                    case 33: r.ScoreValueMineralsFriendlyFireArmy = checked((int)d.ReadInt()); r.PresentTags.Add(33); break;
+                    case 34: r.ScoreValueMineralsFriendlyFireEconomy = checked((int)d.ReadInt()); r.PresentTags.Add(34); break;
+                    case 35: r.ScoreValueMineralsFriendlyFireTechnology = checked((int)d.ReadInt()); r.PresentTags.Add(35); break;
+                    case 36: r.ScoreValueVespeneFriendlyFireArmy = checked((int)d.ReadInt()); r.PresentTags.Add(36); break;
+                    case 37: r.ScoreValueVespeneFriendlyFireEconomy = checked((int)d.ReadInt()); r.PresentTags.Add(37); break;
+                    case 38: r.ScoreValueVespeneFriendlyFireTechnology = checked((int)d.ReadInt()); r.PresentTags.Add(38); break;
                     default: d.SkipInstance(); break;
                 }
             }
@@ -5261,109 +5461,228 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Replay.Tracker
 
         internal static void WriteVersioned(VersionedEncoder e, SPlayerStats v)
         {
-            e.WriteStructFieldCount(39);
-            e.WriteVInt(0);
-            e.WriteInt((long)v.ScoreValueMineralsCurrent);
-            e.WriteVInt(1);
-            e.WriteInt((long)v.ScoreValueVespeneCurrent);
-            e.WriteVInt(2);
-            e.WriteInt((long)v.ScoreValueMineralsCollectionRate);
-            e.WriteVInt(3);
-            e.WriteInt((long)v.ScoreValueVespeneCollectionRate);
-            e.WriteVInt(4);
-            e.WriteInt((long)v.ScoreValueWorkersActiveCount);
-            e.WriteVInt(5);
-            e.WriteInt((long)v.ScoreValueMineralsUsedInProgressArmy);
-            e.WriteVInt(6);
-            e.WriteInt((long)v.ScoreValueMineralsUsedInProgressEconomy);
-            e.WriteVInt(7);
-            e.WriteInt((long)v.ScoreValueMineralsUsedInProgressTechnology);
-            e.WriteVInt(8);
-            e.WriteInt((long)v.ScoreValueVespeneUsedInProgressArmy);
-            e.WriteVInt(9);
-            e.WriteInt((long)v.ScoreValueVespeneUsedInProgressEconomy);
-            e.WriteVInt(10);
-            e.WriteInt((long)v.ScoreValueVespeneUsedInProgressTechnology);
-            e.WriteVInt(11);
-            e.WriteInt((long)v.ScoreValueMineralsUsedCurrentArmy);
-            e.WriteVInt(12);
-            e.WriteInt((long)v.ScoreValueMineralsUsedCurrentEconomy);
-            e.WriteVInt(13);
-            e.WriteInt((long)v.ScoreValueMineralsUsedCurrentTechnology);
-            e.WriteVInt(14);
-            e.WriteInt((long)v.ScoreValueVespeneUsedCurrentArmy);
-            e.WriteVInt(15);
-            e.WriteInt((long)v.ScoreValueVespeneUsedCurrentEconomy);
-            e.WriteVInt(16);
-            e.WriteInt((long)v.ScoreValueVespeneUsedCurrentTechnology);
-            e.WriteVInt(17);
-            e.WriteInt((long)v.ScoreValueMineralsLostArmy);
-            e.WriteVInt(18);
-            e.WriteInt((long)v.ScoreValueMineralsLostEconomy);
-            e.WriteVInt(19);
-            e.WriteInt((long)v.ScoreValueMineralsLostTechnology);
-            e.WriteVInt(20);
-            e.WriteInt((long)v.ScoreValueVespeneLostArmy);
-            e.WriteVInt(21);
-            e.WriteInt((long)v.ScoreValueVespeneLostEconomy);
-            e.WriteVInt(22);
-            e.WriteInt((long)v.ScoreValueVespeneLostTechnology);
-            e.WriteVInt(23);
-            e.WriteInt((long)v.ScoreValueMineralsKilledArmy);
-            e.WriteVInt(24);
-            e.WriteInt((long)v.ScoreValueMineralsKilledEconomy);
-            e.WriteVInt(25);
-            e.WriteInt((long)v.ScoreValueMineralsKilledTechnology);
-            e.WriteVInt(26);
-            e.WriteInt((long)v.ScoreValueVespeneKilledArmy);
-            e.WriteVInt(27);
-            e.WriteInt((long)v.ScoreValueVespeneKilledEconomy);
-            e.WriteVInt(28);
-            e.WriteInt((long)v.ScoreValueVespeneKilledTechnology);
-            e.WriteVInt(29);
-            e.WriteInt((long)v.ScoreValueFoodUsed);
-            e.WriteVInt(30);
-            e.WriteInt((long)v.ScoreValueFoodMade);
-            e.WriteVInt(31);
-            e.WriteInt((long)v.ScoreValueMineralsUsedActiveForces);
-            e.WriteVInt(32);
-            e.WriteInt((long)v.ScoreValueVespeneUsedActiveForces);
-            e.WriteVInt(33);
-            e.WriteInt((long)v.ScoreValueMineralsFriendlyFireArmy);
-            e.WriteVInt(34);
-            e.WriteInt((long)v.ScoreValueMineralsFriendlyFireEconomy);
-            e.WriteVInt(35);
-            e.WriteInt((long)v.ScoreValueMineralsFriendlyFireTechnology);
-            e.WriteVInt(36);
-            e.WriteInt((long)v.ScoreValueVespeneFriendlyFireArmy);
-            e.WriteVInt(37);
-            e.WriteInt((long)v.ScoreValueVespeneFriendlyFireEconomy);
-            e.WriteVInt(38);
-            e.WriteInt((long)v.ScoreValueVespeneFriendlyFireTechnology);
+            e.WriteStructFieldCount(v.PresentTags?.Count ?? 39);
+            if (v.PresentTags is null || v.PresentTags.Contains(0))
+            {
+                e.WriteVInt(0);
+                e.WriteInt((long)v.ScoreValueMineralsCurrent);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(1))
+            {
+                e.WriteVInt(1);
+                e.WriteInt((long)v.ScoreValueVespeneCurrent);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(2))
+            {
+                e.WriteVInt(2);
+                e.WriteInt((long)v.ScoreValueMineralsCollectionRate);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(3))
+            {
+                e.WriteVInt(3);
+                e.WriteInt((long)v.ScoreValueVespeneCollectionRate);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(4))
+            {
+                e.WriteVInt(4);
+                e.WriteInt((long)v.ScoreValueWorkersActiveCount);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(5))
+            {
+                e.WriteVInt(5);
+                e.WriteInt((long)v.ScoreValueMineralsUsedInProgressArmy);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(6))
+            {
+                e.WriteVInt(6);
+                e.WriteInt((long)v.ScoreValueMineralsUsedInProgressEconomy);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(7))
+            {
+                e.WriteVInt(7);
+                e.WriteInt((long)v.ScoreValueMineralsUsedInProgressTechnology);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(8))
+            {
+                e.WriteVInt(8);
+                e.WriteInt((long)v.ScoreValueVespeneUsedInProgressArmy);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(9))
+            {
+                e.WriteVInt(9);
+                e.WriteInt((long)v.ScoreValueVespeneUsedInProgressEconomy);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(10))
+            {
+                e.WriteVInt(10);
+                e.WriteInt((long)v.ScoreValueVespeneUsedInProgressTechnology);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(11))
+            {
+                e.WriteVInt(11);
+                e.WriteInt((long)v.ScoreValueMineralsUsedCurrentArmy);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(12))
+            {
+                e.WriteVInt(12);
+                e.WriteInt((long)v.ScoreValueMineralsUsedCurrentEconomy);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(13))
+            {
+                e.WriteVInt(13);
+                e.WriteInt((long)v.ScoreValueMineralsUsedCurrentTechnology);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(14))
+            {
+                e.WriteVInt(14);
+                e.WriteInt((long)v.ScoreValueVespeneUsedCurrentArmy);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(15))
+            {
+                e.WriteVInt(15);
+                e.WriteInt((long)v.ScoreValueVespeneUsedCurrentEconomy);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(16))
+            {
+                e.WriteVInt(16);
+                e.WriteInt((long)v.ScoreValueVespeneUsedCurrentTechnology);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(17))
+            {
+                e.WriteVInt(17);
+                e.WriteInt((long)v.ScoreValueMineralsLostArmy);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(18))
+            {
+                e.WriteVInt(18);
+                e.WriteInt((long)v.ScoreValueMineralsLostEconomy);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(19))
+            {
+                e.WriteVInt(19);
+                e.WriteInt((long)v.ScoreValueMineralsLostTechnology);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(20))
+            {
+                e.WriteVInt(20);
+                e.WriteInt((long)v.ScoreValueVespeneLostArmy);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(21))
+            {
+                e.WriteVInt(21);
+                e.WriteInt((long)v.ScoreValueVespeneLostEconomy);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(22))
+            {
+                e.WriteVInt(22);
+                e.WriteInt((long)v.ScoreValueVespeneLostTechnology);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(23))
+            {
+                e.WriteVInt(23);
+                e.WriteInt((long)v.ScoreValueMineralsKilledArmy);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(24))
+            {
+                e.WriteVInt(24);
+                e.WriteInt((long)v.ScoreValueMineralsKilledEconomy);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(25))
+            {
+                e.WriteVInt(25);
+                e.WriteInt((long)v.ScoreValueMineralsKilledTechnology);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(26))
+            {
+                e.WriteVInt(26);
+                e.WriteInt((long)v.ScoreValueVespeneKilledArmy);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(27))
+            {
+                e.WriteVInt(27);
+                e.WriteInt((long)v.ScoreValueVespeneKilledEconomy);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(28))
+            {
+                e.WriteVInt(28);
+                e.WriteInt((long)v.ScoreValueVespeneKilledTechnology);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(29))
+            {
+                e.WriteVInt(29);
+                e.WriteInt((long)v.ScoreValueFoodUsed);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(30))
+            {
+                e.WriteVInt(30);
+                e.WriteInt((long)v.ScoreValueFoodMade);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(31))
+            {
+                e.WriteVInt(31);
+                e.WriteInt((long)v.ScoreValueMineralsUsedActiveForces);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(32))
+            {
+                e.WriteVInt(32);
+                e.WriteInt((long)v.ScoreValueVespeneUsedActiveForces);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(33))
+            {
+                e.WriteVInt(33);
+                e.WriteInt((long)v.ScoreValueMineralsFriendlyFireArmy);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(34))
+            {
+                e.WriteVInt(34);
+                e.WriteInt((long)v.ScoreValueMineralsFriendlyFireEconomy);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(35))
+            {
+                e.WriteVInt(35);
+                e.WriteInt((long)v.ScoreValueMineralsFriendlyFireTechnology);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(36))
+            {
+                e.WriteVInt(36);
+                e.WriteInt((long)v.ScoreValueVespeneFriendlyFireArmy);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(37))
+            {
+                e.WriteVInt(37);
+                e.WriteInt((long)v.ScoreValueVespeneFriendlyFireEconomy);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(38))
+            {
+                e.WriteVInt(38);
+                e.WriteInt((long)v.ScoreValueVespeneFriendlyFireTechnology);
+            }
         }
 
     }
 
     public sealed partial class SPlayerStatsEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerStatsEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_playerId")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_playerId", Tag = 0)]
         public int PlayerId { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_stats")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_stats", Tag = 1)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Replay.Tracker.SPlayerStats Stats { get; set; } = new();
+
+        internal global::System.Collections.Generic.HashSet<long>? PresentTags { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerStatsEvent.PlayerId => PlayerId;
         global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerStats global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerStatsEvent.Stats => Stats;
 
         internal static SPlayerStatsEvent ReadVersioned(VersionedDecoder d)
         {
-            var r = new SPlayerStatsEvent();
+            var r = new SPlayerStatsEvent { PresentTags = [] };
             for (long n = d.ReadStructFieldCount(); n > 0; n--)
             {
                 switch (d.ReadVInt())
                 {
-                    case 0: r.PlayerId = checked((int)d.ReadInt()); break;
-                    case 1: r.Stats = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Replay.Tracker.SPlayerStats.ReadVersioned(d); break;
+                    case 0: r.PlayerId = checked((int)d.ReadInt()); r.PresentTags.Add(0); break;
+                    case 1: r.Stats = global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Replay.Tracker.SPlayerStats.ReadVersioned(d); r.PresentTags.Add(1); break;
                     default: d.SkipInstance(); break;
                 }
             }
@@ -5372,46 +5691,54 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Replay.Tracker
 
         internal static void WriteVersioned(VersionedEncoder e, SPlayerStatsEvent v)
         {
-            e.WriteStructFieldCount(2);
-            e.WriteVInt(0);
-            e.WriteInt((long)v.PlayerId);
-            e.WriteVInt(1);
-            global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Replay.Tracker.SPlayerStats.WriteVersioned(e, v.Stats);
+            e.WriteStructFieldCount(v.PresentTags?.Count ?? 2);
+            if (v.PresentTags is null || v.PresentTags.Contains(0))
+            {
+                e.WriteVInt(0);
+                e.WriteInt((long)v.PlayerId);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(1))
+            {
+                e.WriteVInt(1);
+                global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Replay.Tracker.SPlayerStats.WriteVersioned(e, v.Stats);
+            }
         }
 
     }
 
     public sealed partial class SUnitBornEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitBornEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitTagIndex")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitTagIndex", Tag = 0)]
         public long UnitTagIndex { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitTagRecycle")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitTagRecycle", Tag = 1)]
         public long UnitTagRecycle { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitTypeName")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitTypeName", Tag = 2)]
         public byte[] UnitTypeName { get; set; } = [];
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_controlPlayerId")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_controlPlayerId", Tag = 3)]
         public int ControlPlayerId { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_upkeepPlayerId")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_upkeepPlayerId", Tag = 4)]
         public int UpkeepPlayerId { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_x")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_x", Tag = 5)]
         public int X { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_y")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_y", Tag = 6)]
         public int Y { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_creatorUnitTagIndex")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_creatorUnitTagIndex", Tag = 7)]
         public long? CreatorUnitTagIndex { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_creatorUnitTagRecycle")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_creatorUnitTagRecycle", Tag = 8)]
         public long? CreatorUnitTagRecycle { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_creatorAbilityName")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_creatorAbilityName", Tag = 9)]
         public byte[]? CreatorAbilityName { get; set; }
+
+        internal global::System.Collections.Generic.HashSet<long>? PresentTags { get; set; }
 
         long global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitBornEvent.UnitTagIndex => UnitTagIndex;
         long global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitBornEvent.UnitTagRecycle => UnitTagRecycle;
@@ -5423,21 +5750,21 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Replay.Tracker
 
         internal static SUnitBornEvent ReadVersioned(VersionedDecoder d)
         {
-            var r = new SUnitBornEvent();
+            var r = new SUnitBornEvent { PresentTags = [] };
             for (long n = d.ReadStructFieldCount(); n > 0; n--)
             {
                 switch (d.ReadVInt())
                 {
-                    case 0: r.UnitTagIndex = d.ReadInt(); break;
-                    case 1: r.UnitTagRecycle = d.ReadInt(); break;
-                    case 2: r.UnitTypeName = d.ReadBlob(); break;
-                    case 3: r.ControlPlayerId = checked((int)d.ReadInt()); break;
-                    case 4: r.UpkeepPlayerId = checked((int)d.ReadInt()); break;
-                    case 5: r.X = checked((int)d.ReadInt()); break;
-                    case 6: r.Y = checked((int)d.ReadInt()); break;
-                    case 7: r.CreatorUnitTagIndex = d.ReadOptionalValue(() => d.ReadInt()); break;
-                    case 8: r.CreatorUnitTagRecycle = d.ReadOptionalValue(() => d.ReadInt()); break;
-                    case 9: r.CreatorAbilityName = d.ReadOptional(() => d.ReadBlob()); break;
+                    case 0: r.UnitTagIndex = d.ReadInt(); r.PresentTags.Add(0); break;
+                    case 1: r.UnitTagRecycle = d.ReadInt(); r.PresentTags.Add(1); break;
+                    case 2: r.UnitTypeName = d.ReadBlob(); r.PresentTags.Add(2); break;
+                    case 3: r.ControlPlayerId = checked((int)d.ReadInt()); r.PresentTags.Add(3); break;
+                    case 4: r.UpkeepPlayerId = checked((int)d.ReadInt()); r.PresentTags.Add(4); break;
+                    case 5: r.X = checked((int)d.ReadInt()); r.PresentTags.Add(5); break;
+                    case 6: r.Y = checked((int)d.ReadInt()); r.PresentTags.Add(6); break;
+                    case 7: r.CreatorUnitTagIndex = d.ReadOptionalValue(() => d.ReadInt()); r.PresentTags.Add(7); break;
+                    case 8: r.CreatorUnitTagRecycle = d.ReadOptionalValue(() => d.ReadInt()); r.PresentTags.Add(8); break;
+                    case 9: r.CreatorAbilityName = d.ReadOptional(() => d.ReadBlob()); r.PresentTags.Add(9); break;
                     default: d.SkipInstance(); break;
                 }
             }
@@ -5446,53 +5773,85 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Replay.Tracker
 
         internal static void WriteVersioned(VersionedEncoder e, SUnitBornEvent v)
         {
-            e.WriteStructFieldCount(10);
-            e.WriteVInt(0);
-            e.WriteInt((long)v.UnitTagIndex);
-            e.WriteVInt(1);
-            e.WriteInt((long)v.UnitTagRecycle);
-            e.WriteVInt(2);
-            e.WriteBlob(v.UnitTypeName);
-            e.WriteVInt(3);
-            e.WriteInt((long)v.ControlPlayerId);
-            e.WriteVInt(4);
-            e.WriteInt((long)v.UpkeepPlayerId);
-            e.WriteVInt(5);
-            e.WriteInt((long)v.X);
-            e.WriteVInt(6);
-            e.WriteInt((long)v.Y);
-            e.WriteVInt(7);
-            e.WriteOptionalValue(v.CreatorUnitTagIndex, x0 => e.WriteInt((long)x0));
-            e.WriteVInt(8);
-            e.WriteOptionalValue(v.CreatorUnitTagRecycle, x0 => e.WriteInt((long)x0));
-            e.WriteVInt(9);
-            e.WriteOptional(v.CreatorAbilityName, x0 => e.WriteBlob(x0));
+            e.WriteStructFieldCount(v.PresentTags?.Count ?? 10);
+            if (v.PresentTags is null || v.PresentTags.Contains(0))
+            {
+                e.WriteVInt(0);
+                e.WriteInt((long)v.UnitTagIndex);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(1))
+            {
+                e.WriteVInt(1);
+                e.WriteInt((long)v.UnitTagRecycle);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(2))
+            {
+                e.WriteVInt(2);
+                e.WriteBlob(v.UnitTypeName);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(3))
+            {
+                e.WriteVInt(3);
+                e.WriteInt((long)v.ControlPlayerId);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(4))
+            {
+                e.WriteVInt(4);
+                e.WriteInt((long)v.UpkeepPlayerId);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(5))
+            {
+                e.WriteVInt(5);
+                e.WriteInt((long)v.X);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(6))
+            {
+                e.WriteVInt(6);
+                e.WriteInt((long)v.Y);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(7))
+            {
+                e.WriteVInt(7);
+                e.WriteOptionalValue(v.CreatorUnitTagIndex, x0 => e.WriteInt((long)x0));
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(8))
+            {
+                e.WriteVInt(8);
+                e.WriteOptionalValue(v.CreatorUnitTagRecycle, x0 => e.WriteInt((long)x0));
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(9))
+            {
+                e.WriteVInt(9);
+                e.WriteOptional(v.CreatorAbilityName, x0 => e.WriteBlob(x0));
+            }
         }
 
     }
 
     public sealed partial class SUnitDiedEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitDiedEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitTagIndex")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitTagIndex", Tag = 0)]
         public long UnitTagIndex { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitTagRecycle")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitTagRecycle", Tag = 1)]
         public long UnitTagRecycle { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_killerPlayerId")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_killerPlayerId", Tag = 2)]
         public int? KillerPlayerId { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_x")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_x", Tag = 3)]
         public int X { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_y")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_y", Tag = 4)]
         public int Y { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_killerUnitTagIndex")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_killerUnitTagIndex", Tag = 5)]
         public long? KillerUnitTagIndex { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_killerUnitTagRecycle")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_killerUnitTagRecycle", Tag = 6)]
         public long? KillerUnitTagRecycle { get; set; }
+
+        internal global::System.Collections.Generic.HashSet<long>? PresentTags { get; set; }
 
         long global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitDiedEvent.UnitTagIndex => UnitTagIndex;
         long global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitDiedEvent.UnitTagRecycle => UnitTagRecycle;
@@ -5502,18 +5861,18 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Replay.Tracker
 
         internal static SUnitDiedEvent ReadVersioned(VersionedDecoder d)
         {
-            var r = new SUnitDiedEvent();
+            var r = new SUnitDiedEvent { PresentTags = [] };
             for (long n = d.ReadStructFieldCount(); n > 0; n--)
             {
                 switch (d.ReadVInt())
                 {
-                    case 0: r.UnitTagIndex = d.ReadInt(); break;
-                    case 1: r.UnitTagRecycle = d.ReadInt(); break;
-                    case 2: r.KillerPlayerId = d.ReadOptionalValue(() => checked((int)d.ReadInt())); break;
-                    case 3: r.X = checked((int)d.ReadInt()); break;
-                    case 4: r.Y = checked((int)d.ReadInt()); break;
-                    case 5: r.KillerUnitTagIndex = d.ReadOptionalValue(() => d.ReadInt()); break;
-                    case 6: r.KillerUnitTagRecycle = d.ReadOptionalValue(() => d.ReadInt()); break;
+                    case 0: r.UnitTagIndex = d.ReadInt(); r.PresentTags.Add(0); break;
+                    case 1: r.UnitTagRecycle = d.ReadInt(); r.PresentTags.Add(1); break;
+                    case 2: r.KillerPlayerId = d.ReadOptionalValue(() => checked((int)d.ReadInt())); r.PresentTags.Add(2); break;
+                    case 3: r.X = checked((int)d.ReadInt()); r.PresentTags.Add(3); break;
+                    case 4: r.Y = checked((int)d.ReadInt()); r.PresentTags.Add(4); break;
+                    case 5: r.KillerUnitTagIndex = d.ReadOptionalValue(() => d.ReadInt()); r.PresentTags.Add(5); break;
+                    case 6: r.KillerUnitTagRecycle = d.ReadOptionalValue(() => d.ReadInt()); r.PresentTags.Add(6); break;
                     default: d.SkipInstance(); break;
                 }
             }
@@ -5522,45 +5881,68 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Replay.Tracker
 
         internal static void WriteVersioned(VersionedEncoder e, SUnitDiedEvent v)
         {
-            e.WriteStructFieldCount(7);
-            e.WriteVInt(0);
-            e.WriteInt((long)v.UnitTagIndex);
-            e.WriteVInt(1);
-            e.WriteInt((long)v.UnitTagRecycle);
-            e.WriteVInt(2);
-            e.WriteOptionalValue(v.KillerPlayerId, x0 => e.WriteInt((long)x0));
-            e.WriteVInt(3);
-            e.WriteInt((long)v.X);
-            e.WriteVInt(4);
-            e.WriteInt((long)v.Y);
-            e.WriteVInt(5);
-            e.WriteOptionalValue(v.KillerUnitTagIndex, x0 => e.WriteInt((long)x0));
-            e.WriteVInt(6);
-            e.WriteOptionalValue(v.KillerUnitTagRecycle, x0 => e.WriteInt((long)x0));
+            e.WriteStructFieldCount(v.PresentTags?.Count ?? 7);
+            if (v.PresentTags is null || v.PresentTags.Contains(0))
+            {
+                e.WriteVInt(0);
+                e.WriteInt((long)v.UnitTagIndex);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(1))
+            {
+                e.WriteVInt(1);
+                e.WriteInt((long)v.UnitTagRecycle);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(2))
+            {
+                e.WriteVInt(2);
+                e.WriteOptionalValue(v.KillerPlayerId, x0 => e.WriteInt((long)x0));
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(3))
+            {
+                e.WriteVInt(3);
+                e.WriteInt((long)v.X);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(4))
+            {
+                e.WriteVInt(4);
+                e.WriteInt((long)v.Y);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(5))
+            {
+                e.WriteVInt(5);
+                e.WriteOptionalValue(v.KillerUnitTagIndex, x0 => e.WriteInt((long)x0));
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(6))
+            {
+                e.WriteVInt(6);
+                e.WriteOptionalValue(v.KillerUnitTagRecycle, x0 => e.WriteInt((long)x0));
+            }
         }
 
     }
 
     public sealed partial class SUnitDoneEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitDoneEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitTagIndex")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitTagIndex", Tag = 0)]
         public long UnitTagIndex { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitTagRecycle")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitTagRecycle", Tag = 1)]
         public long UnitTagRecycle { get; set; }
+
+        internal global::System.Collections.Generic.HashSet<long>? PresentTags { get; set; }
 
         long global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitDoneEvent.UnitTagIndex => UnitTagIndex;
         long global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitDoneEvent.UnitTagRecycle => UnitTagRecycle;
 
         internal static SUnitDoneEvent ReadVersioned(VersionedDecoder d)
         {
-            var r = new SUnitDoneEvent();
+            var r = new SUnitDoneEvent { PresentTags = [] };
             for (long n = d.ReadStructFieldCount(); n > 0; n--)
             {
                 switch (d.ReadVInt())
                 {
-                    case 0: r.UnitTagIndex = d.ReadInt(); break;
-                    case 1: r.UnitTagRecycle = d.ReadInt(); break;
+                    case 0: r.UnitTagIndex = d.ReadInt(); r.PresentTags.Add(0); break;
+                    case 1: r.UnitTagRecycle = d.ReadInt(); r.PresentTags.Add(1); break;
                     default: d.SkipInstance(); break;
                 }
             }
@@ -5569,37 +5951,45 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Replay.Tracker
 
         internal static void WriteVersioned(VersionedEncoder e, SUnitDoneEvent v)
         {
-            e.WriteStructFieldCount(2);
-            e.WriteVInt(0);
-            e.WriteInt((long)v.UnitTagIndex);
-            e.WriteVInt(1);
-            e.WriteInt((long)v.UnitTagRecycle);
+            e.WriteStructFieldCount(v.PresentTags?.Count ?? 2);
+            if (v.PresentTags is null || v.PresentTags.Contains(0))
+            {
+                e.WriteVInt(0);
+                e.WriteInt((long)v.UnitTagIndex);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(1))
+            {
+                e.WriteVInt(1);
+                e.WriteInt((long)v.UnitTagRecycle);
+            }
         }
 
     }
 
     public sealed partial class SUnitInitEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitInitEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitTagIndex")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitTagIndex", Tag = 0)]
         public long UnitTagIndex { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitTagRecycle")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitTagRecycle", Tag = 1)]
         public long UnitTagRecycle { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitTypeName")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitTypeName", Tag = 2)]
         public byte[] UnitTypeName { get; set; } = [];
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_controlPlayerId")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_controlPlayerId", Tag = 3)]
         public int ControlPlayerId { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_upkeepPlayerId")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_upkeepPlayerId", Tag = 4)]
         public int UpkeepPlayerId { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_x")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_x", Tag = 5)]
         public int X { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_y")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_y", Tag = 6)]
         public int Y { get; set; }
+
+        internal global::System.Collections.Generic.HashSet<long>? PresentTags { get; set; }
 
         long global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitInitEvent.UnitTagIndex => UnitTagIndex;
         long global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitInitEvent.UnitTagRecycle => UnitTagRecycle;
@@ -5611,18 +6001,18 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Replay.Tracker
 
         internal static SUnitInitEvent ReadVersioned(VersionedDecoder d)
         {
-            var r = new SUnitInitEvent();
+            var r = new SUnitInitEvent { PresentTags = [] };
             for (long n = d.ReadStructFieldCount(); n > 0; n--)
             {
                 switch (d.ReadVInt())
                 {
-                    case 0: r.UnitTagIndex = d.ReadInt(); break;
-                    case 1: r.UnitTagRecycle = d.ReadInt(); break;
-                    case 2: r.UnitTypeName = d.ReadBlob(); break;
-                    case 3: r.ControlPlayerId = checked((int)d.ReadInt()); break;
-                    case 4: r.UpkeepPlayerId = checked((int)d.ReadInt()); break;
-                    case 5: r.X = checked((int)d.ReadInt()); break;
-                    case 6: r.Y = checked((int)d.ReadInt()); break;
+                    case 0: r.UnitTagIndex = d.ReadInt(); r.PresentTags.Add(0); break;
+                    case 1: r.UnitTagRecycle = d.ReadInt(); r.PresentTags.Add(1); break;
+                    case 2: r.UnitTypeName = d.ReadBlob(); r.PresentTags.Add(2); break;
+                    case 3: r.ControlPlayerId = checked((int)d.ReadInt()); r.PresentTags.Add(3); break;
+                    case 4: r.UpkeepPlayerId = checked((int)d.ReadInt()); r.PresentTags.Add(4); break;
+                    case 5: r.X = checked((int)d.ReadInt()); r.PresentTags.Add(5); break;
+                    case 6: r.Y = checked((int)d.ReadInt()); r.PresentTags.Add(6); break;
                     default: d.SkipInstance(); break;
                 }
             }
@@ -5631,38 +6021,61 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Replay.Tracker
 
         internal static void WriteVersioned(VersionedEncoder e, SUnitInitEvent v)
         {
-            e.WriteStructFieldCount(7);
-            e.WriteVInt(0);
-            e.WriteInt((long)v.UnitTagIndex);
-            e.WriteVInt(1);
-            e.WriteInt((long)v.UnitTagRecycle);
-            e.WriteVInt(2);
-            e.WriteBlob(v.UnitTypeName);
-            e.WriteVInt(3);
-            e.WriteInt((long)v.ControlPlayerId);
-            e.WriteVInt(4);
-            e.WriteInt((long)v.UpkeepPlayerId);
-            e.WriteVInt(5);
-            e.WriteInt((long)v.X);
-            e.WriteVInt(6);
-            e.WriteInt((long)v.Y);
+            e.WriteStructFieldCount(v.PresentTags?.Count ?? 7);
+            if (v.PresentTags is null || v.PresentTags.Contains(0))
+            {
+                e.WriteVInt(0);
+                e.WriteInt((long)v.UnitTagIndex);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(1))
+            {
+                e.WriteVInt(1);
+                e.WriteInt((long)v.UnitTagRecycle);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(2))
+            {
+                e.WriteVInt(2);
+                e.WriteBlob(v.UnitTypeName);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(3))
+            {
+                e.WriteVInt(3);
+                e.WriteInt((long)v.ControlPlayerId);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(4))
+            {
+                e.WriteVInt(4);
+                e.WriteInt((long)v.UpkeepPlayerId);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(5))
+            {
+                e.WriteVInt(5);
+                e.WriteInt((long)v.X);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(6))
+            {
+                e.WriteVInt(6);
+                e.WriteInt((long)v.Y);
+            }
         }
 
     }
 
     public sealed partial class SUnitOwnerChangeEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitOwnerChangeEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitTagIndex")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitTagIndex", Tag = 0)]
         public long UnitTagIndex { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitTagRecycle")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitTagRecycle", Tag = 1)]
         public long UnitTagRecycle { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_controlPlayerId")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_controlPlayerId", Tag = 2)]
         public int ControlPlayerId { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_upkeepPlayerId")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_upkeepPlayerId", Tag = 3)]
         public int UpkeepPlayerId { get; set; }
+
+        internal global::System.Collections.Generic.HashSet<long>? PresentTags { get; set; }
 
         long global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitOwnerChangeEvent.UnitTagIndex => UnitTagIndex;
         long global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitOwnerChangeEvent.UnitTagRecycle => UnitTagRecycle;
@@ -5671,15 +6084,15 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Replay.Tracker
 
         internal static SUnitOwnerChangeEvent ReadVersioned(VersionedDecoder d)
         {
-            var r = new SUnitOwnerChangeEvent();
+            var r = new SUnitOwnerChangeEvent { PresentTags = [] };
             for (long n = d.ReadStructFieldCount(); n > 0; n--)
             {
                 switch (d.ReadVInt())
                 {
-                    case 0: r.UnitTagIndex = d.ReadInt(); break;
-                    case 1: r.UnitTagRecycle = d.ReadInt(); break;
-                    case 2: r.ControlPlayerId = checked((int)d.ReadInt()); break;
-                    case 3: r.UpkeepPlayerId = checked((int)d.ReadInt()); break;
+                    case 0: r.UnitTagIndex = d.ReadInt(); r.PresentTags.Add(0); break;
+                    case 1: r.UnitTagRecycle = d.ReadInt(); r.PresentTags.Add(1); break;
+                    case 2: r.ControlPlayerId = checked((int)d.ReadInt()); r.PresentTags.Add(2); break;
+                    case 3: r.UpkeepPlayerId = checked((int)d.ReadInt()); r.PresentTags.Add(3); break;
                     default: d.SkipInstance(); break;
                 }
             }
@@ -5688,39 +6101,53 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Replay.Tracker
 
         internal static void WriteVersioned(VersionedEncoder e, SUnitOwnerChangeEvent v)
         {
-            e.WriteStructFieldCount(4);
-            e.WriteVInt(0);
-            e.WriteInt((long)v.UnitTagIndex);
-            e.WriteVInt(1);
-            e.WriteInt((long)v.UnitTagRecycle);
-            e.WriteVInt(2);
-            e.WriteInt((long)v.ControlPlayerId);
-            e.WriteVInt(3);
-            e.WriteInt((long)v.UpkeepPlayerId);
+            e.WriteStructFieldCount(v.PresentTags?.Count ?? 4);
+            if (v.PresentTags is null || v.PresentTags.Contains(0))
+            {
+                e.WriteVInt(0);
+                e.WriteInt((long)v.UnitTagIndex);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(1))
+            {
+                e.WriteVInt(1);
+                e.WriteInt((long)v.UnitTagRecycle);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(2))
+            {
+                e.WriteVInt(2);
+                e.WriteInt((long)v.ControlPlayerId);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(3))
+            {
+                e.WriteVInt(3);
+                e.WriteInt((long)v.UpkeepPlayerId);
+            }
         }
 
     }
 
     public sealed partial class SUnitPositionsEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitPositionsEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_firstUnitIndex")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_firstUnitIndex", Tag = 0)]
         public long FirstUnitIndex { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_items")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_items", Tag = 1)]
         public int[] Items { get; set; } = [];
+
+        internal global::System.Collections.Generic.HashSet<long>? PresentTags { get; set; }
 
         long global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitPositionsEvent.FirstUnitIndex => FirstUnitIndex;
         global::System.Collections.Generic.IReadOnlyList<int> global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitPositionsEvent.Items => Items;
 
         internal static SUnitPositionsEvent ReadVersioned(VersionedDecoder d)
         {
-            var r = new SUnitPositionsEvent();
+            var r = new SUnitPositionsEvent { PresentTags = [] };
             for (long n = d.ReadStructFieldCount(); n > 0; n--)
             {
                 switch (d.ReadVInt())
                 {
-                    case 0: r.FirstUnitIndex = d.ReadInt(); break;
-                    case 1: r.Items = d.ReadArray(() => checked((int)d.ReadInt())); break;
+                    case 0: r.FirstUnitIndex = d.ReadInt(); r.PresentTags.Add(0); break;
+                    case 1: r.Items = d.ReadArray(() => checked((int)d.ReadInt())); r.PresentTags.Add(1); break;
                     default: d.SkipInstance(); break;
                 }
             }
@@ -5729,25 +6156,33 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Replay.Tracker
 
         internal static void WriteVersioned(VersionedEncoder e, SUnitPositionsEvent v)
         {
-            e.WriteStructFieldCount(2);
-            e.WriteVInt(0);
-            e.WriteInt((long)v.FirstUnitIndex);
-            e.WriteVInt(1);
-            e.WriteArray(v.Items, x0 => e.WriteInt((long)x0));
+            e.WriteStructFieldCount(v.PresentTags?.Count ?? 2);
+            if (v.PresentTags is null || v.PresentTags.Contains(0))
+            {
+                e.WriteVInt(0);
+                e.WriteInt((long)v.FirstUnitIndex);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(1))
+            {
+                e.WriteVInt(1);
+                e.WriteArray(v.Items, x0 => e.WriteInt((long)x0));
+            }
         }
 
     }
 
     public sealed partial class SUnitTypeChangeEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitTypeChangeEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitTagIndex")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitTagIndex", Tag = 0)]
         public long UnitTagIndex { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitTagRecycle")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitTagRecycle", Tag = 1)]
         public long UnitTagRecycle { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitTypeName")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitTypeName", Tag = 2)]
         public byte[] UnitTypeName { get; set; } = [];
+
+        internal global::System.Collections.Generic.HashSet<long>? PresentTags { get; set; }
 
         long global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitTypeChangeEvent.UnitTagIndex => UnitTagIndex;
         long global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitTypeChangeEvent.UnitTagRecycle => UnitTagRecycle;
@@ -5755,14 +6190,14 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Replay.Tracker
 
         internal static SUnitTypeChangeEvent ReadVersioned(VersionedDecoder d)
         {
-            var r = new SUnitTypeChangeEvent();
+            var r = new SUnitTypeChangeEvent { PresentTags = [] };
             for (long n = d.ReadStructFieldCount(); n > 0; n--)
             {
                 switch (d.ReadVInt())
                 {
-                    case 0: r.UnitTagIndex = d.ReadInt(); break;
-                    case 1: r.UnitTagRecycle = d.ReadInt(); break;
-                    case 2: r.UnitTypeName = d.ReadBlob(); break;
+                    case 0: r.UnitTagIndex = d.ReadInt(); r.PresentTags.Add(0); break;
+                    case 1: r.UnitTagRecycle = d.ReadInt(); r.PresentTags.Add(1); break;
+                    case 2: r.UnitTypeName = d.ReadBlob(); r.PresentTags.Add(2); break;
                     default: d.SkipInstance(); break;
                 }
             }
@@ -5771,27 +6206,38 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Replay.Tracker
 
         internal static void WriteVersioned(VersionedEncoder e, SUnitTypeChangeEvent v)
         {
-            e.WriteStructFieldCount(3);
-            e.WriteVInt(0);
-            e.WriteInt((long)v.UnitTagIndex);
-            e.WriteVInt(1);
-            e.WriteInt((long)v.UnitTagRecycle);
-            e.WriteVInt(2);
-            e.WriteBlob(v.UnitTypeName);
+            e.WriteStructFieldCount(v.PresentTags?.Count ?? 3);
+            if (v.PresentTags is null || v.PresentTags.Contains(0))
+            {
+                e.WriteVInt(0);
+                e.WriteInt((long)v.UnitTagIndex);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(1))
+            {
+                e.WriteVInt(1);
+                e.WriteInt((long)v.UnitTagRecycle);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(2))
+            {
+                e.WriteVInt(2);
+                e.WriteBlob(v.UnitTypeName);
+            }
         }
 
     }
 
     public sealed partial class SUpgradeEvent : global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUpgradeEvent
     {
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_playerId")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_playerId", Tag = 0)]
         public int PlayerId { get; set; }
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_upgradeTypeName")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_upgradeTypeName", Tag = 1)]
         public byte[] UpgradeTypeName { get; set; } = [];
 
-        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_count")]
+        [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_count", Tag = 2)]
         public int Count { get; set; }
+
+        internal global::System.Collections.Generic.HashSet<long>? PresentTags { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUpgradeEvent.PlayerId => PlayerId;
         byte[] global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUpgradeEvent.UpgradeTypeName => UpgradeTypeName;
@@ -5799,14 +6245,14 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Replay.Tracker
 
         internal static SUpgradeEvent ReadVersioned(VersionedDecoder d)
         {
-            var r = new SUpgradeEvent();
+            var r = new SUpgradeEvent { PresentTags = [] };
             for (long n = d.ReadStructFieldCount(); n > 0; n--)
             {
                 switch (d.ReadVInt())
                 {
-                    case 0: r.PlayerId = checked((int)d.ReadInt()); break;
-                    case 1: r.UpgradeTypeName = d.ReadBlob(); break;
-                    case 2: r.Count = checked((int)d.ReadInt()); break;
+                    case 0: r.PlayerId = checked((int)d.ReadInt()); r.PresentTags.Add(0); break;
+                    case 1: r.UpgradeTypeName = d.ReadBlob(); r.PresentTags.Add(1); break;
+                    case 2: r.Count = checked((int)d.ReadInt()); r.PresentTags.Add(2); break;
                     default: d.SkipInstance(); break;
                 }
             }
@@ -5815,13 +6261,22 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol57507.Replay.Tracker
 
         internal static void WriteVersioned(VersionedEncoder e, SUpgradeEvent v)
         {
-            e.WriteStructFieldCount(3);
-            e.WriteVInt(0);
-            e.WriteInt((long)v.PlayerId);
-            e.WriteVInt(1);
-            e.WriteBlob(v.UpgradeTypeName);
-            e.WriteVInt(2);
-            e.WriteInt((long)v.Count);
+            e.WriteStructFieldCount(v.PresentTags?.Count ?? 3);
+            if (v.PresentTags is null || v.PresentTags.Contains(0))
+            {
+                e.WriteVInt(0);
+                e.WriteInt((long)v.PlayerId);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(1))
+            {
+                e.WriteVInt(1);
+                e.WriteBlob(v.UpgradeTypeName);
+            }
+            if (v.PresentTags is null || v.PresentTags.Contains(2))
+            {
+                e.WriteVInt(2);
+                e.WriteInt((long)v.Count);
+            }
         }
 
     }
