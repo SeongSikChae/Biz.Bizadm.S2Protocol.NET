@@ -610,6 +610,14 @@ private byte[] ReadFile(string name)
 
 `MpqUserData`의 실제 내용 속성 이름은 MPQ.NET 소스로 확인한다.
 
+구현에서 정한 세부:
+
+- `MpqUserData.Content`(MPQ.NET)가 직렬화된 헤더다. user data가 없으면 `CorruptedReplayException`.
+- `replay.details`/`replay.initData`가 없으면 `FileNotFoundException`, 이벤트 3종·attributes 파일이 없으면 빈 결과(tracker 파일이 없는 구버전 리플레이).
+- 합성 리플레이 테스트: `MpqArchive.Create`로 만든 아카이브 앞에 user data 블록(16바이트 + 헤더 내용, 헤더 오프셋 0x400)을 붙인다.
+- 실제 샘플은 `tests/Biz.Bizadm.S2Protocol.NET.Tests/TestData/Replays/*.SC2Replay`에 두면 출력 폴더로 복사되어 끝까지 디코딩된다(없으면 Inconclusive).
+- 샘플(2026-10-31): 사용자 지정 `G:\StarcraftAI\sessions`의 151개가 모두 base build 97563(AI 대전, 2인)이다. 크기·길이가 다른 4개를 복사했다. 네 파일 모두 끝까지 디코딩되고(game 이벤트 최대 165,025건), `replay.attributes.events`는 0바이트다. 실제 샘플로 검증한 빌드는 97563 하나이고, attributes 실데이터는 없다.
+
 - **검증**: 샘플 리플레이로 Open → Header.BaseBuild, Details 플레이어 수 확인(샘플 없으면 Inconclusive)
 - **선행 단위**: 13, 14
 
