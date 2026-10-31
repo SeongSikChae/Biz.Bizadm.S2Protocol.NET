@@ -573,6 +573,14 @@ if (!buffer.Done)
 }
 ```
 
+구현에서 정한 세부:
+
+- `decode_replay_attributes_events` 본문은 93개 py에서 동일하다(확인). 그래서 `IS2Protocol`에 넣지 않고 버전 무관 정적 API `ReplayAttributes.Decode`/`Encode`로 둔다.
+- Python `scopes[scope][attrid]` 묶음은 원래 순서를 잃는다. 그래서 파일 순서 목록 `Attributes`를 보관하고, `Scopes`는 그 위의 묶음 보기로 둔다. 인코딩은 목록으로 한다.
+- Python `value`(4바이트 역순 후 양쪽 0 제거)는 되돌릴 수 없다. 그래서 `ReplayAttribute.RawValue`(원본 4바이트)를 보관하고 `Value`는 계산 속성으로 둔다.
+- 빈 입력은 Python `{}`처럼 `Source`/`MapNamespace`가 null이다. count는 읽고 무시하며, 인코딩은 실제 개수를 쓴다. 원본 count가 실제와 다르면 단위 17 왕복에서 드러난다.
+- `attributes.py`의 attribute ID 상수 60개는 `AttributeIds`로 옮겼다.
+
 - **검증**: 손으로 만든 attributes 바이트 → scope/attrId별 값 확인. 인코딩(`EncodeAttributes`) 왕복
 - **선행 단위**: 3, 6
 

@@ -1,0 +1,66 @@
+namespace Biz.Bizadm.S2Protocol.NET.Attributes;
+
+// s2protocol attributes.py의 attribute ID 상수(ReplayAttribute.AttrId 값).
+public static class AttributeIds
+{
+    public const uint Controller = 500;
+    public const uint Rules = 1000;
+    public const uint IsPremadeGame = 1001;
+    public const uint PartiesPrivate = 2000;
+    public const uint PartiesPremade = 2001;
+    public const uint PartiesPremade1v1 = 2002;
+    public const uint PartiesPremade2v2 = 2003;
+    public const uint PartiesPremade3v3 = 2004;
+    public const uint PartiesPremade4v4 = 2005;
+    public const uint PartiesPremadeFfa = 2006;
+    public const uint PartiesPremade5v5 = 2007;
+    public const uint PartiesPremade6v6 = 2008;
+    public const uint PartiesPrivateOne = 2010;
+    public const uint PartiesPrivateTwo = 2011;
+    public const uint PartiesPrivateThree = 2012;
+    public const uint PartiesPrivateFour = 2013;
+    public const uint PartiesPrivateFive = 2014;
+    public const uint PartiesPrivateSix = 2015;
+    public const uint PartiesPrivateSeven = 2016;
+    public const uint PartiesPrivateFfa = 2017;
+    public const uint PartiesPrivateCustom = 2018;
+    public const uint PartiesPrivateEight = 2019;
+    public const uint PartiesPrivateNine = 2020;
+    public const uint PartiesPrivateTen = 2021;
+    public const uint PartiesPrivateEleven = 2022;
+    public const uint PartiesPrivateFfaTandem = 2023;
+    public const uint PartiesPrivateCustomTandem = 2024;
+    public const uint GameSpeed = 3000;
+    public const uint Race = 3001;
+    public const uint PartyColor = 3002;
+    public const uint Handicap = 3003;
+    public const uint AiSkill = 3004;
+    public const uint AiRace = 3005;
+    public const uint LobbyDelay = 3006;
+    public const uint ParticipantRole = 3007;
+    public const uint WatcherType = 3008;
+    public const uint GameMode = 3009;
+    public const uint LockedAlliances = 3010;
+    public const uint PlayerLogo = 3011;
+    public const uint TandemLeader = 3012;
+    public const uint Commander = 3013;
+    public const uint CommanderLevel = 3014;
+    public const uint GameDuration = 3015;
+    public const uint CommanderMasteryLevel = 3016;
+    public const uint AiBuildFirst = 3100;
+    public const uint AiBuildLast = 3300;
+    public const uint PrivacyOption = 4000;
+    public const uint UsingCustomObserverUi = 4001;
+    public const uint CanReady = 4009;
+    public const uint LobbyMode = 4010;
+    public const uint ReadyOrderDeprecated = 4011;
+    public const uint ActiveTeam = 4012;
+    public const uint LobbyPhase = 4015;
+    public const uint ReadyingCountDeprecated = 4016;
+    public const uint ActiveRound = 4017;
+    public const uint ReadyMode = 4018;
+    public const uint ReadyRequirements = 4019;
+    public const uint FirstActiveTeam = 4020;
+    public const uint CommanderMasteryTalentFirst = 5000;
+    public const uint CommanderMasteryTalentLast = 5005;
+}
