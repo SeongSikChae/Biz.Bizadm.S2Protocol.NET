@@ -6,23 +6,31 @@ namespace Biz.Bizadm.S2Protocol.NET.Attributes;
 // s2protocol decode_replay_attributes_events(93개 버전에서 동일한 구현)의 포팅. 리틀엔디언이며,
 // 헤더(source 8비트, mapNamespace 32비트, count 32비트) 뒤에 namespace·attrid(32비트), scope(8비트),
 // 정렬된 4바이트 값이 끝까지 반복된다. count는 Python처럼 읽고 쓰지 않는다.
+/// <summary>The contents of <c>replay.attributes.events</c> (s2protocol <c>decode_replay_attributes_events</c>).</summary>
 public sealed class ReplayAttributes
 {
     // 빈 입력이면 Python({})처럼 헤더가 없다.
+    /// <summary>The source byte, or <see langword="null"/> when the file is empty.</summary>
     public int? Source { get; init; }
 
+    /// <summary>The map namespace, or <see langword="null"/> when the file is empty.</summary>
     public uint? MapNamespace { get; init; }
 
     // 파일 순서 그대로. Python의 scopes 묶음은 순서를 잃으므로 인코딩은 이 목록으로 한다.
+    /// <summary>The attributes in file order.</summary>
     public IReadOnlyList<ReplayAttribute> Attributes { get; init; } = [];
 
     // Python attributes['scopes'][scope][attrid] 와 같은 묶음.
+    /// <summary>The attributes grouped by scope and attribute id, like s2protocol's <c>scopes</c>.</summary>
     public IReadOnlyDictionary<int, IReadOnlyDictionary<uint, IReadOnlyList<ReplayAttribute>>> Scopes =>
         Attributes.GroupBy(a => (int)a.Scope).ToDictionary(
             s => s.Key,
             s => (IReadOnlyDictionary<uint, IReadOnlyList<ReplayAttribute>>)s.GroupBy(a => a.AttrId)
                 .ToDictionary(g => g.Key, g => (IReadOnlyList<ReplayAttribute>)g.ToList()));
 
+    /// <summary>Decodes <c>replay.attributes.events</c>. The format is the same for every build.</summary>
+    /// <param name="data">The file contents.</param>
+    /// <returns>The attributes.</returns>
     public static ReplayAttributes Decode(ReadOnlyMemory<byte> data)
     {
         var buffer = new BitPackedBuffer(data, bigEndian: false);
@@ -43,6 +51,9 @@ public sealed class ReplayAttributes
         return new ReplayAttributes { Source = source, MapNamespace = mapNamespace, Attributes = attributes };
     }
 
+    /// <summary>Encodes the attributes in <see cref="Attributes"/> order.</summary>
+    /// <returns>The file contents.</returns>
+    /// <exception cref="InvalidOperationException">Attributes exist without a header, or a raw value is not 4 bytes.</exception>
     public byte[] Encode()
     {
         if (Source is null || MapNamespace is null)

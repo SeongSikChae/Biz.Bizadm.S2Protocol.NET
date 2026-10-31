@@ -1,8 +1,12 @@
 namespace Biz.Bizadm.S2Protocol.NET.Attributes;
 
 // s2protocol attributes.py의 attribute ID 상수(ReplayAttribute.AttrId 값).
+/// <summary>Attribute ids of s2protocol <c>attributes.py</c> (values of <see cref="ReplayAttribute.AttrId"/>).</summary>
+/// <remarks>Each constant is the PascalCase form of the <c>attributes.py</c> name, for example <c>RACE</c> is <see cref="Race"/>.</remarks>
 public static class AttributeIds
 {
+    // 상수는 attributes.py 이름과 1:1이라 멤버별 XML 문서를 두지 않는다.
+#pragma warning disable CS1591
     public const uint Controller = 500;
     public const uint Rules = 1000;
     public const uint IsPremadeGame = 1001;
@@ -63,4 +67,5 @@ public static class AttributeIds
     public const uint FirstActiveTeam = 4020;
     public const uint CommanderMasteryTalentFirst = 5000;
     public const uint CommanderMasteryTalentLast = 5005;
+#pragma warning restore CS1591
 }

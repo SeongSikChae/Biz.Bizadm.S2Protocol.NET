@@ -17,30 +17,76 @@ namespace Biz.Bizadm.S2Protocol.NET.Protocols;
 /// </remarks>
 public interface IS2Protocol
 {
+    /// <summary>The s2protocol base build of this protocol.</summary>
     int BaseBuild { get; }
 
+    /// <summary>Decodes a replay header (the MPQ user data contents).</summary>
+    /// <param name="data">The encoded header.</param>
+    /// <returns>The header; the object is this build's generated type.</returns>
     IHeader DecodeHeader(ReadOnlyMemory<byte> data);
 
+    /// <summary>Decodes <c>replay.details</c>.</summary>
+    /// <param name="data">The file contents.</param>
+    /// <returns>The details; the object is this build's generated type.</returns>
     IDetails DecodeDetails(ReadOnlyMemory<byte> data);
 
+    /// <summary>Decodes <c>replay.initData</c>.</summary>
+    /// <param name="data">The file contents.</param>
+    /// <returns>The init data; the object is this build's generated type.</returns>
     IInitData DecodeInitData(ReadOnlyMemory<byte> data);
 
+    /// <summary>Decodes <c>replay.game.events</c> lazily.</summary>
+    /// <param name="data">The file contents.</param>
+    /// <returns>The events.</returns>
+    /// <exception cref="NotSupportedException">s2protocol cannot decode game events of this build.</exception>
     IEnumerable<GameEvent> DecodeGameEvents(ReadOnlyMemory<byte> data);
 
+    /// <summary>Decodes <c>replay.message.events</c> lazily.</summary>
+    /// <param name="data">The file contents.</param>
+    /// <returns>The events.</returns>
+    /// <exception cref="NotSupportedException">s2protocol cannot decode message events of this build.</exception>
     IEnumerable<MessageEvent> DecodeMessageEvents(ReadOnlyMemory<byte> data);
 
+    /// <summary>Decodes <c>replay.tracker.events</c> lazily.</summary>
+    /// <param name="data">The file contents.</param>
+    /// <returns>The events.</returns>
+    /// <exception cref="NotSupportedException">This build has no tracker events.</exception>
     IEnumerable<TrackerEvent> DecodeTrackerEvents(ReadOnlyMemory<byte> data);
 
     // 값이 이 빌드의 생성 타입이 아니면 ArgumentException.
+    /// <summary>Encodes a replay header.</summary>
+    /// <param name="value">A header of this build's generated type.</param>
+    /// <returns>The encoded header.</returns>
+    /// <exception cref="ArgumentException">The value is not this build's generated type.</exception>
     byte[] EncodeHeader(IHeader value);
 
+    /// <summary>Encodes <c>replay.details</c>.</summary>
+    /// <param name="value">Details of this build's generated type.</param>
+    /// <returns>The file contents.</returns>
+    /// <exception cref="ArgumentException">The value is not this build's generated type.</exception>
     byte[] EncodeDetails(IDetails value);
 
+    /// <summary>Encodes <c>replay.initData</c>.</summary>
+    /// <param name="value">Init data of this build's generated type.</param>
+    /// <returns>The file contents.</returns>
+    /// <exception cref="ArgumentException">The value is not this build's generated type.</exception>
     byte[] EncodeInitData(IInitData value);
 
+    /// <summary>Encodes <c>replay.game.events</c>.</summary>
+    /// <param name="events">Events whose bodies are this build's generated types.</param>
+    /// <returns>The file contents.</returns>
+    /// <exception cref="ArgumentException">An event body does not match its event id in this build.</exception>
     byte[] EncodeGameEvents(IEnumerable<GameEvent> events);
 
+    /// <summary>Encodes <c>replay.message.events</c>.</summary>
+    /// <param name="events">Events whose bodies are this build's generated types.</param>
+    /// <returns>The file contents.</returns>
+    /// <exception cref="ArgumentException">An event body does not match its event id in this build.</exception>
     byte[] EncodeMessageEvents(IEnumerable<MessageEvent> events);
 
+    /// <summary>Encodes <c>replay.tracker.events</c>.</summary>
+    /// <param name="events">Events whose bodies are this build's generated types.</param>
+    /// <returns>The file contents.</returns>
+    /// <exception cref="ArgumentException">An event body does not match its event id in this build.</exception>
     byte[] EncodeTrackerEvents(IEnumerable<TrackerEvent> events);
 }

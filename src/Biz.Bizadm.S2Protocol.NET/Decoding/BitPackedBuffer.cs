@@ -2,6 +2,13 @@ namespace Biz.Bizadm.S2Protocol.NET.Decoding;
 
 // s2protocol decoders.BitPackedBuffer: 바이트 안에서는 LSB부터 소비하고,
 // 빅엔디언이면 먼저 읽은 청크가 결과의 상위 비트가 된다.
+
+/// <summary>
+/// Bit reader of the s2protocol <c>BitPackedBuffer</c>: bits are taken from the low end of each byte, and in big-endian
+/// mode the first chunk read becomes the most significant bits of the value.
+/// </summary>
+/// <param name="data">The bytes to read.</param>
+/// <param name="bigEndian">Big-endian value assembly (protocol data); little-endian is used for replay attributes.</param>
 public sealed class BitPackedBuffer(ReadOnlyMemory<byte> data, bool bigEndian = true)
 {
     private readonly ReadOnlyMemory<byte> _data = data;
@@ -10,12 +17,19 @@ public sealed class BitPackedBuffer(ReadOnlyMemory<byte> data, bool bigEndian = 
     private int _next;
     private int _nextBits;
 
+    /// <summary>Whether all bits have been read.</summary>
     public bool Done => _nextBits == 0 && _used >= _data.Length;
 
+    /// <summary>Number of bits read so far.</summary>
     public long UsedBits => _used * 8L - _nextBits;
 
+    /// <summary>Skips the rest of the current byte.</summary>
     public void ByteAlign() => _nextBits = 0;
 
+    /// <summary>Reads up to 64 bits as one value.</summary>
+    /// <param name="bits">Number of bits (0 to 64).</param>
+    /// <returns>The value.</returns>
+    /// <exception cref="CorruptedReplayException">The data ends first.</exception>
     public ulong ReadBits(int bits)
     {
         ArgumentOutOfRangeException.ThrowIfNegative(bits);
@@ -33,6 +47,9 @@ public sealed class BitPackedBuffer(ReadOnlyMemory<byte> data, bool bigEndian = 
         return result;
     }
 
+    /// <summary>Reads any number of bits as one value, returned as big-endian bytes.</summary>
+    /// <param name="bits">Number of bits.</param>
+    /// <returns>The value in <c>(bits + 7) / 8</c> big-endian bytes.</returns>
     // ReadBits(bits)가 만들 정수를 빅엔디언 바이트((bits+7)/8개)로 돌려준다. 64비트를 넘는 bitarray용.
     public byte[] ReadBitsToBytes(int bits)
     {
@@ -54,6 +71,10 @@ public sealed class BitPackedBuffer(ReadOnlyMemory<byte> data, bool bigEndian = 
         return result;
     }
 
+    /// <summary>Skips the rest of the current byte, then reads whole bytes.</summary>
+    /// <param name="bytes">Number of bytes.</param>
+    /// <returns>The bytes.</returns>
+    /// <exception cref="CorruptedReplayException">The data ends first.</exception>
     public byte[] ReadAlignedBytes(int bytes)
     {
         ArgumentOutOfRangeException.ThrowIfNegative(bytes);
@@ -66,6 +87,9 @@ public sealed class BitPackedBuffer(ReadOnlyMemory<byte> data, bool bigEndian = 
         return result;
     }
 
+    /// <summary>Reads bytes as 8-bit values from the current bit position.</summary>
+    /// <param name="bytes">Number of bytes.</param>
+    /// <returns>The bytes.</returns>
     public byte[] ReadUnalignedBytes(int bytes)
     {
         ArgumentOutOfRangeException.ThrowIfNegative(bytes);
