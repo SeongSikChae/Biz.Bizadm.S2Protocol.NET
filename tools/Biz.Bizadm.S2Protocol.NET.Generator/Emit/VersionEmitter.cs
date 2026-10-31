@@ -290,9 +290,9 @@ internal sealed class VersionEmitter
         }
         if (type.Codecs.HasFlag(Codecs.Versioned))
         {
-            // 설계 D10: versioned로 읽은 필드 태그. null(직접 만든 객체)이면 모든 필드가 있는 것으로 본다.
+            // 설계 D10: versioned로 읽은 필드 태그(읽은 순서). null(직접 만든 객체)이면 모든 필드가 있는 것으로 본다.
             Claim(members, "PresentTags", type);
-            w.Line("internal global::System.Collections.Generic.HashSet<long>? PresentTags { get; set; }");
+            w.Line("internal global::System.Collections.Generic.List<long>? PresentTags { get; set; }");
             w.Line();
         }
         if (common is not null)
@@ -340,16 +340,27 @@ internal sealed class VersionEmitter
             w.Line("return r;");
             w.Close();
             w.Line();
-            // 기록된 필드만 쓴다(설계 D10). 모르는 태그는 읽을 때 건너뛰어 기록되지 않는다.
+            // 기록된 필드만, 읽은 순서대로 쓴다(설계 D10). 모르는 태그는 읽을 때 건너뛰어 기록되지 않는다.
+            // 기록이 없으면 모든 필드를 태그 오름차순으로 쓴다(Blizzard 데이터의 순서. 선언 순서와 다를 수 있다).
             w.Open($"internal static void WriteVersioned(VersionedEncoder e, {type.Name} v)");
-            w.Line($"e.WriteStructFieldCount(v.PresentTags?.Count ?? {structType.Fields.Count});");
-            foreach (var field in structType.Fields)
+            w.Open("if (v.PresentTags is null)");
+            w.Line($"e.WriteStructFieldCount({structType.Fields.Count});");
+            foreach (var field in structType.Fields.OrderBy(f => f.Tag))
             {
-                w.Open($"if (v.PresentTags is null || v.PresentTags.Contains({field.Tag}))");
                 w.Line($"e.WriteVInt({field.Tag});");
                 w.Line(WriteVersioned(field.Type, $"v.{ClrNames.Member(field.Name)}", 0) + ";");
-                w.Close();
             }
+            w.Line("return;");
+            w.Close();
+            w.Line("e.WriteStructFieldCount(v.PresentTags.Count);");
+            w.Open("foreach (long tag in v.PresentTags)");
+            w.Line("e.WriteVInt(tag);");
+            w.Open("switch (tag)");
+            foreach (var field in structType.Fields)
+                w.Line($"case {field.Tag}: {WriteVersioned(field.Type, $"v.{ClrNames.Member(field.Name)}", 0)}; break;");
+            w.Line($"default: throw new global::System.InvalidOperationException($\"Unknown field tag {{tag}} for {type.Name}.\");");
+            w.Close();
+            w.Close();
             w.Close();
             w.Line();
         }

@@ -76,7 +76,7 @@ internal static class GoldenSerializer
         if (type.Name == "UnknownCase")
             return new JsonObject();   // Python은 모르는 choice 태그에 {}
 
-        var present = (HashSet<long>?)type.GetProperty("PresentTags", BindingFlags.Instance | BindingFlags.NonPublic)?.GetValue(value);
+        var present = (ICollection<long>?)type.GetProperty("PresentTags", BindingFlags.Instance | BindingFlags.NonPublic)?.GetValue(value);
         var declared = type.GetProperties()
             .Select(p => (Property: p, Field: p.GetCustomAttribute<S2FieldAttribute>()))
             .Where(x => x.Field is not null)

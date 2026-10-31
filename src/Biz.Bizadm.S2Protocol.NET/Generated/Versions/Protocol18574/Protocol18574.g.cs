@@ -148,7 +148,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol18574
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_baseBuild", Tag = 5)]
         public long BaseBuild { get; set; }
 
-        internal global::System.Collections.Generic.HashSet<long>? PresentTags { get; set; }
+        internal global::System.Collections.Generic.List<long>? PresentTags { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.IVersion.Flags => Flags;
         int global::Biz.Bizadm.S2Protocol.NET.Common.IVersion.Major => Major;
@@ -178,36 +178,37 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol18574
 
         internal static void WriteVersioned(VersionedEncoder e, SVersion v)
         {
-            e.WriteStructFieldCount(v.PresentTags?.Count ?? 6);
-            if (v.PresentTags is null || v.PresentTags.Contains(0))
+            if (v.PresentTags is null)
             {
+                e.WriteStructFieldCount(6);
                 e.WriteVInt(0);
                 e.WriteInt((long)v.Flags);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(1))
-            {
                 e.WriteVInt(1);
                 e.WriteInt((long)v.Major);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(2))
-            {
                 e.WriteVInt(2);
                 e.WriteInt((long)v.Minor);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(3))
-            {
                 e.WriteVInt(3);
                 e.WriteInt((long)v.Revision);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(4))
-            {
                 e.WriteVInt(4);
                 e.WriteInt((long)v.Build);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(5))
-            {
                 e.WriteVInt(5);
                 e.WriteInt((long)v.BaseBuild);
+                return;
+            }
+            e.WriteStructFieldCount(v.PresentTags.Count);
+            foreach (long tag in v.PresentTags)
+            {
+                e.WriteVInt(tag);
+                switch (tag)
+                {
+                    case 0: e.WriteInt((long)v.Flags); break;
+                    case 1: e.WriteInt((long)v.Major); break;
+                    case 2: e.WriteInt((long)v.Minor); break;
+                    case 3: e.WriteInt((long)v.Revision); break;
+                    case 4: e.WriteInt((long)v.Build); break;
+                    case 5: e.WriteInt((long)v.BaseBuild); break;
+                    default: throw new global::System.InvalidOperationException($"Unknown field tag {tag} for SVersion.");
+                }
             }
         }
 
@@ -988,7 +989,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol18574.Game
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_b", Tag = 3)]
         public int B { get; set; }
 
-        internal global::System.Collections.Generic.HashSet<long>? PresentTags { get; set; }
+        internal global::System.Collections.Generic.List<long>? PresentTags { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IColor.A => A;
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IColor.R => R;
@@ -1014,26 +1015,31 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol18574.Game
 
         internal static void WriteVersioned(VersionedEncoder e, SColor v)
         {
-            e.WriteStructFieldCount(v.PresentTags?.Count ?? 4);
-            if (v.PresentTags is null || v.PresentTags.Contains(0))
+            if (v.PresentTags is null)
             {
+                e.WriteStructFieldCount(4);
                 e.WriteVInt(0);
                 e.WriteInt((long)v.A);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(1))
-            {
                 e.WriteVInt(1);
                 e.WriteInt((long)v.R);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(2))
-            {
                 e.WriteVInt(2);
                 e.WriteInt((long)v.G);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(3))
-            {
                 e.WriteVInt(3);
                 e.WriteInt((long)v.B);
+                return;
+            }
+            e.WriteStructFieldCount(v.PresentTags.Count);
+            foreach (long tag in v.PresentTags)
+            {
+                e.WriteVInt(tag);
+                switch (tag)
+                {
+                    case 0: e.WriteInt((long)v.A); break;
+                    case 1: e.WriteInt((long)v.R); break;
+                    case 2: e.WriteInt((long)v.G); break;
+                    case 3: e.WriteInt((long)v.B); break;
+                    default: throw new global::System.InvalidOperationException($"Unknown field tag {tag} for SColor.");
+                }
             }
         }
 
@@ -1134,7 +1140,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol18574.Game
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_defaultDifficulty", Tag = 13)]
         public int DefaultDifficulty { get; set; }
 
-        internal global::System.Collections.Generic.HashSet<long>? PresentTags { get; set; }
+        internal global::System.Collections.Generic.List<long>? PresentTags { get; set; }
 
         global::System.Collections.Generic.IReadOnlyList<global::Biz.Bizadm.S2Protocol.NET.Common.Game.IPlayerDetails>? global::Biz.Bizadm.S2Protocol.NET.Common.Game.IDetails.PlayerList => PlayerList;
         byte[] global::Biz.Bizadm.S2Protocol.NET.Common.Game.IDetails.Title => Title;
@@ -1180,76 +1186,61 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol18574.Game
 
         internal static void WriteVersioned(VersionedEncoder e, SDetails v)
         {
-            e.WriteStructFieldCount(v.PresentTags?.Count ?? 14);
-            if (v.PresentTags is null || v.PresentTags.Contains(0))
+            if (v.PresentTags is null)
             {
+                e.WriteStructFieldCount(14);
                 e.WriteVInt(0);
                 e.WriteOptional(v.PlayerList, x0 => e.WriteArray(x0, x1 => global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol18574.Game.SPlayerDetails.WriteVersioned(e, x1)));
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(1))
-            {
                 e.WriteVInt(1);
                 e.WriteBlob(v.Title);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(2))
-            {
                 e.WriteVInt(2);
                 e.WriteBlob(v.Difficulty);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(3))
-            {
                 e.WriteVInt(3);
                 global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol18574.Game.SThumbnail.WriteVersioned(e, v.Thumbnail);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(4))
-            {
                 e.WriteVInt(4);
                 e.WriteBool(v.IsBlizzardMap);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(5))
-            {
                 e.WriteVInt(5);
                 e.WriteInt((long)v.TimeUTC);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(6))
-            {
                 e.WriteVInt(6);
                 e.WriteInt((long)v.TimeLocalOffset);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(7))
-            {
                 e.WriteVInt(7);
                 e.WriteBlob(v.Description);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(8))
-            {
                 e.WriteVInt(8);
                 e.WriteBlob(v.ImageFilePath);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(9))
-            {
                 e.WriteVInt(9);
                 e.WriteBlob(v.MapFileName);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(10))
-            {
                 e.WriteVInt(10);
                 e.WriteOptional(v.CacheHandles, x0 => e.WriteArray(x0, x1 => e.WriteBlob(x1)));
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(11))
-            {
                 e.WriteVInt(11);
                 e.WriteBool(v.MiniSave);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(12))
-            {
                 e.WriteVInt(12);
                 e.WriteInt((long)v.GameSpeed);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(13))
-            {
                 e.WriteVInt(13);
                 e.WriteInt((long)v.DefaultDifficulty);
+                return;
+            }
+            e.WriteStructFieldCount(v.PresentTags.Count);
+            foreach (long tag in v.PresentTags)
+            {
+                e.WriteVInt(tag);
+                switch (tag)
+                {
+                    case 0: e.WriteOptional(v.PlayerList, x0 => e.WriteArray(x0, x1 => global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol18574.Game.SPlayerDetails.WriteVersioned(e, x1))); break;
+                    case 1: e.WriteBlob(v.Title); break;
+                    case 2: e.WriteBlob(v.Difficulty); break;
+                    case 3: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol18574.Game.SThumbnail.WriteVersioned(e, v.Thumbnail); break;
+                    case 4: e.WriteBool(v.IsBlizzardMap); break;
+                    case 5: e.WriteInt((long)v.TimeUTC); break;
+                    case 6: e.WriteInt((long)v.TimeLocalOffset); break;
+                    case 7: e.WriteBlob(v.Description); break;
+                    case 8: e.WriteBlob(v.ImageFilePath); break;
+                    case 9: e.WriteBlob(v.MapFileName); break;
+                    case 10: e.WriteOptional(v.CacheHandles, x0 => e.WriteArray(x0, x1 => e.WriteBlob(x1))); break;
+                    case 11: e.WriteBool(v.MiniSave); break;
+                    case 12: e.WriteInt((long)v.GameSpeed); break;
+                    case 13: e.WriteInt((long)v.DefaultDifficulty); break;
+                    default: throw new global::System.InvalidOperationException($"Unknown field tag {tag} for SDetails.");
+                }
             }
         }
 
@@ -1812,7 +1803,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol18574.Game
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_result", Tag = 8)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol18574.Game.EResultDetails Result { get; set; }
 
-        internal global::System.Collections.Generic.HashSet<long>? PresentTags { get; set; }
+        internal global::System.Collections.Generic.List<long>? PresentTags { get; set; }
 
         byte[] global::Biz.Bizadm.S2Protocol.NET.Common.Game.IPlayerDetails.Name => Name;
         global::Biz.Bizadm.S2Protocol.NET.Common.Game.IToonNameDetails global::Biz.Bizadm.S2Protocol.NET.Common.Game.IPlayerDetails.Toon => Toon;
@@ -1847,51 +1838,46 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol18574.Game
 
         internal static void WriteVersioned(VersionedEncoder e, SPlayerDetails v)
         {
-            e.WriteStructFieldCount(v.PresentTags?.Count ?? 9);
-            if (v.PresentTags is null || v.PresentTags.Contains(0))
+            if (v.PresentTags is null)
             {
+                e.WriteStructFieldCount(9);
                 e.WriteVInt(0);
                 e.WriteBlob(v.Name);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(1))
-            {
                 e.WriteVInt(1);
                 global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol18574.Game.SToonNameDetails.WriteVersioned(e, v.Toon);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(2))
-            {
                 e.WriteVInt(2);
                 e.WriteBlob(v.Race);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(3))
-            {
                 e.WriteVInt(3);
                 global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol18574.Game.SColor.WriteVersioned(e, v.Color);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(4))
-            {
                 e.WriteVInt(4);
                 e.WriteInt((long)v.Control);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(5))
-            {
                 e.WriteVInt(5);
                 e.WriteInt((long)v.TeamId);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(6))
-            {
                 e.WriteVInt(6);
                 e.WriteInt((long)v.Handicap);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(7))
-            {
                 e.WriteVInt(7);
                 e.WriteInt((long)v.Observe);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(8))
-            {
                 e.WriteVInt(8);
                 e.WriteInt((long)v.Result);
+                return;
+            }
+            e.WriteStructFieldCount(v.PresentTags.Count);
+            foreach (long tag in v.PresentTags)
+            {
+                e.WriteVInt(tag);
+                switch (tag)
+                {
+                    case 0: e.WriteBlob(v.Name); break;
+                    case 1: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol18574.Game.SToonNameDetails.WriteVersioned(e, v.Toon); break;
+                    case 2: e.WriteBlob(v.Race); break;
+                    case 3: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol18574.Game.SColor.WriteVersioned(e, v.Color); break;
+                    case 4: e.WriteInt((long)v.Control); break;
+                    case 5: e.WriteInt((long)v.TeamId); break;
+                    case 6: e.WriteInt((long)v.Handicap); break;
+                    case 7: e.WriteInt((long)v.Observe); break;
+                    case 8: e.WriteInt((long)v.Result); break;
+                    default: throw new global::System.InvalidOperationException($"Unknown field tag {tag} for SPlayerDetails.");
+                }
             }
         }
 
@@ -2491,7 +2477,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol18574.Game
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_file", Tag = 0)]
         public byte[] File { get; set; } = [];
 
-        internal global::System.Collections.Generic.HashSet<long>? PresentTags { get; set; }
+        internal global::System.Collections.Generic.List<long>? PresentTags { get; set; }
 
         byte[] global::Biz.Bizadm.S2Protocol.NET.Common.Game.IThumbnail.File => File;
 
@@ -2511,11 +2497,22 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol18574.Game
 
         internal static void WriteVersioned(VersionedEncoder e, SThumbnail v)
         {
-            e.WriteStructFieldCount(v.PresentTags?.Count ?? 1);
-            if (v.PresentTags is null || v.PresentTags.Contains(0))
+            if (v.PresentTags is null)
             {
+                e.WriteStructFieldCount(1);
                 e.WriteVInt(0);
                 e.WriteBlob(v.File);
+                return;
+            }
+            e.WriteStructFieldCount(v.PresentTags.Count);
+            foreach (long tag in v.PresentTags)
+            {
+                e.WriteVInt(tag);
+                switch (tag)
+                {
+                    case 0: e.WriteBlob(v.File); break;
+                    default: throw new global::System.InvalidOperationException($"Unknown field tag {tag} for SThumbnail.");
+                }
             }
         }
 
@@ -2538,7 +2535,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol18574.Game
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_id", Tag = 4)]
         public ulong Id { get; set; }
 
-        internal global::System.Collections.Generic.HashSet<long>? PresentTags { get; set; }
+        internal global::System.Collections.Generic.List<long>? PresentTags { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IToonNameDetails.Region => Region;
         global::Biz.Bizadm.S2Protocol.NET.FourCC global::Biz.Bizadm.S2Protocol.NET.Common.Game.IToonNameDetails.ProgramId => ProgramId;
@@ -2565,31 +2562,34 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol18574.Game
 
         internal static void WriteVersioned(VersionedEncoder e, SToonNameDetails v)
         {
-            e.WriteStructFieldCount(v.PresentTags?.Count ?? 5);
-            if (v.PresentTags is null || v.PresentTags.Contains(0))
+            if (v.PresentTags is null)
             {
+                e.WriteStructFieldCount(5);
                 e.WriteVInt(0);
                 e.WriteInt((long)v.Region);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(1))
-            {
                 e.WriteVInt(1);
                 e.WriteFourCC(v.ProgramId);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(2))
-            {
                 e.WriteVInt(2);
                 e.WriteInt((long)v.Realm);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(3))
-            {
                 e.WriteVInt(3);
                 e.WriteBlob(v.Name);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(4))
-            {
                 e.WriteVInt(4);
                 e.WriteUInt64((ulong)v.Id);
+                return;
+            }
+            e.WriteStructFieldCount(v.PresentTags.Count);
+            foreach (long tag in v.PresentTags)
+            {
+                e.WriteVInt(tag);
+                switch (tag)
+                {
+                    case 0: e.WriteInt((long)v.Region); break;
+                    case 1: e.WriteFourCC(v.ProgramId); break;
+                    case 2: e.WriteInt((long)v.Realm); break;
+                    case 3: e.WriteBlob(v.Name); break;
+                    case 4: e.WriteUInt64((ulong)v.Id); break;
+                    default: throw new global::System.InvalidOperationException($"Unknown field tag {tag} for SToonNameDetails.");
+                }
             }
         }
 
@@ -3744,7 +3744,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol18574.Replay
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_elapsedGameLoops", Tag = 3)]
         public long ElapsedGameLoops { get; set; }
 
-        internal global::System.Collections.Generic.HashSet<long>? PresentTags { get; set; }
+        internal global::System.Collections.Generic.List<long>? PresentTags { get; set; }
 
         byte[] global::Biz.Bizadm.S2Protocol.NET.Common.Replay.IHeader.Signature => Signature;
         global::Biz.Bizadm.S2Protocol.NET.Common.IVersion global::Biz.Bizadm.S2Protocol.NET.Common.Replay.IHeader.Version => Version;
@@ -3770,26 +3770,31 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol18574.Replay
 
         internal static void WriteVersioned(VersionedEncoder e, SHeader v)
         {
-            e.WriteStructFieldCount(v.PresentTags?.Count ?? 4);
-            if (v.PresentTags is null || v.PresentTags.Contains(0))
+            if (v.PresentTags is null)
             {
+                e.WriteStructFieldCount(4);
                 e.WriteVInt(0);
                 e.WriteBlob(v.Signature);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(1))
-            {
                 e.WriteVInt(1);
                 global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol18574.SVersion.WriteVersioned(e, v.Version);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(2))
-            {
                 e.WriteVInt(2);
                 e.WriteInt((long)v.Type);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(3))
-            {
                 e.WriteVInt(3);
                 e.WriteInt((long)v.ElapsedGameLoops);
+                return;
+            }
+            e.WriteStructFieldCount(v.PresentTags.Count);
+            foreach (long tag in v.PresentTags)
+            {
+                e.WriteVInt(tag);
+                switch (tag)
+                {
+                    case 0: e.WriteBlob(v.Signature); break;
+                    case 1: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol18574.SVersion.WriteVersioned(e, v.Version); break;
+                    case 2: e.WriteInt((long)v.Type); break;
+                    case 3: e.WriteInt((long)v.ElapsedGameLoops); break;
+                    default: throw new global::System.InvalidOperationException($"Unknown field tag {tag} for SHeader.");
+                }
             }
         }
 

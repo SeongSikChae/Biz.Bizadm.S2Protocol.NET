@@ -684,6 +684,13 @@ var events = protocol.DecodeGameEvents(bytes).ToList();
 CollectionAssert.AreEqual(bytes, protocol.EncodeGameEvents(events));
 ```
 
+결과(2026-10-31):
+
+- 첫 실행에서 4개 샘플 모두 details만 같은 길이로 달랐다. `SDetails`는 태그 16·17 필드가 선언 중간(6과 7 사이)에 있는데, 실제 데이터는 태그 오름차순으로 기록되어 있었다(선언 순서로 쓴 인코딩과 순서가 다름).
+- 수정: `PresentTags`를 읽은 순서를 보존하는 `List<long>`으로 바꾸고, 인코딩도 그 순서로 한다. 기록이 없는 객체는 태그 오름차순으로 쓴다(설계 D10 갱신).
+- 결과: 4개 샘플 × 7파트(header, details, initData, game/message/tracker, attributes)가 원본과 바이트 단위로 같다. gameloop 차이를 가장 작은 경우로 고르는 방식도 실제 데이터와 일치해, 원래 경우를 보존하는 대안은 필요 없다.
+- 제약은 `IS2Protocol`의 XML 문서(`remarks`)에 적었다.
+
 - **검증**: 지원 빌드 샘플 전체에서 header/details/initdata/3종 이벤트/attributes 바이트 일치. 왕복 보장은 정확 일치 프로토콜에 한한다(폴백 프로토콜은 versioned에서 모르는 태그를 skip해 정보가 빠질 수 있음). XML 문서에 이 제약을 적는다
 - **선행 단위**: 16
 

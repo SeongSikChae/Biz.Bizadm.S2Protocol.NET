@@ -49,7 +49,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol82457
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_data", Tag = 1)]
         public byte[] Data { get; set; } = [];
 
-        internal global::System.Collections.Generic.HashSet<long>? PresentTags { get; set; }
+        internal global::System.Collections.Generic.List<long>? PresentTags { get; set; }
 
         global::System.Collections.Generic.IReadOnlyList<int>? global::Biz.Bizadm.S2Protocol.NET.Common.IMD5.DataDeprecated => DataDeprecated;
         byte[] global::Biz.Bizadm.S2Protocol.NET.Common.IMD5.Data => Data;
@@ -71,16 +71,25 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol82457
 
         internal static void WriteVersioned(VersionedEncoder e, SMD5 v)
         {
-            e.WriteStructFieldCount(v.PresentTags?.Count ?? 2);
-            if (v.PresentTags is null || v.PresentTags.Contains(0))
+            if (v.PresentTags is null)
             {
+                e.WriteStructFieldCount(2);
                 e.WriteVInt(0);
                 e.WriteOptional(v.DataDeprecated, x0 => e.WriteArray(x0, x1 => e.WriteInt((long)x1)));
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(1))
-            {
                 e.WriteVInt(1);
                 e.WriteBlob(v.Data);
+                return;
+            }
+            e.WriteStructFieldCount(v.PresentTags.Count);
+            foreach (long tag in v.PresentTags)
+            {
+                e.WriteVInt(tag);
+                switch (tag)
+                {
+                    case 0: e.WriteOptional(v.DataDeprecated, x0 => e.WriteArray(x0, x1 => e.WriteInt((long)x1))); break;
+                    case 1: e.WriteBlob(v.Data); break;
+                    default: throw new global::System.InvalidOperationException($"Unknown field tag {tag} for SMD5.");
+                }
             }
         }
 
@@ -306,7 +315,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol82457
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_baseBuild", Tag = 5)]
         public long BaseBuild { get; set; }
 
-        internal global::System.Collections.Generic.HashSet<long>? PresentTags { get; set; }
+        internal global::System.Collections.Generic.List<long>? PresentTags { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.IVersion.Flags => Flags;
         int global::Biz.Bizadm.S2Protocol.NET.Common.IVersion.Major => Major;
@@ -336,36 +345,37 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol82457
 
         internal static void WriteVersioned(VersionedEncoder e, SVersion v)
         {
-            e.WriteStructFieldCount(v.PresentTags?.Count ?? 6);
-            if (v.PresentTags is null || v.PresentTags.Contains(0))
+            if (v.PresentTags is null)
             {
+                e.WriteStructFieldCount(6);
                 e.WriteVInt(0);
                 e.WriteInt((long)v.Flags);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(1))
-            {
                 e.WriteVInt(1);
                 e.WriteInt((long)v.Major);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(2))
-            {
                 e.WriteVInt(2);
                 e.WriteInt((long)v.Minor);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(3))
-            {
                 e.WriteVInt(3);
                 e.WriteInt((long)v.Revision);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(4))
-            {
                 e.WriteVInt(4);
                 e.WriteInt((long)v.Build);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(5))
-            {
                 e.WriteVInt(5);
                 e.WriteInt((long)v.BaseBuild);
+                return;
+            }
+            e.WriteStructFieldCount(v.PresentTags.Count);
+            foreach (long tag in v.PresentTags)
+            {
+                e.WriteVInt(tag);
+                switch (tag)
+                {
+                    case 0: e.WriteInt((long)v.Flags); break;
+                    case 1: e.WriteInt((long)v.Major); break;
+                    case 2: e.WriteInt((long)v.Minor); break;
+                    case 3: e.WriteInt((long)v.Revision); break;
+                    case 4: e.WriteInt((long)v.Build); break;
+                    case 5: e.WriteInt((long)v.BaseBuild); break;
+                    default: throw new global::System.InvalidOperationException($"Unknown field tag {tag} for SVersion.");
+                }
             }
         }
 
@@ -1403,7 +1413,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol82457.Game
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_b", Tag = 3)]
         public int B { get; set; }
 
-        internal global::System.Collections.Generic.HashSet<long>? PresentTags { get; set; }
+        internal global::System.Collections.Generic.List<long>? PresentTags { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IColor.A => A;
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IColor.R => R;
@@ -1429,26 +1439,31 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol82457.Game
 
         internal static void WriteVersioned(VersionedEncoder e, SColor v)
         {
-            e.WriteStructFieldCount(v.PresentTags?.Count ?? 4);
-            if (v.PresentTags is null || v.PresentTags.Contains(0))
+            if (v.PresentTags is null)
             {
+                e.WriteStructFieldCount(4);
                 e.WriteVInt(0);
                 e.WriteInt((long)v.A);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(1))
-            {
                 e.WriteVInt(1);
                 e.WriteInt((long)v.R);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(2))
-            {
                 e.WriteVInt(2);
                 e.WriteInt((long)v.G);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(3))
-            {
                 e.WriteVInt(3);
                 e.WriteInt((long)v.B);
+                return;
+            }
+            e.WriteStructFieldCount(v.PresentTags.Count);
+            foreach (long tag in v.PresentTags)
+            {
+                e.WriteVInt(tag);
+                switch (tag)
+                {
+                    case 0: e.WriteInt((long)v.A); break;
+                    case 1: e.WriteInt((long)v.R); break;
+                    case 2: e.WriteInt((long)v.G); break;
+                    case 3: e.WriteInt((long)v.B); break;
+                    default: throw new global::System.InvalidOperationException($"Unknown field tag {tag} for SColor.");
+                }
             }
         }
 
@@ -1609,7 +1624,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol82457.Game
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_modPaths", Tag = 14)]
         public byte[][]? ModPaths { get; set; }
 
-        internal global::System.Collections.Generic.HashSet<long>? PresentTags { get; set; }
+        internal global::System.Collections.Generic.List<long>? PresentTags { get; set; }
 
         global::System.Collections.Generic.IReadOnlyList<global::Biz.Bizadm.S2Protocol.NET.Common.Game.IPlayerDetails>? global::Biz.Bizadm.S2Protocol.NET.Common.Game.IDetails.PlayerList => PlayerList;
         byte[] global::Biz.Bizadm.S2Protocol.NET.Common.Game.IDetails.Title => Title;
@@ -1659,96 +1674,73 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol82457.Game
 
         internal static void WriteVersioned(VersionedEncoder e, SDetails v)
         {
-            e.WriteStructFieldCount(v.PresentTags?.Count ?? 18);
-            if (v.PresentTags is null || v.PresentTags.Contains(0))
+            if (v.PresentTags is null)
             {
+                e.WriteStructFieldCount(18);
                 e.WriteVInt(0);
                 e.WriteOptional(v.PlayerList, x0 => e.WriteArray(x0, x1 => global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol82457.Game.SPlayerDetails.WriteVersioned(e, x1)));
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(1))
-            {
                 e.WriteVInt(1);
                 e.WriteBlob(v.Title);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(2))
-            {
                 e.WriteVInt(2);
                 e.WriteBlob(v.Difficulty);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(3))
-            {
                 e.WriteVInt(3);
                 global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol82457.Game.SThumbnail.WriteVersioned(e, v.Thumbnail);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(4))
-            {
                 e.WriteVInt(4);
                 e.WriteBool(v.IsBlizzardMap);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(5))
-            {
                 e.WriteVInt(5);
                 e.WriteInt((long)v.TimeUTC);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(6))
-            {
                 e.WriteVInt(6);
                 e.WriteInt((long)v.TimeLocalOffset);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(16))
-            {
-                e.WriteVInt(16);
-                e.WriteOptionalValue(v.RestartAsTransitionMap, x0 => e.WriteBool(x0));
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(17))
-            {
-                e.WriteVInt(17);
-                e.WriteBool(v.DisableRecoverGame);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(7))
-            {
                 e.WriteVInt(7);
                 e.WriteBlob(v.Description);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(8))
-            {
                 e.WriteVInt(8);
                 e.WriteBlob(v.ImageFilePath);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(15))
-            {
-                e.WriteVInt(15);
-                e.WriteInt((long)v.CampaignIndex);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(9))
-            {
                 e.WriteVInt(9);
                 e.WriteBlob(v.MapFileName);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(10))
-            {
                 e.WriteVInt(10);
                 e.WriteOptional(v.CacheHandles, x0 => e.WriteArray(x0, x1 => e.WriteBlob(x1)));
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(11))
-            {
                 e.WriteVInt(11);
                 e.WriteBool(v.MiniSave);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(12))
-            {
                 e.WriteVInt(12);
                 e.WriteInt((long)v.GameSpeed);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(13))
-            {
                 e.WriteVInt(13);
                 e.WriteInt((long)v.DefaultDifficulty);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(14))
-            {
                 e.WriteVInt(14);
                 e.WriteOptional(v.ModPaths, x0 => e.WriteArray(x0, x1 => e.WriteBlob(x1)));
+                e.WriteVInt(15);
+                e.WriteInt((long)v.CampaignIndex);
+                e.WriteVInt(16);
+                e.WriteOptionalValue(v.RestartAsTransitionMap, x0 => e.WriteBool(x0));
+                e.WriteVInt(17);
+                e.WriteBool(v.DisableRecoverGame);
+                return;
+            }
+            e.WriteStructFieldCount(v.PresentTags.Count);
+            foreach (long tag in v.PresentTags)
+            {
+                e.WriteVInt(tag);
+                switch (tag)
+                {
+                    case 0: e.WriteOptional(v.PlayerList, x0 => e.WriteArray(x0, x1 => global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol82457.Game.SPlayerDetails.WriteVersioned(e, x1))); break;
+                    case 1: e.WriteBlob(v.Title); break;
+                    case 2: e.WriteBlob(v.Difficulty); break;
+                    case 3: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol82457.Game.SThumbnail.WriteVersioned(e, v.Thumbnail); break;
+                    case 4: e.WriteBool(v.IsBlizzardMap); break;
+                    case 5: e.WriteInt((long)v.TimeUTC); break;
+                    case 6: e.WriteInt((long)v.TimeLocalOffset); break;
+                    case 16: e.WriteOptionalValue(v.RestartAsTransitionMap, x0 => e.WriteBool(x0)); break;
+                    case 17: e.WriteBool(v.DisableRecoverGame); break;
+                    case 7: e.WriteBlob(v.Description); break;
+                    case 8: e.WriteBlob(v.ImageFilePath); break;
+                    case 15: e.WriteInt((long)v.CampaignIndex); break;
+                    case 9: e.WriteBlob(v.MapFileName); break;
+                    case 10: e.WriteOptional(v.CacheHandles, x0 => e.WriteArray(x0, x1 => e.WriteBlob(x1))); break;
+                    case 11: e.WriteBool(v.MiniSave); break;
+                    case 12: e.WriteInt((long)v.GameSpeed); break;
+                    case 13: e.WriteInt((long)v.DefaultDifficulty); break;
+                    case 14: e.WriteOptional(v.ModPaths, x0 => e.WriteArray(x0, x1 => e.WriteBlob(x1))); break;
+                    default: throw new global::System.InvalidOperationException($"Unknown field tag {tag} for SDetails.");
+                }
             }
         }
 
@@ -2714,7 +2706,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol82457.Game
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_hero", Tag = 10)]
         public byte[] Hero { get; set; } = [];
 
-        internal global::System.Collections.Generic.HashSet<long>? PresentTags { get; set; }
+        internal global::System.Collections.Generic.List<long>? PresentTags { get; set; }
 
         byte[] global::Biz.Bizadm.S2Protocol.NET.Common.Game.IPlayerDetails.Name => Name;
         global::Biz.Bizadm.S2Protocol.NET.Common.Game.IToonNameDetails global::Biz.Bizadm.S2Protocol.NET.Common.Game.IPlayerDetails.Toon => Toon;
@@ -2751,61 +2743,52 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol82457.Game
 
         internal static void WriteVersioned(VersionedEncoder e, SPlayerDetails v)
         {
-            e.WriteStructFieldCount(v.PresentTags?.Count ?? 11);
-            if (v.PresentTags is null || v.PresentTags.Contains(0))
+            if (v.PresentTags is null)
             {
+                e.WriteStructFieldCount(11);
                 e.WriteVInt(0);
                 e.WriteBlob(v.Name);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(1))
-            {
                 e.WriteVInt(1);
                 global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol82457.Game.SToonNameDetails.WriteVersioned(e, v.Toon);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(2))
-            {
                 e.WriteVInt(2);
                 e.WriteBlob(v.Race);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(3))
-            {
                 e.WriteVInt(3);
                 global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol82457.Game.SColor.WriteVersioned(e, v.Color);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(4))
-            {
                 e.WriteVInt(4);
                 e.WriteInt((long)v.Control);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(5))
-            {
                 e.WriteVInt(5);
                 e.WriteInt((long)v.TeamId);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(6))
-            {
                 e.WriteVInt(6);
                 e.WriteInt((long)v.Handicap);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(7))
-            {
                 e.WriteVInt(7);
                 e.WriteInt((long)v.Observe);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(8))
-            {
                 e.WriteVInt(8);
                 e.WriteInt((long)v.Result);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(9))
-            {
                 e.WriteVInt(9);
                 e.WriteOptionalValue(v.WorkingSetSlotId, x0 => e.WriteInt((long)x0));
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(10))
-            {
                 e.WriteVInt(10);
                 e.WriteBlob(v.Hero);
+                return;
+            }
+            e.WriteStructFieldCount(v.PresentTags.Count);
+            foreach (long tag in v.PresentTags)
+            {
+                e.WriteVInt(tag);
+                switch (tag)
+                {
+                    case 0: e.WriteBlob(v.Name); break;
+                    case 1: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol82457.Game.SToonNameDetails.WriteVersioned(e, v.Toon); break;
+                    case 2: e.WriteBlob(v.Race); break;
+                    case 3: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol82457.Game.SColor.WriteVersioned(e, v.Color); break;
+                    case 4: e.WriteInt((long)v.Control); break;
+                    case 5: e.WriteInt((long)v.TeamId); break;
+                    case 6: e.WriteInt((long)v.Handicap); break;
+                    case 7: e.WriteInt((long)v.Observe); break;
+                    case 8: e.WriteInt((long)v.Result); break;
+                    case 9: e.WriteOptionalValue(v.WorkingSetSlotId, x0 => e.WriteInt((long)x0)); break;
+                    case 10: e.WriteBlob(v.Hero); break;
+                    default: throw new global::System.InvalidOperationException($"Unknown field tag {tag} for SPlayerDetails.");
+                }
             }
         }
 
@@ -3464,7 +3447,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol82457.Game
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_file", Tag = 0)]
         public byte[] File { get; set; } = [];
 
-        internal global::System.Collections.Generic.HashSet<long>? PresentTags { get; set; }
+        internal global::System.Collections.Generic.List<long>? PresentTags { get; set; }
 
         byte[] global::Biz.Bizadm.S2Protocol.NET.Common.Game.IThumbnail.File => File;
 
@@ -3484,11 +3467,22 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol82457.Game
 
         internal static void WriteVersioned(VersionedEncoder e, SThumbnail v)
         {
-            e.WriteStructFieldCount(v.PresentTags?.Count ?? 1);
-            if (v.PresentTags is null || v.PresentTags.Contains(0))
+            if (v.PresentTags is null)
             {
+                e.WriteStructFieldCount(1);
                 e.WriteVInt(0);
                 e.WriteBlob(v.File);
+                return;
+            }
+            e.WriteStructFieldCount(v.PresentTags.Count);
+            foreach (long tag in v.PresentTags)
+            {
+                e.WriteVInt(tag);
+                switch (tag)
+                {
+                    case 0: e.WriteBlob(v.File); break;
+                    default: throw new global::System.InvalidOperationException($"Unknown field tag {tag} for SThumbnail.");
+                }
             }
         }
 
@@ -3511,7 +3505,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol82457.Game
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_id", Tag = 4)]
         public ulong Id { get; set; }
 
-        internal global::System.Collections.Generic.HashSet<long>? PresentTags { get; set; }
+        internal global::System.Collections.Generic.List<long>? PresentTags { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Game.IToonNameDetails.Region => Region;
         global::Biz.Bizadm.S2Protocol.NET.FourCC global::Biz.Bizadm.S2Protocol.NET.Common.Game.IToonNameDetails.ProgramId => ProgramId;
@@ -3538,31 +3532,34 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol82457.Game
 
         internal static void WriteVersioned(VersionedEncoder e, SToonNameDetails v)
         {
-            e.WriteStructFieldCount(v.PresentTags?.Count ?? 5);
-            if (v.PresentTags is null || v.PresentTags.Contains(0))
+            if (v.PresentTags is null)
             {
+                e.WriteStructFieldCount(5);
                 e.WriteVInt(0);
                 e.WriteInt((long)v.Region);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(1))
-            {
                 e.WriteVInt(1);
                 e.WriteFourCC(v.ProgramId);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(2))
-            {
                 e.WriteVInt(2);
                 e.WriteInt((long)v.Realm);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(3))
-            {
                 e.WriteVInt(3);
                 e.WriteBlob(v.Name);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(4))
-            {
                 e.WriteVInt(4);
                 e.WriteUInt64((ulong)v.Id);
+                return;
+            }
+            e.WriteStructFieldCount(v.PresentTags.Count);
+            foreach (long tag in v.PresentTags)
+            {
+                e.WriteVInt(tag);
+                switch (tag)
+                {
+                    case 0: e.WriteInt((long)v.Region); break;
+                    case 1: e.WriteFourCC(v.ProgramId); break;
+                    case 2: e.WriteInt((long)v.Realm); break;
+                    case 3: e.WriteBlob(v.Name); break;
+                    case 4: e.WriteUInt64((ulong)v.Id); break;
+                    default: throw new global::System.InvalidOperationException($"Unknown field tag {tag} for SToonNameDetails.");
+                }
             }
         }
 
@@ -5185,7 +5182,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol82457.Replay
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_ngdpRootKeyIsDevData", Tag = 8)]
         public bool NgdpRootKeyIsDevData { get; set; }
 
-        internal global::System.Collections.Generic.HashSet<long>? PresentTags { get; set; }
+        internal global::System.Collections.Generic.List<long>? PresentTags { get; set; }
 
         byte[] global::Biz.Bizadm.S2Protocol.NET.Common.Replay.IHeader.Signature => Signature;
         global::Biz.Bizadm.S2Protocol.NET.Common.IVersion global::Biz.Bizadm.S2Protocol.NET.Common.Replay.IHeader.Version => Version;
@@ -5216,51 +5213,46 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol82457.Replay
 
         internal static void WriteVersioned(VersionedEncoder e, SHeader v)
         {
-            e.WriteStructFieldCount(v.PresentTags?.Count ?? 9);
-            if (v.PresentTags is null || v.PresentTags.Contains(0))
+            if (v.PresentTags is null)
             {
+                e.WriteStructFieldCount(9);
                 e.WriteVInt(0);
                 e.WriteBlob(v.Signature);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(1))
-            {
                 e.WriteVInt(1);
                 global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol82457.SVersion.WriteVersioned(e, v.Version);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(2))
-            {
                 e.WriteVInt(2);
                 e.WriteInt((long)v.Type);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(3))
-            {
                 e.WriteVInt(3);
                 e.WriteInt((long)v.ElapsedGameLoops);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(4))
-            {
                 e.WriteVInt(4);
                 e.WriteBool(v.UseScaledTime);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(5))
-            {
                 e.WriteVInt(5);
                 global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol82457.SMD5.WriteVersioned(e, v.NgdpRootKey);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(6))
-            {
                 e.WriteVInt(6);
                 e.WriteInt((long)v.DataBuildNum);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(7))
-            {
                 e.WriteVInt(7);
                 global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol82457.SMD5.WriteVersioned(e, v.ReplayCompatibilityHash);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(8))
-            {
                 e.WriteVInt(8);
                 e.WriteBool(v.NgdpRootKeyIsDevData);
+                return;
+            }
+            e.WriteStructFieldCount(v.PresentTags.Count);
+            foreach (long tag in v.PresentTags)
+            {
+                e.WriteVInt(tag);
+                switch (tag)
+                {
+                    case 0: e.WriteBlob(v.Signature); break;
+                    case 1: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol82457.SVersion.WriteVersioned(e, v.Version); break;
+                    case 2: e.WriteInt((long)v.Type); break;
+                    case 3: e.WriteInt((long)v.ElapsedGameLoops); break;
+                    case 4: e.WriteBool(v.UseScaledTime); break;
+                    case 5: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol82457.SMD5.WriteVersioned(e, v.NgdpRootKey); break;
+                    case 6: e.WriteInt((long)v.DataBuildNum); break;
+                    case 7: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol82457.SMD5.WriteVersioned(e, v.ReplayCompatibilityHash); break;
+                    case 8: e.WriteBool(v.NgdpRootKeyIsDevData); break;
+                    default: throw new global::System.InvalidOperationException($"Unknown field tag {tag} for SHeader.");
+                }
             }
         }
 
@@ -5318,7 +5310,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol82457.Replay.Tracker
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_slotId", Tag = 3)]
         public long? SlotId { get; set; }
 
-        internal global::System.Collections.Generic.HashSet<long>? PresentTags { get; set; }
+        internal global::System.Collections.Generic.List<long>? PresentTags { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerSetupEvent.PlayerId => PlayerId;
         long global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerSetupEvent.Type => Type;
@@ -5344,26 +5336,31 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol82457.Replay.Tracker
 
         internal static void WriteVersioned(VersionedEncoder e, SPlayerSetupEvent v)
         {
-            e.WriteStructFieldCount(v.PresentTags?.Count ?? 4);
-            if (v.PresentTags is null || v.PresentTags.Contains(0))
+            if (v.PresentTags is null)
             {
+                e.WriteStructFieldCount(4);
                 e.WriteVInt(0);
                 e.WriteInt((long)v.PlayerId);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(1))
-            {
                 e.WriteVInt(1);
                 e.WriteInt((long)v.Type);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(2))
-            {
                 e.WriteVInt(2);
                 e.WriteOptionalValue(v.UserId, x0 => e.WriteInt((long)x0));
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(3))
-            {
                 e.WriteVInt(3);
                 e.WriteOptionalValue(v.SlotId, x0 => e.WriteInt((long)x0));
+                return;
+            }
+            e.WriteStructFieldCount(v.PresentTags.Count);
+            foreach (long tag in v.PresentTags)
+            {
+                e.WriteVInt(tag);
+                switch (tag)
+                {
+                    case 0: e.WriteInt((long)v.PlayerId); break;
+                    case 1: e.WriteInt((long)v.Type); break;
+                    case 2: e.WriteOptionalValue(v.UserId, x0 => e.WriteInt((long)x0)); break;
+                    case 3: e.WriteOptionalValue(v.SlotId, x0 => e.WriteInt((long)x0)); break;
+                    default: throw new global::System.InvalidOperationException($"Unknown field tag {tag} for SPlayerSetupEvent.");
+                }
             }
         }
 
@@ -5488,7 +5485,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol82457.Replay.Tracker
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_scoreValueVespeneFriendlyFireTechnology", Tag = 38)]
         public int ScoreValueVespeneFriendlyFireTechnology { get; set; }
 
-        internal global::System.Collections.Generic.HashSet<long>? PresentTags { get; set; }
+        internal global::System.Collections.Generic.List<long>? PresentTags { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerStats.ScoreValueMineralsCurrent => ScoreValueMineralsCurrent;
         int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerStats.ScoreValueVespeneCurrent => ScoreValueVespeneCurrent;
@@ -5584,201 +5581,136 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol82457.Replay.Tracker
 
         internal static void WriteVersioned(VersionedEncoder e, SPlayerStats v)
         {
-            e.WriteStructFieldCount(v.PresentTags?.Count ?? 39);
-            if (v.PresentTags is null || v.PresentTags.Contains(0))
+            if (v.PresentTags is null)
             {
+                e.WriteStructFieldCount(39);
                 e.WriteVInt(0);
                 e.WriteInt((long)v.ScoreValueMineralsCurrent);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(1))
-            {
                 e.WriteVInt(1);
                 e.WriteInt((long)v.ScoreValueVespeneCurrent);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(2))
-            {
                 e.WriteVInt(2);
                 e.WriteInt((long)v.ScoreValueMineralsCollectionRate);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(3))
-            {
                 e.WriteVInt(3);
                 e.WriteInt((long)v.ScoreValueVespeneCollectionRate);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(4))
-            {
                 e.WriteVInt(4);
                 e.WriteInt((long)v.ScoreValueWorkersActiveCount);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(5))
-            {
                 e.WriteVInt(5);
                 e.WriteInt((long)v.ScoreValueMineralsUsedInProgressArmy);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(6))
-            {
                 e.WriteVInt(6);
                 e.WriteInt((long)v.ScoreValueMineralsUsedInProgressEconomy);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(7))
-            {
                 e.WriteVInt(7);
                 e.WriteInt((long)v.ScoreValueMineralsUsedInProgressTechnology);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(8))
-            {
                 e.WriteVInt(8);
                 e.WriteInt((long)v.ScoreValueVespeneUsedInProgressArmy);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(9))
-            {
                 e.WriteVInt(9);
                 e.WriteInt((long)v.ScoreValueVespeneUsedInProgressEconomy);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(10))
-            {
                 e.WriteVInt(10);
                 e.WriteInt((long)v.ScoreValueVespeneUsedInProgressTechnology);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(11))
-            {
                 e.WriteVInt(11);
                 e.WriteInt((long)v.ScoreValueMineralsUsedCurrentArmy);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(12))
-            {
                 e.WriteVInt(12);
                 e.WriteInt((long)v.ScoreValueMineralsUsedCurrentEconomy);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(13))
-            {
                 e.WriteVInt(13);
                 e.WriteInt((long)v.ScoreValueMineralsUsedCurrentTechnology);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(14))
-            {
                 e.WriteVInt(14);
                 e.WriteInt((long)v.ScoreValueVespeneUsedCurrentArmy);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(15))
-            {
                 e.WriteVInt(15);
                 e.WriteInt((long)v.ScoreValueVespeneUsedCurrentEconomy);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(16))
-            {
                 e.WriteVInt(16);
                 e.WriteInt((long)v.ScoreValueVespeneUsedCurrentTechnology);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(17))
-            {
                 e.WriteVInt(17);
                 e.WriteInt((long)v.ScoreValueMineralsLostArmy);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(18))
-            {
                 e.WriteVInt(18);
                 e.WriteInt((long)v.ScoreValueMineralsLostEconomy);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(19))
-            {
                 e.WriteVInt(19);
                 e.WriteInt((long)v.ScoreValueMineralsLostTechnology);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(20))
-            {
                 e.WriteVInt(20);
                 e.WriteInt((long)v.ScoreValueVespeneLostArmy);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(21))
-            {
                 e.WriteVInt(21);
                 e.WriteInt((long)v.ScoreValueVespeneLostEconomy);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(22))
-            {
                 e.WriteVInt(22);
                 e.WriteInt((long)v.ScoreValueVespeneLostTechnology);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(23))
-            {
                 e.WriteVInt(23);
                 e.WriteInt((long)v.ScoreValueMineralsKilledArmy);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(24))
-            {
                 e.WriteVInt(24);
                 e.WriteInt((long)v.ScoreValueMineralsKilledEconomy);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(25))
-            {
                 e.WriteVInt(25);
                 e.WriteInt((long)v.ScoreValueMineralsKilledTechnology);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(26))
-            {
                 e.WriteVInt(26);
                 e.WriteInt((long)v.ScoreValueVespeneKilledArmy);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(27))
-            {
                 e.WriteVInt(27);
                 e.WriteInt((long)v.ScoreValueVespeneKilledEconomy);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(28))
-            {
                 e.WriteVInt(28);
                 e.WriteInt((long)v.ScoreValueVespeneKilledTechnology);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(29))
-            {
                 e.WriteVInt(29);
                 e.WriteInt((long)v.ScoreValueFoodUsed);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(30))
-            {
                 e.WriteVInt(30);
                 e.WriteInt((long)v.ScoreValueFoodMade);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(31))
-            {
                 e.WriteVInt(31);
                 e.WriteInt((long)v.ScoreValueMineralsUsedActiveForces);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(32))
-            {
                 e.WriteVInt(32);
                 e.WriteInt((long)v.ScoreValueVespeneUsedActiveForces);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(33))
-            {
                 e.WriteVInt(33);
                 e.WriteInt((long)v.ScoreValueMineralsFriendlyFireArmy);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(34))
-            {
                 e.WriteVInt(34);
                 e.WriteInt((long)v.ScoreValueMineralsFriendlyFireEconomy);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(35))
-            {
                 e.WriteVInt(35);
                 e.WriteInt((long)v.ScoreValueMineralsFriendlyFireTechnology);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(36))
-            {
                 e.WriteVInt(36);
                 e.WriteInt((long)v.ScoreValueVespeneFriendlyFireArmy);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(37))
-            {
                 e.WriteVInt(37);
                 e.WriteInt((long)v.ScoreValueVespeneFriendlyFireEconomy);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(38))
-            {
                 e.WriteVInt(38);
                 e.WriteInt((long)v.ScoreValueVespeneFriendlyFireTechnology);
+                return;
+            }
+            e.WriteStructFieldCount(v.PresentTags.Count);
+            foreach (long tag in v.PresentTags)
+            {
+                e.WriteVInt(tag);
+                switch (tag)
+                {
+                    case 0: e.WriteInt((long)v.ScoreValueMineralsCurrent); break;
+                    case 1: e.WriteInt((long)v.ScoreValueVespeneCurrent); break;
+                    case 2: e.WriteInt((long)v.ScoreValueMineralsCollectionRate); break;
+                    case 3: e.WriteInt((long)v.ScoreValueVespeneCollectionRate); break;
+                    case 4: e.WriteInt((long)v.ScoreValueWorkersActiveCount); break;
+                    case 5: e.WriteInt((long)v.ScoreValueMineralsUsedInProgressArmy); break;
+                    case 6: e.WriteInt((long)v.ScoreValueMineralsUsedInProgressEconomy); break;
+                    case 7: e.WriteInt((long)v.ScoreValueMineralsUsedInProgressTechnology); break;
+                    case 8: e.WriteInt((long)v.ScoreValueVespeneUsedInProgressArmy); break;
+                    case 9: e.WriteInt((long)v.ScoreValueVespeneUsedInProgressEconomy); break;
+                    case 10: e.WriteInt((long)v.ScoreValueVespeneUsedInProgressTechnology); break;
+                    case 11: e.WriteInt((long)v.ScoreValueMineralsUsedCurrentArmy); break;
+                    case 12: e.WriteInt((long)v.ScoreValueMineralsUsedCurrentEconomy); break;
+                    case 13: e.WriteInt((long)v.ScoreValueMineralsUsedCurrentTechnology); break;
+                    case 14: e.WriteInt((long)v.ScoreValueVespeneUsedCurrentArmy); break;
+                    case 15: e.WriteInt((long)v.ScoreValueVespeneUsedCurrentEconomy); break;
+                    case 16: e.WriteInt((long)v.ScoreValueVespeneUsedCurrentTechnology); break;
+                    case 17: e.WriteInt((long)v.ScoreValueMineralsLostArmy); break;
+                    case 18: e.WriteInt((long)v.ScoreValueMineralsLostEconomy); break;
+                    case 19: e.WriteInt((long)v.ScoreValueMineralsLostTechnology); break;
+                    case 20: e.WriteInt((long)v.ScoreValueVespeneLostArmy); break;
+                    case 21: e.WriteInt((long)v.ScoreValueVespeneLostEconomy); break;
+                    case 22: e.WriteInt((long)v.ScoreValueVespeneLostTechnology); break;
+                    case 23: e.WriteInt((long)v.ScoreValueMineralsKilledArmy); break;
+                    case 24: e.WriteInt((long)v.ScoreValueMineralsKilledEconomy); break;
+                    case 25: e.WriteInt((long)v.ScoreValueMineralsKilledTechnology); break;
+                    case 26: e.WriteInt((long)v.ScoreValueVespeneKilledArmy); break;
+                    case 27: e.WriteInt((long)v.ScoreValueVespeneKilledEconomy); break;
+                    case 28: e.WriteInt((long)v.ScoreValueVespeneKilledTechnology); break;
+                    case 29: e.WriteInt((long)v.ScoreValueFoodUsed); break;
+                    case 30: e.WriteInt((long)v.ScoreValueFoodMade); break;
+                    case 31: e.WriteInt((long)v.ScoreValueMineralsUsedActiveForces); break;
+                    case 32: e.WriteInt((long)v.ScoreValueVespeneUsedActiveForces); break;
+                    case 33: e.WriteInt((long)v.ScoreValueMineralsFriendlyFireArmy); break;
+                    case 34: e.WriteInt((long)v.ScoreValueMineralsFriendlyFireEconomy); break;
+                    case 35: e.WriteInt((long)v.ScoreValueMineralsFriendlyFireTechnology); break;
+                    case 36: e.WriteInt((long)v.ScoreValueVespeneFriendlyFireArmy); break;
+                    case 37: e.WriteInt((long)v.ScoreValueVespeneFriendlyFireEconomy); break;
+                    case 38: e.WriteInt((long)v.ScoreValueVespeneFriendlyFireTechnology); break;
+                    default: throw new global::System.InvalidOperationException($"Unknown field tag {tag} for SPlayerStats.");
+                }
             }
         }
 
@@ -5792,7 +5724,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol82457.Replay.Tracker
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_stats", Tag = 1)]
         public global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol82457.Replay.Tracker.SPlayerStats Stats { get; set; } = new();
 
-        internal global::System.Collections.Generic.HashSet<long>? PresentTags { get; set; }
+        internal global::System.Collections.Generic.List<long>? PresentTags { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerStatsEvent.PlayerId => PlayerId;
         global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerStats global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IPlayerStatsEvent.Stats => Stats;
@@ -5814,16 +5746,25 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol82457.Replay.Tracker
 
         internal static void WriteVersioned(VersionedEncoder e, SPlayerStatsEvent v)
         {
-            e.WriteStructFieldCount(v.PresentTags?.Count ?? 2);
-            if (v.PresentTags is null || v.PresentTags.Contains(0))
+            if (v.PresentTags is null)
             {
+                e.WriteStructFieldCount(2);
                 e.WriteVInt(0);
                 e.WriteInt((long)v.PlayerId);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(1))
-            {
                 e.WriteVInt(1);
                 global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol82457.Replay.Tracker.SPlayerStats.WriteVersioned(e, v.Stats);
+                return;
+            }
+            e.WriteStructFieldCount(v.PresentTags.Count);
+            foreach (long tag in v.PresentTags)
+            {
+                e.WriteVInt(tag);
+                switch (tag)
+                {
+                    case 0: e.WriteInt((long)v.PlayerId); break;
+                    case 1: global::Biz.Bizadm.S2Protocol.NET.Versions.Protocol82457.Replay.Tracker.SPlayerStats.WriteVersioned(e, v.Stats); break;
+                    default: throw new global::System.InvalidOperationException($"Unknown field tag {tag} for SPlayerStatsEvent.");
+                }
             }
         }
 
@@ -5861,7 +5802,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol82457.Replay.Tracker
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_creatorAbilityName", Tag = 9)]
         public byte[]? CreatorAbilityName { get; set; }
 
-        internal global::System.Collections.Generic.HashSet<long>? PresentTags { get; set; }
+        internal global::System.Collections.Generic.List<long>? PresentTags { get; set; }
 
         long global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitBornEvent.UnitTagIndex => UnitTagIndex;
         long global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitBornEvent.UnitTagRecycle => UnitTagRecycle;
@@ -5896,56 +5837,49 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol82457.Replay.Tracker
 
         internal static void WriteVersioned(VersionedEncoder e, SUnitBornEvent v)
         {
-            e.WriteStructFieldCount(v.PresentTags?.Count ?? 10);
-            if (v.PresentTags is null || v.PresentTags.Contains(0))
+            if (v.PresentTags is null)
             {
+                e.WriteStructFieldCount(10);
                 e.WriteVInt(0);
                 e.WriteInt((long)v.UnitTagIndex);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(1))
-            {
                 e.WriteVInt(1);
                 e.WriteInt((long)v.UnitTagRecycle);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(2))
-            {
                 e.WriteVInt(2);
                 e.WriteBlob(v.UnitTypeName);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(3))
-            {
                 e.WriteVInt(3);
                 e.WriteInt((long)v.ControlPlayerId);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(4))
-            {
                 e.WriteVInt(4);
                 e.WriteInt((long)v.UpkeepPlayerId);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(5))
-            {
                 e.WriteVInt(5);
                 e.WriteInt((long)v.X);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(6))
-            {
                 e.WriteVInt(6);
                 e.WriteInt((long)v.Y);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(7))
-            {
                 e.WriteVInt(7);
                 e.WriteOptionalValue(v.CreatorUnitTagIndex, x0 => e.WriteInt((long)x0));
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(8))
-            {
                 e.WriteVInt(8);
                 e.WriteOptionalValue(v.CreatorUnitTagRecycle, x0 => e.WriteInt((long)x0));
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(9))
-            {
                 e.WriteVInt(9);
                 e.WriteOptional(v.CreatorAbilityName, x0 => e.WriteBlob(x0));
+                return;
+            }
+            e.WriteStructFieldCount(v.PresentTags.Count);
+            foreach (long tag in v.PresentTags)
+            {
+                e.WriteVInt(tag);
+                switch (tag)
+                {
+                    case 0: e.WriteInt((long)v.UnitTagIndex); break;
+                    case 1: e.WriteInt((long)v.UnitTagRecycle); break;
+                    case 2: e.WriteBlob(v.UnitTypeName); break;
+                    case 3: e.WriteInt((long)v.ControlPlayerId); break;
+                    case 4: e.WriteInt((long)v.UpkeepPlayerId); break;
+                    case 5: e.WriteInt((long)v.X); break;
+                    case 6: e.WriteInt((long)v.Y); break;
+                    case 7: e.WriteOptionalValue(v.CreatorUnitTagIndex, x0 => e.WriteInt((long)x0)); break;
+                    case 8: e.WriteOptionalValue(v.CreatorUnitTagRecycle, x0 => e.WriteInt((long)x0)); break;
+                    case 9: e.WriteOptional(v.CreatorAbilityName, x0 => e.WriteBlob(x0)); break;
+                    default: throw new global::System.InvalidOperationException($"Unknown field tag {tag} for SUnitBornEvent.");
+                }
             }
         }
 
@@ -5974,7 +5908,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol82457.Replay.Tracker
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_killerUnitTagRecycle", Tag = 6)]
         public long? KillerUnitTagRecycle { get; set; }
 
-        internal global::System.Collections.Generic.HashSet<long>? PresentTags { get; set; }
+        internal global::System.Collections.Generic.List<long>? PresentTags { get; set; }
 
         long global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitDiedEvent.UnitTagIndex => UnitTagIndex;
         long global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitDiedEvent.UnitTagRecycle => UnitTagRecycle;
@@ -6004,41 +5938,40 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol82457.Replay.Tracker
 
         internal static void WriteVersioned(VersionedEncoder e, SUnitDiedEvent v)
         {
-            e.WriteStructFieldCount(v.PresentTags?.Count ?? 7);
-            if (v.PresentTags is null || v.PresentTags.Contains(0))
+            if (v.PresentTags is null)
             {
+                e.WriteStructFieldCount(7);
                 e.WriteVInt(0);
                 e.WriteInt((long)v.UnitTagIndex);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(1))
-            {
                 e.WriteVInt(1);
                 e.WriteInt((long)v.UnitTagRecycle);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(2))
-            {
                 e.WriteVInt(2);
                 e.WriteOptionalValue(v.KillerPlayerId, x0 => e.WriteInt((long)x0));
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(3))
-            {
                 e.WriteVInt(3);
                 e.WriteInt((long)v.X);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(4))
-            {
                 e.WriteVInt(4);
                 e.WriteInt((long)v.Y);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(5))
-            {
                 e.WriteVInt(5);
                 e.WriteOptionalValue(v.KillerUnitTagIndex, x0 => e.WriteInt((long)x0));
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(6))
-            {
                 e.WriteVInt(6);
                 e.WriteOptionalValue(v.KillerUnitTagRecycle, x0 => e.WriteInt((long)x0));
+                return;
+            }
+            e.WriteStructFieldCount(v.PresentTags.Count);
+            foreach (long tag in v.PresentTags)
+            {
+                e.WriteVInt(tag);
+                switch (tag)
+                {
+                    case 0: e.WriteInt((long)v.UnitTagIndex); break;
+                    case 1: e.WriteInt((long)v.UnitTagRecycle); break;
+                    case 2: e.WriteOptionalValue(v.KillerPlayerId, x0 => e.WriteInt((long)x0)); break;
+                    case 3: e.WriteInt((long)v.X); break;
+                    case 4: e.WriteInt((long)v.Y); break;
+                    case 5: e.WriteOptionalValue(v.KillerUnitTagIndex, x0 => e.WriteInt((long)x0)); break;
+                    case 6: e.WriteOptionalValue(v.KillerUnitTagRecycle, x0 => e.WriteInt((long)x0)); break;
+                    default: throw new global::System.InvalidOperationException($"Unknown field tag {tag} for SUnitDiedEvent.");
+                }
             }
         }
 
@@ -6052,7 +5985,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol82457.Replay.Tracker
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitTagRecycle", Tag = 1)]
         public long UnitTagRecycle { get; set; }
 
-        internal global::System.Collections.Generic.HashSet<long>? PresentTags { get; set; }
+        internal global::System.Collections.Generic.List<long>? PresentTags { get; set; }
 
         long global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitDoneEvent.UnitTagIndex => UnitTagIndex;
         long global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitDoneEvent.UnitTagRecycle => UnitTagRecycle;
@@ -6074,16 +6007,25 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol82457.Replay.Tracker
 
         internal static void WriteVersioned(VersionedEncoder e, SUnitDoneEvent v)
         {
-            e.WriteStructFieldCount(v.PresentTags?.Count ?? 2);
-            if (v.PresentTags is null || v.PresentTags.Contains(0))
+            if (v.PresentTags is null)
             {
+                e.WriteStructFieldCount(2);
                 e.WriteVInt(0);
                 e.WriteInt((long)v.UnitTagIndex);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(1))
-            {
                 e.WriteVInt(1);
                 e.WriteInt((long)v.UnitTagRecycle);
+                return;
+            }
+            e.WriteStructFieldCount(v.PresentTags.Count);
+            foreach (long tag in v.PresentTags)
+            {
+                e.WriteVInt(tag);
+                switch (tag)
+                {
+                    case 0: e.WriteInt((long)v.UnitTagIndex); break;
+                    case 1: e.WriteInt((long)v.UnitTagRecycle); break;
+                    default: throw new global::System.InvalidOperationException($"Unknown field tag {tag} for SUnitDoneEvent.");
+                }
             }
         }
 
@@ -6112,7 +6054,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol82457.Replay.Tracker
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_y", Tag = 6)]
         public int Y { get; set; }
 
-        internal global::System.Collections.Generic.HashSet<long>? PresentTags { get; set; }
+        internal global::System.Collections.Generic.List<long>? PresentTags { get; set; }
 
         long global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitInitEvent.UnitTagIndex => UnitTagIndex;
         long global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitInitEvent.UnitTagRecycle => UnitTagRecycle;
@@ -6144,41 +6086,40 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol82457.Replay.Tracker
 
         internal static void WriteVersioned(VersionedEncoder e, SUnitInitEvent v)
         {
-            e.WriteStructFieldCount(v.PresentTags?.Count ?? 7);
-            if (v.PresentTags is null || v.PresentTags.Contains(0))
+            if (v.PresentTags is null)
             {
+                e.WriteStructFieldCount(7);
                 e.WriteVInt(0);
                 e.WriteInt((long)v.UnitTagIndex);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(1))
-            {
                 e.WriteVInt(1);
                 e.WriteInt((long)v.UnitTagRecycle);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(2))
-            {
                 e.WriteVInt(2);
                 e.WriteBlob(v.UnitTypeName);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(3))
-            {
                 e.WriteVInt(3);
                 e.WriteInt((long)v.ControlPlayerId);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(4))
-            {
                 e.WriteVInt(4);
                 e.WriteInt((long)v.UpkeepPlayerId);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(5))
-            {
                 e.WriteVInt(5);
                 e.WriteInt((long)v.X);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(6))
-            {
                 e.WriteVInt(6);
                 e.WriteInt((long)v.Y);
+                return;
+            }
+            e.WriteStructFieldCount(v.PresentTags.Count);
+            foreach (long tag in v.PresentTags)
+            {
+                e.WriteVInt(tag);
+                switch (tag)
+                {
+                    case 0: e.WriteInt((long)v.UnitTagIndex); break;
+                    case 1: e.WriteInt((long)v.UnitTagRecycle); break;
+                    case 2: e.WriteBlob(v.UnitTypeName); break;
+                    case 3: e.WriteInt((long)v.ControlPlayerId); break;
+                    case 4: e.WriteInt((long)v.UpkeepPlayerId); break;
+                    case 5: e.WriteInt((long)v.X); break;
+                    case 6: e.WriteInt((long)v.Y); break;
+                    default: throw new global::System.InvalidOperationException($"Unknown field tag {tag} for SUnitInitEvent.");
+                }
             }
         }
 
@@ -6198,7 +6139,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol82457.Replay.Tracker
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_upkeepPlayerId", Tag = 3)]
         public int UpkeepPlayerId { get; set; }
 
-        internal global::System.Collections.Generic.HashSet<long>? PresentTags { get; set; }
+        internal global::System.Collections.Generic.List<long>? PresentTags { get; set; }
 
         long global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitOwnerChangeEvent.UnitTagIndex => UnitTagIndex;
         long global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitOwnerChangeEvent.UnitTagRecycle => UnitTagRecycle;
@@ -6224,26 +6165,31 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol82457.Replay.Tracker
 
         internal static void WriteVersioned(VersionedEncoder e, SUnitOwnerChangeEvent v)
         {
-            e.WriteStructFieldCount(v.PresentTags?.Count ?? 4);
-            if (v.PresentTags is null || v.PresentTags.Contains(0))
+            if (v.PresentTags is null)
             {
+                e.WriteStructFieldCount(4);
                 e.WriteVInt(0);
                 e.WriteInt((long)v.UnitTagIndex);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(1))
-            {
                 e.WriteVInt(1);
                 e.WriteInt((long)v.UnitTagRecycle);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(2))
-            {
                 e.WriteVInt(2);
                 e.WriteInt((long)v.ControlPlayerId);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(3))
-            {
                 e.WriteVInt(3);
                 e.WriteInt((long)v.UpkeepPlayerId);
+                return;
+            }
+            e.WriteStructFieldCount(v.PresentTags.Count);
+            foreach (long tag in v.PresentTags)
+            {
+                e.WriteVInt(tag);
+                switch (tag)
+                {
+                    case 0: e.WriteInt((long)v.UnitTagIndex); break;
+                    case 1: e.WriteInt((long)v.UnitTagRecycle); break;
+                    case 2: e.WriteInt((long)v.ControlPlayerId); break;
+                    case 3: e.WriteInt((long)v.UpkeepPlayerId); break;
+                    default: throw new global::System.InvalidOperationException($"Unknown field tag {tag} for SUnitOwnerChangeEvent.");
+                }
             }
         }
 
@@ -6257,7 +6203,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol82457.Replay.Tracker
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_items", Tag = 1)]
         public int[] Items { get; set; } = [];
 
-        internal global::System.Collections.Generic.HashSet<long>? PresentTags { get; set; }
+        internal global::System.Collections.Generic.List<long>? PresentTags { get; set; }
 
         long global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitPositionsEvent.FirstUnitIndex => FirstUnitIndex;
         global::System.Collections.Generic.IReadOnlyList<int> global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitPositionsEvent.Items => Items;
@@ -6279,16 +6225,25 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol82457.Replay.Tracker
 
         internal static void WriteVersioned(VersionedEncoder e, SUnitPositionsEvent v)
         {
-            e.WriteStructFieldCount(v.PresentTags?.Count ?? 2);
-            if (v.PresentTags is null || v.PresentTags.Contains(0))
+            if (v.PresentTags is null)
             {
+                e.WriteStructFieldCount(2);
                 e.WriteVInt(0);
                 e.WriteInt((long)v.FirstUnitIndex);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(1))
-            {
                 e.WriteVInt(1);
                 e.WriteArray(v.Items, x0 => e.WriteInt((long)x0));
+                return;
+            }
+            e.WriteStructFieldCount(v.PresentTags.Count);
+            foreach (long tag in v.PresentTags)
+            {
+                e.WriteVInt(tag);
+                switch (tag)
+                {
+                    case 0: e.WriteInt((long)v.FirstUnitIndex); break;
+                    case 1: e.WriteArray(v.Items, x0 => e.WriteInt((long)x0)); break;
+                    default: throw new global::System.InvalidOperationException($"Unknown field tag {tag} for SUnitPositionsEvent.");
+                }
             }
         }
 
@@ -6305,7 +6260,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol82457.Replay.Tracker
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_unitTypeName", Tag = 2)]
         public byte[] UnitTypeName { get; set; } = [];
 
-        internal global::System.Collections.Generic.HashSet<long>? PresentTags { get; set; }
+        internal global::System.Collections.Generic.List<long>? PresentTags { get; set; }
 
         long global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitTypeChangeEvent.UnitTagIndex => UnitTagIndex;
         long global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUnitTypeChangeEvent.UnitTagRecycle => UnitTagRecycle;
@@ -6329,21 +6284,28 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol82457.Replay.Tracker
 
         internal static void WriteVersioned(VersionedEncoder e, SUnitTypeChangeEvent v)
         {
-            e.WriteStructFieldCount(v.PresentTags?.Count ?? 3);
-            if (v.PresentTags is null || v.PresentTags.Contains(0))
+            if (v.PresentTags is null)
             {
+                e.WriteStructFieldCount(3);
                 e.WriteVInt(0);
                 e.WriteInt((long)v.UnitTagIndex);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(1))
-            {
                 e.WriteVInt(1);
                 e.WriteInt((long)v.UnitTagRecycle);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(2))
-            {
                 e.WriteVInt(2);
                 e.WriteBlob(v.UnitTypeName);
+                return;
+            }
+            e.WriteStructFieldCount(v.PresentTags.Count);
+            foreach (long tag in v.PresentTags)
+            {
+                e.WriteVInt(tag);
+                switch (tag)
+                {
+                    case 0: e.WriteInt((long)v.UnitTagIndex); break;
+                    case 1: e.WriteInt((long)v.UnitTagRecycle); break;
+                    case 2: e.WriteBlob(v.UnitTypeName); break;
+                    default: throw new global::System.InvalidOperationException($"Unknown field tag {tag} for SUnitTypeChangeEvent.");
+                }
             }
         }
 
@@ -6360,7 +6322,7 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol82457.Replay.Tracker
         [global::Biz.Bizadm.S2Protocol.NET.S2Field("m_count", Tag = 2)]
         public int Count { get; set; }
 
-        internal global::System.Collections.Generic.HashSet<long>? PresentTags { get; set; }
+        internal global::System.Collections.Generic.List<long>? PresentTags { get; set; }
 
         int global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUpgradeEvent.PlayerId => PlayerId;
         byte[] global::Biz.Bizadm.S2Protocol.NET.Common.Replay.Tracker.IUpgradeEvent.UpgradeTypeName => UpgradeTypeName;
@@ -6384,21 +6346,28 @@ namespace Biz.Bizadm.S2Protocol.NET.Versions.Protocol82457.Replay.Tracker
 
         internal static void WriteVersioned(VersionedEncoder e, SUpgradeEvent v)
         {
-            e.WriteStructFieldCount(v.PresentTags?.Count ?? 3);
-            if (v.PresentTags is null || v.PresentTags.Contains(0))
+            if (v.PresentTags is null)
             {
+                e.WriteStructFieldCount(3);
                 e.WriteVInt(0);
                 e.WriteInt((long)v.PlayerId);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(1))
-            {
                 e.WriteVInt(1);
                 e.WriteBlob(v.UpgradeTypeName);
-            }
-            if (v.PresentTags is null || v.PresentTags.Contains(2))
-            {
                 e.WriteVInt(2);
                 e.WriteInt((long)v.Count);
+                return;
+            }
+            e.WriteStructFieldCount(v.PresentTags.Count);
+            foreach (long tag in v.PresentTags)
+            {
+                e.WriteVInt(tag);
+                switch (tag)
+                {
+                    case 0: e.WriteInt((long)v.PlayerId); break;
+                    case 1: e.WriteBlob(v.UpgradeTypeName); break;
+                    case 2: e.WriteInt((long)v.Count); break;
+                    default: throw new global::System.InvalidOperationException($"Unknown field tag {tag} for SUpgradeEvent.");
+                }
             }
         }
 
