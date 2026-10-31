@@ -536,6 +536,18 @@ dotnet build Biz.Bizadm.S2Protocol.NET.slnx -c Release
 (Get-Item src/Biz.Bizadm.S2Protocol.NET/bin/Release/net10.0/Biz.Bizadm.S2Protocol.NET.dll).Length
 ```
 
+측정 결과(2026-10-31):
+
+| 항목 | 값 |
+|---|---|
+| 생성 소스 | `.g.cs` 95개(버전 93 + Common + Registry), 26.1MB. 버전당 타입 117(15405)~176(98310) |
+| `emit`(전체) | 약 8초 |
+| Release 빌드(`--no-incremental`, 솔루션 전체) | 28.7초, 경고 0 |
+| DLL 크기 | Release 15.82MB, Debug 17.01MB |
+| 공통 인터페이스 | 155개(`SSelectionMask`는 종류가 달라 제외) |
+
+단일 어셈블리(설계 D5)를 유지할 수 있는 크기다(nuget.org 패키지 한도 250MB).
+
 - **검증**: 빌드 성공, `S2ProtocolRegistry.Builds.Count == 93`, `IHeader`에 `Version.BaseBuild`와 `IDetails`에 플레이어 목록이 교집합으로 남아 있음(단위 15 전제), DLL 크기·빌드 시간을 기록해 사용자에게 보고(설계 D5 재검토 판단 근거)
 - **선행 단위**: 12
 
