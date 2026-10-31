@@ -161,7 +161,11 @@ public sealed class VersionedDecoder(ReadOnlyMemory<byte> data)
     /// <returns>The elements.</returns>
     public T[] ReadArray<T>(Func<T> readElement)
     {
-        var result = new T[checked((int)ReadArrayLength())];
+        // 원소마다 최소 1바이트(skip 코드)가 필요하므로, 남은 바이트보다 긴 길이는 할당 전에 손상으로 본다.
+        long length = ReadArrayLength();
+        if (length < 0 || length > _buffer.RemainingBytes)
+            throw new CorruptedReplayException($"Array length {length} exceeds the remaining {_buffer.RemainingBytes} bytes.");
+        var result = new T[length];
         for (int i = 0; i < result.Length; i++)
             result[i] = readElement();
         return result;
@@ -180,12 +184,23 @@ public sealed class VersionedDecoder(ReadOnlyMemory<byte> data)
     public T? ReadOptionalValue<T>(Func<T> read) where T : struct => ReadOptionalExists() ? read() : null;
 
     /// <summary>Skips one value of any kind (used for unknown struct fields and choice cases).</summary>
-    public void SkipInstance()
+    /// <exception cref="CorruptedReplayException">The value is nested deeper than <see cref="MaxSkipDepth"/>.</exception>
+    public void SkipInstance() => SkipInstance(0);
+
+    /// <summary>Maximum nesting depth <see cref="SkipInstance()"/> accepts; deeper data is treated as corrupted.</summary>
+    // 조작된 입력의 무제한 중첩이 재귀를 깊게 만들어 잡을 수 없는 스택 오버플로로 프로세스를 끝내지 않게 한다.
+    // 실제 프로토콜 중첩보다 훨씬 크다.
+    public const int MaxSkipDepth = 256;
+
+    private void SkipInstance(int depth)
     {
+        if (depth > MaxSkipDepth)
+            throw new CorruptedReplayException($"Value nested deeper than {MaxSkipDepth}.");
+        depth++;
         switch ((int)_buffer.ReadBits(8))
         {
             case SkipArray:
-                for (long n = ReadVInt(); n > 0; n--) SkipInstance();
+                for (long n = ReadVInt(); n > 0; n--) SkipInstance(depth);
                 break;
             case SkipBitBlob:
                 _buffer.ReadAlignedBytes(checked((int)((ReadVInt() + 7) / 8)));
@@ -195,16 +210,16 @@ public sealed class VersionedDecoder(ReadOnlyMemory<byte> data)
                 break;
             case SkipChoice:
                 ReadVInt();
-                SkipInstance();
+                SkipInstance(depth);
                 break;
             case SkipOptional:
-                if (_buffer.ReadBits(8) != 0) SkipInstance();
+                if (_buffer.ReadBits(8) != 0) SkipInstance(depth);
                 break;
             case SkipStruct:
                 for (long n = ReadVInt(); n > 0; n--)
                 {
                     ReadVInt();
-                    SkipInstance();
+                    SkipInstance(depth);
                 }
                 break;
             case SkipU8:

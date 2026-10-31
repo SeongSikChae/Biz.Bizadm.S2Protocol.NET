@@ -226,6 +226,11 @@ for (long n = d.ReadStructFieldCount(); n > 0; n--)   // ExpectSkip(5) + ReadVIn
 }
 ```
 
+보안 검토 후 보강(2026-10-31):
+
+- `SkipInstance`는 중첩 깊이 상한 `MaxSkipDepth = 256`을 둔다. 조작된 입력(optional 20만 단, 약 400KB)으로 잡을 수 없는 스택 오버플로가 나서 프로세스가 종료되는 것을 재현했고, 이제는 `CorruptedReplayException`을 던진다.
+- `ReadArray`는 길이가 음수이거나 남은 바이트보다 크면 할당 전에 `CorruptedReplayException`을 던진다(원소마다 skip 코드 1바이트 이상). 이전에는 6바이트 입력으로 16GB 배열을 할당했다.
+
 - **검증**: `VersionedDecoderTests` — 음수·다중 바이트 vint, skip 코드 0~9 각각, 알 수 없는 struct 태그 skip
 - **선행 단위**: 3
 

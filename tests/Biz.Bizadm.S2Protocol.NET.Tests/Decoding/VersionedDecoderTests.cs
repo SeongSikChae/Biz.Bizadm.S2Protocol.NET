@@ -107,6 +107,68 @@ public sealed class VersionedDecoderTests
         Assert.IsTrue(decoder.Done, $"skip code {skipCode}");
     }
 
+    // optional을 nesting단 중첩한 뒤 vint 0으로 끝나는 값.
+    private static byte[] NestedOptionals(int nesting)
+    {
+        var data = new List<byte>(nesting * 2 + 2);
+        for (int i = 0; i < nesting; i++) { data.Add(0x04); data.Add(0x01); }
+        data.AddRange([0x09, 0x00]);
+        return [.. data];
+    }
+
+    [TestMethod]
+    public void SkipInstance_NestingAtLimit_IsSkipped()
+    {
+        var decoder = new VersionedDecoder(NestedOptionals(VersionedDecoder.MaxSkipDepth));
+
+        decoder.SkipInstance();
+
+        Assert.IsTrue(decoder.Done);
+    }
+
+    [TestMethod]
+    public void SkipInstance_NestingBeyondLimit_IsCorrupted()
+    {
+        var decoder = new VersionedDecoder(NestedOptionals(VersionedDecoder.MaxSkipDepth + 1));
+
+        Assert.ThrowsExactly<CorruptedReplayException>(() => decoder.SkipInstance());
+    }
+
+    // 보안 검토에서 재현한 입력: 이전에는 스택 오버플로로 프로세스가 종료됐다.
+    [TestMethod]
+    public void SkipInstance_HostileNesting_ThrowsInsteadOfStackOverflow()
+    {
+        var decoder = new VersionedDecoder(NestedOptionals(200_000));
+
+        Assert.ThrowsExactly<CorruptedReplayException>(() => decoder.SkipInstance());
+    }
+
+    [TestMethod]
+    public void ReadArray_LengthBeyondRemainingBytes_IsCorruptedBeforeAllocation()
+    {
+        var encoder = new Biz.Bizadm.S2Protocol.NET.Encoding.VersionedEncoder();
+        encoder.WriteArrayLength(2_000_000_000);
+        var decoder = new VersionedDecoder(encoder.ToArray());
+
+        Assert.ThrowsExactly<CorruptedReplayException>(() => decoder.ReadArray(() => decoder.ReadInt()));
+    }
+
+    [TestMethod]
+    public void ReadArray_NegativeLength_IsCorrupted()
+    {
+        var decoder = new VersionedDecoder(new byte[] { 0x00, 0x03 });   // array, 길이 vint -1
+
+        Assert.ThrowsExactly<CorruptedReplayException>(() => decoder.ReadArray(() => decoder.ReadInt()));
+    }
+
+    [TestMethod]
+    public void ReadArray_LengthEqualToRemainingBytes_IsRead()
+    {
+        var decoder = new VersionedDecoder(new byte[] { 0x00, 0x04, 0x06, 0x01, 0x06, 0x00 });   // bool 2개(각 2바이트)
+
+        CollectionAssert.AreEqual(new[] { true, false }, decoder.ReadArray(decoder.ReadBool));
+    }
+
     [TestMethod]
     public void Struct_UnknownTag_IsSkipped()
     {

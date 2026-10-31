@@ -23,6 +23,9 @@ public sealed class BitPackedBuffer(ReadOnlyMemory<byte> data, bool bigEndian = 
     /// <summary>Number of bits read so far.</summary>
     public long UsedBits => _used * 8L - _nextBits;
 
+    // 아직 손대지 않은 바이트 수(현재 바이트의 남은 비트는 제외). 길이 값으로 미리 할당하기 전 검사용.
+    internal int RemainingBytes => _data.Length - _used;
+
     /// <summary>Skips the rest of the current byte.</summary>
     public void ByteAlign() => _nextBits = 0;
 
